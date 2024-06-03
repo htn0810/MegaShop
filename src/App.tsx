@@ -1,5 +1,6 @@
 import Header from '@/modules/header'
 import { Fragment } from 'react'
+import './i18n'
 
 const App = () => {
   return (

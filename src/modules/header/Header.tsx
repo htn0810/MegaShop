@@ -16,7 +16,7 @@ const Header = () => {
     i18n.changeLanguage(lng)
   }
   return (
-    <section className='fixed top-0 left-0 right-0'>
+    <section className='fixed top-0 left-0 right-0 z-50 bg-white'>
       <div className='hidden py-3 text-center text-white bg-black md:block'>
         {t('home.header.sale')}
         <Link to='products' className='font-bold underline'>
@@ -34,7 +34,11 @@ const Header = () => {
             </li>
           ))}
         </ul>
-        <Input type='text' className='flex-1 outline-none md:min-w-80 md:flex-grow-0' placeholder='Search product...' />
+        <Input
+          type='text'
+          className='flex-1 outline-none md:min-w-80 md:flex-grow-0'
+          placeholder={t('home.header.search_placeholder')}
+        />
         <div className='flex gap-x-4'>
           <div className='flex md:gap-x-4 gap-x-2'>
             <span className='hidden xl:inline'>{languages[i18n.language as keyof typeof languages]}</span>

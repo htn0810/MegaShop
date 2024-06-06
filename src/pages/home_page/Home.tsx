@@ -1,12 +1,14 @@
 import { Fragment } from 'react'
-import CarouselBanner from '@/modules/carousel_banner/CarouselBanner'
+import CarouselBanner from '@/modules/home/carousel_banner/CarouselBanner'
 import PrimaryLayout from '@/layouts/primary_layout'
+import FlashSale from '@/modules/home/flash_sales'
 
 const Home = () => {
   return (
     <Fragment>
       <PrimaryLayout>
-        <CarouselBanner></CarouselBanner>
+        <CarouselBanner />
+        <FlashSale />
       </PrimaryLayout>
     </Fragment>
   )

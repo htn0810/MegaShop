@@ -6,5 +6,43 @@
     "home_nav": "Trang chủ",
     "products_nav": "Sản phẩm",
     "about_nav": "Về chúng tôi"
+  },
+  "product": {
+    "today": "Hôm nay",
+    "this_month": "Tháng này",
+    "flash_sale": "Giảm Sập Sàn",
+    "sale_day": "Ngày",
+    "sale_hour": "Giờ",
+    "sale_minute": "Phút",
+    "sale_second": "Giây",
+    "categories": "Danh mục",
+    "browse_categories": "Khám Phá Danh Mục",
+    "best_selling": "Sản Phẩm Bán Chạy",
+    "new_arrival": "Sản Phẩm Mới",
+    "shop_now": "Mua ngay",
+    "view_all": "Xem Tất Cả"
+  },
+  "policy": {
+    "delivery": "MIỄN PHÍ VÀ CHUYỂN PHÁT NHANH",
+    "delivery_desc": "Miễn phí vận chuyển cho tất cả đơn hàng trên $140",
+    "customer": "CHĂM SÓC KHÁCH HÀNG 24/7",
+    "customer_desc": "Hỗ trợ chăm sóc khách hàng thân thiện 24/7",
+    "guaranty": "HOÀN TRẢ",
+    "guaranty_desc": "Hoàn trả trong vòng 30 ngày"
+  },
+  "footer": {
+    "subscribe": "Đăng ký",
+    "get_voucher": "Giảm 10% cho đơn hàng đầu tiên",
+    "email_placeholder": "Email của bạn ...",
+    "support": "Hỗ Trợ",
+    "account": "Tài Khoản",
+    "my_account": "Tài khoản của tôi",
+    "cart": "Giỏ hàng",
+    "shop": "Mua sắm",
+    "quick_link": "Xem Nhanh",
+    "private_policy": "Chính sách bảo mật",
+    "term": "Điều khoản sử dụng",
+    "faq": "Hỏi đáp",
+    "copyright": "Bản Quyền Huynh Thanh Nhan 2024"
   }
 }

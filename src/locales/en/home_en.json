@@ -6,5 +6,43 @@
     "home_nav": "Home",
     "products_nav": "Products",
     "about_nav": "About"
+  },
+  "product": {
+    "today": "Today's",
+    "this_month": "This month",
+    "flash_sale": "Flash Sales",
+    "sale_day": "Days",
+    "sale_hour": "Hours",
+    "sale_minute": "Minutes",
+    "sale_second": "Seconds",
+    "categories": "Categories",
+    "browse_categories": "Browse By Category",
+    "best_selling": "Best Selling Products",
+    "new_arrival": "New Arrival",
+    "shop_now": "Shop now",
+    "view_all": "View All Products"
+  },
+  "policy": {
+    "delivery": "FREE AND FAST DELIVERY",
+    "delivery_desc": "Free delivery for all orders over $140",
+    "customer": "24/7 CUSTOMER SERVICE",
+    "customer_desc": "Friendly 24/7 customer support",
+    "guaranty": "MONEY BACK GUARANTY",
+    "guaranty_desc": "We return money within 30 days"
+  },
+  "footer": {
+    "subscribe": "Subscribe",
+    "get_voucher": "Get 10% off your first order",
+    "email_placeholder": "Enter your email ...",
+    "support": "Support",
+    "account": "Account",
+    "my_account": "My Account",
+    "cart": "Cart",
+    "shop": "Shop",
+    "quick_link": "Quick Link",
+    "private_policy": "Privacy Policy",
+    "term": "Terms Of Use",
+    "faq": "FAQ",
+    "copyright": "Copyright Huynh Thanh Nhan 2024. All right reserved"
   }
 }

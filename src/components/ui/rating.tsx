@@ -1,5 +1,3 @@
-import React from 'react'
-
 const Rating = ({ val }: { val: number }) => {
   return (
     <div className='rating rating-sm'>

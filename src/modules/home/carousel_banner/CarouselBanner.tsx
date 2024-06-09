@@ -20,8 +20,8 @@ const CarouselBanner = () => {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className='w-10 h-10 shadow-lg -left-6 xl:w-14 xl:h-14' />
-        <CarouselNext className='w-10 h-10 shadow-lg -right-6 xl:w-14 xl:h-14' />
+        <CarouselPrevious className='left-0 w-10 h-10 shadow-lg md:-left-6 xl:w-14 xl:h-14' />
+        <CarouselNext className='right-0 w-10 h-10 shadow-lg md:-right-6 xl:w-14 xl:h-14' />
       </Carousel>
     </div>
   )

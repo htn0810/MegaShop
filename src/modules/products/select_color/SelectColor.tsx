@@ -1,6 +1,6 @@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Color, COLORS } from '@/constants/common.constant'
-import React, { useId } from 'react'
+import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
 
 const SelectColor = () => {

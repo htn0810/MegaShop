@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom'
 import MetaLogo from '@/assets/images/mega-logo.png'
 import { List, ShoppingCart, UserCircle } from '@phosphor-icons/react'
-import { GlobeSimple, Heart } from '@phosphor-icons/react/dist/ssr'
+import { GlobeSimple } from '@phosphor-icons/react/dist/ssr'
 import { Input } from '@/components/ui/input'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { HEADER_NAV } from '@/constants/header.constant'

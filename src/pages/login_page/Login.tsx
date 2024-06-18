@@ -8,6 +8,11 @@ import { Eye, EyeSlash } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+type FormData = {
+  email: string
+  password: string
+}
+
 const Login = () => {
   const { t } = useTranslation()
   const [isHiddenPassword, setIsHiddenPassword] = useState(true)

@@ -13,7 +13,7 @@ const DoubleCarousel = () => {
   const [selectedImg, setSelectedImg] = useState<string>(IMAGE_DUMMY[0])
   return (
     <div className='flex flex-col gap-y-6'>
-      <Carousel className='w-full max-w-xl'>
+      <Carousel className='w-full md:max-w-2xl'>
         <CarouselContent>
           <CarouselItem>
             <div className='p-1'>
@@ -26,7 +26,7 @@ const DoubleCarousel = () => {
           </CarouselItem>
         </CarouselContent>
       </Carousel>
-      <Carousel className='w-full max-w-md'>
+      <Carousel className='w-full md:max-w-xl'>
         <CarouselContent className='-ml-1'>
           {IMAGE_DUMMY.map((src, index) => (
             <CarouselItem key={index} className='pl-1 basis-1/4'>

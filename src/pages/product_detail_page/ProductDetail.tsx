@@ -16,7 +16,7 @@ const ProductDetail = () => {
   const { t } = useTranslation()
   return (
     <div className='py-10'>
-      <div className='flex gap-6'>
+      <div className='flex md:flex-row flex-col gap-6'>
         <DoubleCarousel />
         <div>
           <h4 className='font-bold text-lg'>
@@ -48,7 +48,7 @@ const ProductDetail = () => {
             <SelectColor />
             <SelectSize />
           </div>
-          <div className='mt-2 py-4 flex gap-x-14 items-center'>
+          <div className='mt-2 py-4 flex gap-x-6 md:gap-x-14 items-center'>
             <ProductCounter />
             <Button
               variant='outline'
@@ -60,7 +60,7 @@ const ProductDetail = () => {
           </div>
         </div>
       </div>
-      <div className='mt-6 p-6 rounded-md border border-gray-200'>
+      <div className='mt-6 md:p-6 px-2 py-4 rounded-md border border-gray-200'>
         <ViewShop />
       </div>
       <div className='mt-6 p-6'>

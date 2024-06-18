@@ -8,6 +8,7 @@ import { HEADER_NAV } from '@/constants/header.constant'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { languages } from '@/i18n'
 import { useTranslation } from 'react-i18next'
+import ThemeToggle from '@/modules/home/theme_toggle'
 
 const Header = () => {
   const { t, i18n } = useTranslation()
@@ -16,14 +17,14 @@ const Header = () => {
     i18n.changeLanguage(lng)
   }
   return (
-    <section className='fixed top-0 left-0 right-0 z-50 bg-white'>
-      <div className='hidden py-3 text-center text-white bg-black md:block'>
+    <section className='fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-800'>
+      <div className='hidden py-3 text-center text-white bg-black dark:bg-gray-900 md:block'>
         {t('home.header.sale')}
         <Link to='products' className='font-bold underline'>
           {t('home.header.shop_now')}
         </Link>
       </div>
-      <div className='flex items-center justify-between px-4 py-4 border-b-2 shadow-sm sm:px-10 xl:px-40 md:px-20 md:gap-x-0 gap-x-2'>
+      <div className='flex items-center justify-between px-4 py-4 border-b-2 shadow-sm sm:px-10 xl:px-40 md:px-20 md:gap-x-0 gap-x-2 dark:shadow-gray-600 dark:shadow-md'>
         <div className='hidden w-40 cursor-pointer md:block' onClick={() => navigate('/')}>
           <img src={MetaLogo} loading='lazy' />
         </div>
@@ -39,7 +40,7 @@ const Header = () => {
           className='flex-1 outline-none md:min-w-80 md:flex-grow-0'
           placeholder={t('home.header.search_placeholder')}
         />
-        <div className='flex gap-x-4'>
+        <div className='flex items-center gap-x-4'>
           <div className='flex md:gap-x-4 gap-x-2'>
             <span className='hidden xl:inline'>{languages[i18n.language as keyof typeof languages]}</span>
             <DropdownMenu>
@@ -56,9 +57,9 @@ const Header = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <Heart size={24} className='hidden cursor-pointer hover:text-gray-500 xl:block' />
           <ShoppingCart size={24} className='cursor-pointer hover:text-gray-500' />
           <UserCircle size={24} className='cursor-pointer hover:text-gray-500' />
+          <ThemeToggle />
           <Sheet>
             <SheetTrigger asChild>
               <List size={24} className='cursor-pointer xl:hidden hover:text-gray-500' />

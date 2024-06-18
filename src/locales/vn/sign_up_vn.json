@@ -1,0 +1,15 @@
+{
+  "page_title_key": "Đăng Ký",
+  "password": "Mật khẩu",
+  "confirm_password": "Xác nhận mật khẩu",
+  "err_password_not_match": "Mật khẩu không trùng khớp.",
+  "err_input_need_filled": "Vui lòng điền thông tin.",
+  "err_unvalid_email": "Email không hợp lệ.",
+  "err_min_length_password": "Ít nhất 6 ký tự.",
+  "err_max_length_password": "Tối đa 20 ký tự.",
+  "err_miss_upper_character": "Phải có ký tự viết hoa.",
+  "err_miss_lower_character": "Phải có ký tự viết thường.",
+  "err_miss_special_character": "Phải có ký tự đặc biệt.",
+  "err_miss_digit": "Phải có ký tự số.",
+  "submit_btn": "Xác nhận"
+}

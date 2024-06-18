@@ -8,7 +8,7 @@ import { Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
 
 type Props = {
-  time: string
+  subTitle: string
   title: string
   type: 'product' | 'category'
   products?: IProduct[] | undefined
@@ -18,7 +18,7 @@ type Props = {
 }
 
 const CarouselHighlight = (props: Props) => {
-  const { time, title, type, products, categories, showViewAll, isFlashSales } = props
+  const { subTitle, title, type, products, categories, showViewAll, isFlashSales } = props
   const { t } = useTranslation()
   return (
     <Fragment>
@@ -29,8 +29,8 @@ const CarouselHighlight = (props: Props) => {
         className='w-full'
       >
         <div className='flex gap-x-2 center'>
-          <span className='block w-3 bg-black rounded-sm'></span>
-          <span className='font-semibold'>{time}</span>
+          <span className='block w-3 bg-black rounded-sm dark:bg-white'></span>
+          <span className='font-semibold'>{subTitle}</span>
         </div>
         <div className='flex justify-between'>
           <div className='flex items-center gap-x-8'>
@@ -60,8 +60,8 @@ const CarouselHighlight = (props: Props) => {
             )}
           </div>
           <div className='items-center hidden md:flex gap-x-4 '>
-            <CarouselPrevious className='relative inset-0 w-10 h-10 translate-x-0 translate-y-0 shadow-lg xl:w-14 xl:h-14' />
-            <CarouselNext className='relative inset-0 w-10 h-10 translate-x-0 translate-y-0 shadow-lg xl:w-14 xl:h-14' />
+            <CarouselPrevious className='relative inset-0 w-10 h-10 translate-x-0 translate-y-0 shadow-lg xl:w-14 xl:h-14 dark:bg-white dark:text-black dark:border-none' />
+            <CarouselNext className='relative inset-0 w-10 h-10 translate-x-0 translate-y-0 shadow-lg xl:w-14 xl:h-14 dark:bg-white dark:text-black dark:border-none' />
           </div>
         </div>
         <CarouselContent className='mt-6'>
@@ -77,21 +77,21 @@ const CarouselHighlight = (props: Props) => {
           {type === 'category' &&
             categories &&
             categories.map((category) => (
-              <CarouselItem key={category.id} className='sm:basis-1/2 md:basis-1/3 lg:basis-1/4 2xl:basis-1/5 '>
+              <CarouselItem key={category.id} className='sm:basis-1/2 md:basis-1/3 lg:basis-1/4 2xl:basis-1/5'>
                 <div className='p-1'>
-                  <Card className='flex flex-col items-center justify-between p-6 border-2 cursor-pointer hover:border-black'>
+                  <Card className='flex flex-col items-center justify-between p-6 border-2 cursor-pointer hover:border-black dark:bg-white'>
                     <div className='w-[100px] h-[100px] '>
                       <img src={category.image} alt='CategoryImg' className='w-full h-full bg-cover' />
                     </div>
-                    <h4 className='font-semibold'>{category.name}</h4>
+                    <h4 className='font-semibold dark:text-black'>{category.name}</h4>
                   </Card>
                 </div>
               </CarouselItem>
             ))}
         </CarouselContent>
         <div className='block md:hidden'>
-          <CarouselPrevious className='left-0 w-10 h-10 translate-y-1/2 shadow-lg xl:w-14 xl:h-14' />
-          <CarouselNext className='right-0 w-10 h-10 translate-y-1/2 shadow-lg xl:w-14 xl:h-14' />
+          <CarouselPrevious className='left-0 w-10 h-10 translate-y-1/2 shadow-lg xl:w-14 xl:h-14 dark:bg-white dark:text-black dark:border-none' />
+          <CarouselNext className='right-0 w-10 h-10 translate-y-1/2 shadow-lg xl:w-14 xl:h-14 dark:bg-white dark:text-black dark:border-none' />
         </div>
       </Carousel>
       <div className='flex justify-center pb-8 mt-10 border-b-2'>

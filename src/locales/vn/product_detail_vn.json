@@ -1,0 +1,14 @@
+{
+  "reviews": "Đánh giá",
+  "products": "Sản phẩm",
+  "availability": "Tình trạng",
+  "in_stock": "Còn hàng",
+  "out_of_stock": "Hết hàng",
+  "category": "Danh mục",
+  "free_ship": "Miễn phí vận chuyển",
+  "select_color": "Màu sắc:",
+  "size": "Kích cỡ:",
+  "add_to_cart": "Thêm vào giỏ hàng",
+  "view_shop": "Xem Shop",
+  "related_products": "Sản phẩm liên quan"
+}

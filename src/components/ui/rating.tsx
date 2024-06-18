@@ -1,6 +1,6 @@
 const Rating = ({ val }: { val: number }) => {
   return (
-    <div className='rating rating-sm'>
+    <span className='block rating rating-sm'>
       {new Array(5).fill(0).map((_item, index) => (
         <input
           type='text'
@@ -8,9 +8,10 @@ const Rating = ({ val }: { val: number }) => {
           className={`mask mask-star-2 ${val >= index + 1 ? 'bg-yellow-500' : 'bg-gray-300'}`}
           key={index}
           checked={val === index + 1}
+          readOnly
         />
       ))}
-    </div>
+    </span>
   )
 }
 

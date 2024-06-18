@@ -1,0 +1,14 @@
+{
+  "reviews": "Reviews",
+  "products": "Products",
+  "availability": "Availability:",
+  "in_stock": "In stock",
+  "out_of_stock": "Out of stock",
+  "category": "Category:",
+  "free_ship": "Free Shipping",
+  "select_color": "Select Color:",
+  "size": "Size:",
+  "add_to_cart": "Add to cart",
+  "view_shop": "View Shop",
+  "related_products": "Related Products"
+}

@@ -1,0 +1,102 @@
+import { Button } from '@/components/ui/button'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Eye, EyeSlash } from '@phosphor-icons/react'
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+
+const Login = () => {
+  const { t } = useTranslation()
+  const [isHiddenPassword, setIsHiddenPassword] = useState(true)
+  const formSchema = z.object({
+    email: z
+      .string()
+      .min(1, { message: t('login.err_input_need_filled') })
+      .email(t('login.err_unvalid_email')),
+    password: z
+      .string()
+      .min(6, { message: t('login.err_min_length_password') })
+      .max(20, { message: t('login.err_max_length_password') })
+      .regex(/[A-Z]/, { message: t('login.err_miss_upper_character') })
+      .regex(/[a-z]/, { message: t('login.err_miss_lower_character') })
+      .regex(/[`!@#$%^&*()_\-+=\[\]{};':"\\|,.<>\/?~ ]/, { message: t('login.err_miss_special_character') })
+      .regex(/[\d]/, { message: t('login.err_miss_digit') }),
+  })
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  })
+
+  const onSubmit = (data: FormData) => {
+    console.log(data)
+  }
+  return (
+    <div className='flex items-center justify-center'>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className='p-4 sm:p-10 mt-10 mb-4 space-y-8 border rounded-md shadow-md w-[360px] sm:min-w-[400px]'
+        >
+          <h6 className='text-xl font-bold text-center'>{t('login.page_title_key').toUpperCase()}</h6>
+          <FormField
+            control={form.control}
+            name='email'
+            render={({ field }) => (
+              <FormItem className='mt-[8px_!important]'>
+                <FormLabel className='text-black'>Email</FormLabel>
+                <FormControl>
+                  <Input {...field} className='focus-visible:ring-offset-0' />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='password'
+            render={({ field }) => (
+              <FormItem className='mt-[8px_!important]'>
+                <FormLabel className='text-black'>{t('login.password')}</FormLabel>
+                <div className='relative'>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      className='focus-visible:ring-offset-0'
+                      type={isHiddenPassword ? 'password' : 'text'}
+                    />
+                  </FormControl>
+                  {isHiddenPassword && (
+                    <Eye
+                      size={18}
+                      className='cursor-pointer absolute right-4 top-0 translate-y-1/2 hover:text-gray-700'
+                      onClick={() => setIsHiddenPassword(false)}
+                    />
+                  )}
+                  {!isHiddenPassword && (
+                    <EyeSlash
+                      size={18}
+                      className='cursor-pointer absolute right-4 top-0 translate-y-1/2 hover:text-gray-700'
+                      onClick={() => setIsHiddenPassword(true)}
+                    />
+                  )}
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type='submit' className='w-full'>
+            {t('login.submit_btn')}
+          </Button>
+        </form>
+      </Form>
+    </div>
+  )
+}
+
+export default Login

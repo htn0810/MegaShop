@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next'
 const Footer = () => {
   const { t } = useTranslation()
   return (
-    <div className='pt-10 pb-6 -mx-4 text-white bg-black xl:-mx-40 md:-mx-20 sm:-mx-10 xl:px-40'>
-      <div className='grid grid-cols-1 px-10 md:px-0 md:grid-cols-3 xl:grid-cols-4 md:place-items-center xl:gap-x-10 gap-x-2 gap-y-6'>
+    <div className='px-4 pt-10 pb-6 text-white bg-black xl:px-40 md:px-20 sm:px-10'>
+      <div className='grid grid-cols-1 px-2 md:px-0 md:grid-cols-3 xl:grid-cols-4 md:place-items-center xl:gap-x-10 gap-x-2 gap-y-6'>
         <div className='flex flex-row items-center w-full md:gap-6 md:w-2/3 xl:w-full col-span-full xl:flex-col xl:col-span-1'>
           <div className='w-full'>
             <h5 className='text-xl font-bold xl:text-3xl'>MegaShop</h5>

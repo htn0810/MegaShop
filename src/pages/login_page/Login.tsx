@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Eye, EyeSlash } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 
 type FormData = {
   email: string
@@ -98,6 +99,14 @@ const Login = () => {
           <Button type='submit' className='w-full'>
             {t('login.submit_btn')}
           </Button>
+          <div className='text-end text-gray-500 text-sm font-semibold'>
+            <span>
+              Don’t have an account?{' '}
+              <Link to='/signup' className='text-black hover:text-cyan-800'>
+                Sign up
+              </Link>
+            </span>
+          </div>
         </form>
       </Form>
     </div>

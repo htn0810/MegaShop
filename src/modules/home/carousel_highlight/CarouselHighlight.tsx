@@ -6,6 +6,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import ProductItem from '@/modules/products/product_item'
 import { Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 
 type Props = {
   subTitle: string
@@ -20,6 +21,7 @@ type Props = {
 const CarouselHighlight = (props: Props) => {
   const { subTitle, title, type, products, categories, showViewAll, isFlashSales } = props
   const { t } = useTranslation()
+  const navigate = useNavigate()
   return (
     <Fragment>
       <Carousel
@@ -69,7 +71,7 @@ const CarouselHighlight = (props: Props) => {
             products &&
             products.map((product) => (
               <CarouselItem key={product.id} className='sm:basis-1/2 md:basis-1/3 lg:basis-1/4 2xl:basis-1/5'>
-                <div className='p-1'>
+                <div className='p-1' onClick={() => navigate('/product_detail')}>
                   <ProductItem product={product}></ProductItem>
                 </div>
               </CarouselItem>

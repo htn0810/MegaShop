@@ -1,6 +1,8 @@
 {
   "page_title_key": "Login",
   "password": "Password",
+  "have_account": "Don’t have an account?",
+  "sign_up": "Sign up",
   "err_input_need_filled": "This field has to be filled.",
   "err_unvalid_email": "This is not a valid email.",
   "err_min_length_password": "At least 6 characters.",

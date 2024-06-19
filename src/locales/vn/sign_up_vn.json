@@ -1,6 +1,8 @@
 {
   "page_title_key": "Đăng Ký",
   "password": "Mật khẩu",
+  "have_account": "Đã có tài khoản?",
+  "login": "Đăng nhập",
   "confirm_password": "Xác nhận mật khẩu",
   "err_password_not_match": "Mật khẩu không trùng khớp.",
   "err_input_need_filled": "Vui lòng điền thông tin.",

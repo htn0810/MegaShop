@@ -1,6 +1,8 @@
 {
   "page_title_key": "Đăng nhập",
   "password": "Mật khẩu",
+  "have_account": "Chưa có tài khoản?",
+  "sign_up": "Đăng ký",
   "err_input_need_filled": "Vui lòng điền thông tin.",
   "err_unvalid_email": "Email không hợp lệ.",
   "err_min_length_password": "Ít nhất 6 ký tự.",

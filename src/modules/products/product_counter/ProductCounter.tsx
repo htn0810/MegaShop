@@ -22,7 +22,7 @@ const ProductCounter = () => {
       </Button>
       <Input
         type='number'
-        className={`w-24 text-center outline-none focus-visible:ring-0 dark:bg-white dark:text-black font-bold ${styles.removeArrows}`}
+        className={`md:w-24 w-16 text-center outline-none focus-visible:ring-0 dark:bg-white dark:text-black font-bold ${styles.removeArrows}`}
         // min={0}
         value={quantity.toString()}
         onChange={handleChangeValue}

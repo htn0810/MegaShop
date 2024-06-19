@@ -47,7 +47,7 @@ const Login = () => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className='p-4 sm:p-10 mt-10 mb-4 space-y-8 border rounded-md shadow-md w-[360px] sm:min-w-[400px]'
+          className='p-4 sm:p-10 mt-10 mb-4 space-y-8 border rounded-md shadow-md w-[360px] sm:min-w-[400px] dark:shadow-gray-600'
         >
           <h6 className='text-xl font-bold text-center'>{t('login.page_title_key').toUpperCase()}</h6>
           <FormField
@@ -55,7 +55,7 @@ const Login = () => {
             name='email'
             render={({ field }) => (
               <FormItem className='mt-[8px_!important]'>
-                <FormLabel className='text-black'>Email</FormLabel>
+                <FormLabel className='text-black dark:text-white'>Email</FormLabel>
                 <FormControl>
                   <Input {...field} className='focus-visible:ring-offset-0' />
                 </FormControl>
@@ -68,7 +68,7 @@ const Login = () => {
             name='password'
             render={({ field }) => (
               <FormItem className='mt-[8px_!important]'>
-                <FormLabel className='text-black'>{t('login.password')}</FormLabel>
+                <FormLabel className='text-black dark:text-white'>{t('login.password')}</FormLabel>
                 <div className='relative'>
                   <FormControl>
                     <Input
@@ -101,9 +101,9 @@ const Login = () => {
           </Button>
           <div className='text-end text-gray-500 text-sm font-semibold'>
             <span>
-              Don’t have an account?{' '}
+              {t('login.have_account')}{' '}
               <Link to='/signup' className='text-black hover:text-cyan-800'>
-                Sign up
+                {t('login.sign_up')}
               </Link>
             </span>
           </div>

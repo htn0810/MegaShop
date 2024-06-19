@@ -48,7 +48,7 @@ const ProductDetail = () => {
             <SelectColor />
             <SelectSize />
           </div>
-          <div className='mt-2 py-4 flex gap-x-6 md:gap-x-14 items-center'>
+          <div className='mt-2 py-4 flex gap-x-4 md:gap-x-14 items-center'>
             <ProductCounter />
             <Button
               variant='outline'

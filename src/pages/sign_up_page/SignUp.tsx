@@ -55,7 +55,7 @@ const SignUp = () => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className='p-4 sm:p-10 mt-10 mb-4 space-y-8 border rounded-md shadow-md w-[360px] sm:min-w-[400px]'
+          className='p-4 sm:p-10 mt-10 mb-4 space-y-8 border rounded-md shadow-md w-[360px] sm:min-w-[400px] dark:shadow-gray-600'
         >
           <h6 className='text-xl font-bold text-center'>{t('sign_up.page_title_key').toUpperCase()}</h6>
           <FormField
@@ -63,9 +63,9 @@ const SignUp = () => {
             name='email'
             render={({ field }) => (
               <FormItem className='mt-[8px_!important]'>
-                <FormLabel className='text-black'>Email</FormLabel>
+                <FormLabel className='text-black dark:text-white'>Email</FormLabel>
                 <FormControl>
-                  <Input {...field} className='focus-visible:ring-offset-0' />
+                  <Input {...field} className='focus-visible:ring-offset-0 ' />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -76,7 +76,7 @@ const SignUp = () => {
             name='password'
             render={({ field }) => (
               <FormItem className='mt-[8px_!important]'>
-                <FormLabel className='text-black'>{t('sign_up.password')}</FormLabel>
+                <FormLabel className='text-black dark:text-white'>{t('sign_up.password')}</FormLabel>
                 <div className='relative'>
                   <FormControl>
                     <Input
@@ -109,7 +109,7 @@ const SignUp = () => {
             name='confirm'
             render={({ field }) => (
               <FormItem className='mt-[8px_!important]'>
-                <FormLabel className='text-black'>{t('sign_up.confirm_password')}</FormLabel>
+                <FormLabel className='text-black dark:text-white'>{t('sign_up.confirm_password')}</FormLabel>
                 <div className='relative'>
                   <FormControl>
                     <Input
@@ -142,9 +142,9 @@ const SignUp = () => {
           </Button>
           <div className='text-end text-gray-500 text-sm font-semibold'>
             <span>
-              Already have an account?{' '}
-              <Link to='/login' className='text-black hover:text-cyan-800'>
-                Login
+              {t('sign_up.have_account')}{' '}
+              <Link to='/login' className='text-black dark:text-gray-200 hover:text-cyan-800'>
+                {t('sign_up.login')}
               </Link>
             </span>
           </div>

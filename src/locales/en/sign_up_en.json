@@ -1,6 +1,8 @@
 {
   "page_title_key": "Sign Up",
   "password": "Password",
+  "have_account": "Already have an account?",
+  "login": "Login",
   "confirm_password": "Confirm Password",
   "err_password_not_match": "Passwords don't match",
   "err_input_need_filled": "This field has to be filled.",

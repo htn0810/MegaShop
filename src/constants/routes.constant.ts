@@ -24,7 +24,7 @@ export const SIGN_UP_PAGE_ROUTE: AppRoute = {
 export const PRODUCTS_PAGE_ROUTE: AppRoute = {
   pageTitleKey: 'PageTitle_ProductsPage',
   path: BASE_ROUTE_PATH + 'products',
-  component: MegaLazyLoad(import('@/pages/login_page/Login')),
+  component: MegaLazyLoad(import('@/pages/products_page/Products')),
 }
 
 export const PRODUCT_DETAIL_PAGE_ROUTE: AppRoute = {

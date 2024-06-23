@@ -1,0 +1,17 @@
+{
+  "product_header": {
+    "price": "Giá",
+    "asc": "Tăng dần",
+    "des": "Giảm dần",
+    "newest": "Mới nhất",
+    "best_seller": "Bán chạy",
+    "reset_btn": "Khôi phục",
+    "apply_btn": "Lưu thay đổi"
+  },
+  "product_sidebar": {
+    "category": "DANH MỤC",
+    "prices": "GIÁ",
+    "popular_brand": "THƯƠNG HIỆU NỔI BẬT",
+    "currency": "đ"
+  }
+}

@@ -8,6 +8,8 @@ import sign_up_en from '@/locales/en/sign_up_en.json'
 import sign_up_vn from '@/locales/vn/sign_up_vn.json'
 import product_detail_en from '@/locales/en/product_detail_en.json'
 import product_detail_vn from '@/locales/vn/product_detail_vn.json'
+import products_en from '@/locales/en/products_en.json'
+import products_vn from '@/locales/vn/products_vn.json'
 
 export const languages = {
   en: 'English',
@@ -21,6 +23,7 @@ export const resources = {
       login: login_en,
       sign_up: sign_up_en,
       product_detail: product_detail_en,
+      products: products_en,
     },
   },
   vn: {
@@ -29,6 +32,7 @@ export const resources = {
       login: login_vn,
       sign_up: sign_up_vn,
       product_detail: product_detail_vn,
+      products: products_vn,
     },
   },
 }

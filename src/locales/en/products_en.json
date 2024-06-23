@@ -1,0 +1,17 @@
+{
+  "product_header": {
+    "price": "Price",
+    "asc": "Ascending",
+    "des": "Descending",
+    "newest": "Newest",
+    "best_seller": "Best seller",
+    "reset_btn": "Reset all",
+    "apply_btn": "Apply"
+  },
+  "product_sidebar": {
+    "category": "CATEGORY",
+    "prices": "PRICES",
+    "popular_brand": "POPULAR BRANDS",
+    "currency": "$"
+  }
+}

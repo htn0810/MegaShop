@@ -13,7 +13,7 @@ const ProductItem = (props: Props) => {
   return (
     <Card className='overflow-hidden border-none shadow-none cursor-pointer'>
       <div className='relative w-full group'>
-        <img src={product.image} alt='productImg' className='w-full h-[300px] sm:h-[250px] xl:h-[280px] bg-cover' />
+        <img src={product.image} alt='productImg' className='w-full h-[30 0px] sm:h-[250px] xl:h-[280px] bg-cover' />
         <Button className='absolute bottom-0 left-0 right-0 w-full py-4 transition-all duration-500 ease-in-out rounded-none opacity-0 group-hover:opacity-100'>
           Add to cart
         </Button>

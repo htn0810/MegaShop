@@ -12,19 +12,23 @@ import {
 import { Sheet, SheetClose, SheetContent, SheetFooter, SheetTrigger } from '@/components/ui/sheet'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import Sidebar from '@/modules/sidebar'
+import { Layout } from '@/types/common.type'
 import { Funnel, List, SquaresFour } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-type Layout = 'grid' | 'list'
+type Props = {
+  layout: Layout
+  changeLayout: (val: Layout | ((prev: Layout) => Layout)) => void
+}
 
-const ProductHeader = () => {
+const ProductHeader = (props: Props) => {
+  const { layout, changeLayout } = props
   const { t } = useTranslation()
   const [sortPrice, setSortPrice] = useState<string>('none')
-  const [layout, setLayout] = useState<Layout>('grid')
 
   const handleChangeLayout = (e: Layout | '') => {
-    setLayout((prev) => (e !== '' ? e : prev))
+    changeLayout((prev) => (e !== '' ? e : prev))
   }
 
   return (

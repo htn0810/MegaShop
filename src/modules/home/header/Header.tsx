@@ -64,7 +64,7 @@ const Header = () => {
             <SheetTrigger asChild>
               <List size={24} className='cursor-pointer xl:hidden hover:text-gray-500' />
             </SheetTrigger>
-            <SheetContent className='flex flex-col p-10'>
+            <SheetContent className='flex flex-col p-10 dark:bg-gray-700'>
               {HEADER_NAV.map((item) => (
                 <Link to={item.path} className='font-bold hover:text-gray-500' key={item.id}>
                   {t(`home.header.${item.name}`)}

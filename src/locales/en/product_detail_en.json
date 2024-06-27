@@ -4,6 +4,7 @@
   "availability": "Availability:",
   "in_stock": "In stock",
   "out_of_stock": "Out of stock",
+  "currency": "$",
   "category": "Category:",
   "free_ship": "Free Shipping",
   "select_color": "Select Color:",

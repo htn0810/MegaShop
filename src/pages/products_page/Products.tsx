@@ -11,20 +11,25 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination'
+import { useState } from 'react'
+import { Layout } from '@/types/common.type'
 
 const products = BestSellingProducts
 
 const Products = () => {
+  const [layout, setLayout] = useState<Layout>('grid')
   return (
     <div className='grid grid-cols-12 gap-x-4 py-6 md:py-10'>
       <div className='col-span-3 lg:block hidden'>
         <Sidebar />
       </div>
       <div className='col-span-full lg:col-span-9'>
-        <ProductHeader />
-        <div className='mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8'>
+        <ProductHeader layout={layout} changeLayout={setLayout} />
+        <div
+          className={`mt-4 grid gap-y-8 ${layout === 'grid' ? ' grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-x-4' : 'grid-cols-1'}`}
+        >
           {products.map((product) => (
-            <ProductItem product={product}></ProductItem>
+            <ProductItem product={product} showType={layout}></ProductItem>
           ))}
         </div>
         <div className='mt-12'>

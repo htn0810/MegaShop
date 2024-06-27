@@ -4,13 +4,19 @@ import { Minus, Plus } from '@phosphor-icons/react'
 import styles from '@/modules/products/product_counter/ProductCounter.module.scss'
 import { ChangeEvent, useState } from 'react'
 
-const ProductCounter = () => {
-  const [quantity, setQuantity] = useState<number>(0)
+type Props = {
+  value?: number
+  className?: string
+}
+
+const ProductCounter = (props: Props) => {
+  const { value, className } = props
+  const [quantity, setQuantity] = useState<number>(value ?? 0)
   const handleChangeValue = (event: ChangeEvent<HTMLInputElement>) => {
     setQuantity(Number(event.target.value))
   }
   return (
-    <div className='flex gap-x-1'>
+    <div className={`flex gap-x-1 ${className}`}>
       <Button
         variant='outline'
         className='bg-black text-white hover:bg-gray-700 hover:text-white dark:bg-gray-300 dark:text-black dark:hover:text-black dark:hover:bg-gray-500'

@@ -1,4 +1,5 @@
 import {
+  CART_ROUTE_BLOCK,
   DEFAULT_ROUTE_BLOCK,
   LOGIN_ROUTE_BLOCK,
   PRODUCTS_ROUTE_BLOCK,
@@ -37,6 +38,7 @@ const App = () => {
           {renderRoutesOfBlock(SIGN_UP_ROUTE_BLOCK)}
           {renderRoutesOfBlock(PRODUCTS_ROUTE_BLOCK)}
           {renderRoutesOfBlock(PRODUCT_DETAIL_ROUTE_BLOCK)}
+          {renderRoutesOfBlock(CART_ROUTE_BLOCK)}
         </Routes>
       </PrimaryLayout>
     </Fragment>

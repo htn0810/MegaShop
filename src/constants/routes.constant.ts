@@ -33,6 +33,12 @@ export const PRODUCT_DETAIL_PAGE_ROUTE: AppRoute = {
   component: MegaLazyLoad(import('@/pages/product_detail_page/ProductDetail')),
 }
 
+export const CART_PAGE_ROUTE: AppRoute = {
+  pageTitleKey: 'PageTitle_CartPage',
+  path: BASE_ROUTE_PATH + 'cart',
+  component: MegaLazyLoad(import('@/pages/cart_page/Cart')),
+}
+
 export const DEFAULT_ROUTE_BLOCK: AppRouteBlock = {
   parentRoute: HOME_PAGE_ROUTE,
 }
@@ -51,4 +57,8 @@ export const PRODUCTS_ROUTE_BLOCK: AppRouteBlock = {
 
 export const PRODUCT_DETAIL_ROUTE_BLOCK: AppRouteBlock = {
   parentRoute: PRODUCT_DETAIL_PAGE_ROUTE,
+}
+
+export const CART_ROUTE_BLOCK: AppRouteBlock = {
+  parentRoute: CART_PAGE_ROUTE,
 }

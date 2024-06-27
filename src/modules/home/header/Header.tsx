@@ -57,8 +57,12 @@ const Header = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <ShoppingCart size={24} className='cursor-pointer hover:text-gray-500' />
-          <UserCircle size={24} className='cursor-pointer hover:text-gray-500' onClick={() => navigate('/login')} />
+          <Link to='/cart'>
+            <ShoppingCart size={24} className='cursor-pointer hover:text-gray-500' />
+          </Link>
+          <Link to='/login'>
+            <UserCircle size={24} className='cursor-pointer hover:text-gray-500' />
+          </Link>
           <ThemeToggle />
           <Sheet>
             <SheetTrigger asChild>

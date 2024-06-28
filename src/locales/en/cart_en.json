@@ -1,0 +1,14 @@
+{
+  "product": "Product",
+  "price": "Price",
+  "quantity": "Quantity",
+  "subtotal": "Subtotal",
+  "action": "Action",
+  "coupon": "Coupon Code",
+  "apply_coupoun": "Apply",
+  "currency": "$",
+  "cart_total": "Cart total",
+  "shipping": "Shipping",
+  "total": "Total",
+  "checkout": "Checkout"
+}

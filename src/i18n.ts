@@ -10,6 +10,8 @@ import product_detail_en from '@/locales/en/product_detail_en.json'
 import product_detail_vn from '@/locales/vn/product_detail_vn.json'
 import products_en from '@/locales/en/products_en.json'
 import products_vn from '@/locales/vn/products_vn.json'
+import cart_en from '@/locales/en/cart_en.json'
+import cart_vn from '@/locales/vn/cart_vn.json'
 
 export const languages = {
   en: 'English',
@@ -24,6 +26,7 @@ export const resources = {
       sign_up: sign_up_en,
       product_detail: product_detail_en,
       products: products_en,
+      cart: cart_en,
     },
   },
   vn: {
@@ -33,6 +36,7 @@ export const resources = {
       sign_up: sign_up_vn,
       product_detail: product_detail_vn,
       products: products_vn,
+      cart: cart_vn,
     },
   },
 }

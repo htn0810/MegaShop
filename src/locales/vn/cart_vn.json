@@ -1,0 +1,14 @@
+{
+  "product": "Sản phẩm",
+  "price": "Giá",
+  "quantity": "Số lượng",
+  "subtotal": "Tổng tiền",
+  "action": "Xóa",
+  "coupon": "Mã giảm giá",
+  "apply_coupoun": "Áp mã",
+  "currency": "đ",
+  "cart_total": "Tổng giỏ hàng",
+  "shipping": "Phí vận chuyển",
+  "total": "Thành tiền",
+  "checkout": "Thanh toán"
+}

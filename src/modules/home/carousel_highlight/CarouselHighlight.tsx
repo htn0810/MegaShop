@@ -26,7 +26,7 @@ const CarouselHighlight = (props: Props) => {
     <Fragment>
       <Carousel
         opts={{
-          align: 'start',
+          align: 'start'
         }}
         className='w-full'
       >

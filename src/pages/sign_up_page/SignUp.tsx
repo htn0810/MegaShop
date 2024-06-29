@@ -32,19 +32,19 @@ const SignUp = () => {
         .regex(/[a-z]/, { message: t('sign_up.err_miss_lower_character') })
         .regex(/[`!@#$%^&*()_\-+=\[\]{};':"\\|,.<>\/?~ ]/, { message: t('sign_up.err_miss_special_character') })
         .regex(/[\d]/, { message: t('sign_up.err_miss_digit') }),
-      confirm: z.string(),
+      confirm: z.string()
     })
     .refine((data) => data.password === data.confirm, {
       message: t('sign_up.err_password_not_match'),
-      path: ['confirm'], // path of error
+      path: ['confirm'] // path of error
     })
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
       password: '',
-      confirm: '',
-    },
+      confirm: ''
+    }
   })
 
   const onSubmit = (data: FormData) => {

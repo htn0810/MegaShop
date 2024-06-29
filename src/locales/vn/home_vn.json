@@ -5,7 +5,9 @@
     "search_placeholder": "Tìm kiếm sản phẩm...",
     "home_nav": "Trang chủ",
     "products_nav": "Sản phẩm",
-    "about_nav": "Về chúng tôi"
+    "about_nav": "Về chúng tôi",
+    "admin_nav": "Admin",
+    "super_admin_nav": "Super admin"
   },
   "product": {
     "today": "Hôm nay",

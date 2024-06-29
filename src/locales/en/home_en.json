@@ -5,7 +5,9 @@
     "search_placeholder": "Search products...",
     "home_nav": "Home",
     "products_nav": "Products",
-    "about_nav": "About"
+    "about_nav": "About",
+    "admin_nav": "Admin",
+    "super_admin_nav": "Super admin"
   },
   "product": {
     "today": "Today's",

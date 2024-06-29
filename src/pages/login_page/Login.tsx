@@ -29,14 +29,14 @@ const Login = () => {
       .regex(/[A-Z]/, { message: t('login.err_miss_upper_character') })
       .regex(/[a-z]/, { message: t('login.err_miss_lower_character') })
       .regex(/[`!@#$%^&*()_\-+=\[\]{};':"\\|,.<>\/?~ ]/, { message: t('login.err_miss_special_character') })
-      .regex(/[\d]/, { message: t('login.err_miss_digit') }),
+      .regex(/[\d]/, { message: t('login.err_miss_digit') })
   })
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
-      password: '',
-    },
+      password: ''
+    }
   })
 
   const onSubmit = (data: FormData) => {

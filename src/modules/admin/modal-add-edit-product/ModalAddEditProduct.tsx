@@ -8,6 +8,22 @@ import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 
+type Product = {
+  id: string
+  quantity: number
+  name: string
+  status: 'in stock' | 'out of stock'
+  isDisabled: boolean
+  saleOff: number
+  image: string
+  price: number
+}
+
+type Props = {
+  type: 'add' | 'edit'
+  product?: Product
+}
+
 type FormData = {
   name: string
   category: string
@@ -17,7 +33,8 @@ type FormData = {
   description: string
 }
 
-const ModalAddEditProduct = () => {
+const ModalAddEditProduct = (props: Props) => {
+  const { type, product } = props
   const { t } = useTranslation()
   const formSchema = z.object({
     name: z.string().min(1, { message: t('login.err_input_need_filled') }),
@@ -29,7 +46,7 @@ const ModalAddEditProduct = () => {
   })
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: product ?? {
       name: '',
       category: '',
       quantity: 0,
@@ -46,7 +63,7 @@ const ModalAddEditProduct = () => {
     <div className='flex items-center justify-center'>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='p-4 space-y-8'>
-          <h6 className='text-xl font-bold text-left'>Add product</h6>
+          <h6 className='text-xl font-bold text-left'>{type.toUpperCase()} product</h6>
           <div className='grid grid-cols-1 md:grid-cols-6 gap-x-4 mt-[8px_!important]'>
             <FormField
               control={form.control}

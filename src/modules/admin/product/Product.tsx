@@ -26,15 +26,29 @@ import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useState } from 'react'
 import { DataTablePagination } from '@/components/ui/data-table-pagination'
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import ModalAddEditProduct from '@/modules/admin/modal-add-edit-product'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 
 const data: Product[] = [
   {
     id: 'm5gr84i9',
     quantity: 316,
+    saleOff: 20,
+    isDisabled: false,
     price: 100,
-    status: 'disabled',
+    status: 'in stock',
+    description: '',
     name: 'ken99@yahoo.com',
     image:
       'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
@@ -42,8 +56,11 @@ const data: Product[] = [
   {
     id: '3u1reuv4',
     quantity: 242,
+    saleOff: 20,
+    isDisabled: false,
     price: 100,
     status: 'in stock',
+    description: '',
     name: 'Abe45@gmail.com',
     image:
       'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
@@ -51,8 +68,11 @@ const data: Product[] = [
   {
     id: 'derv1ws0',
     quantity: 837,
+    saleOff: 20,
+    isDisabled: true,
     price: 100,
     status: 'in stock',
+    description: '',
     name: 'Monserrat44@gmail.com',
     image:
       'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
@@ -60,8 +80,11 @@ const data: Product[] = [
   {
     id: '5kma53ae',
     quantity: 874,
+    saleOff: 20,
+    isDisabled: false,
     price: 100,
     status: 'out of stock',
+    description: '',
     name: 'Silas22@gmail.com',
     image:
       'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
@@ -69,8 +92,11 @@ const data: Product[] = [
   {
     id: 'bhqecj4p',
     quantity: 721,
+    saleOff: 20,
+    isDisabled: false,
     price: 100,
     status: 'in stock',
+    description: '',
     name: 'carmella@hotmail.com',
     image:
       'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
@@ -81,9 +107,17 @@ type Product = {
   id: string
   quantity: number
   name: string
-  status: 'in stock' | 'out of stock' | 'disabled'
+  description: string
+  status: 'in stock' | 'out of stock'
+  isDisabled: boolean
+  saleOff: number
   image: string
   price: number
+}
+
+type ConfirmDialog = {
+  data: Product | null
+  isShow: boolean
 }
 
 const Product = () => {
@@ -93,6 +127,8 @@ const Product = () => {
   const [rowSelection, setRowSelection] = useState({})
 
   const [status, setStatus] = useState<Product['status'] | 'all'>('all')
+  const [confirmDisableDialog, setConfirmDisableDialog] = useState<ConfirmDialog>({ data: null, isShow: false })
+  const [confirmDeleteDialog, setConfirmDeleteDialog] = useState<ConfirmDialog>({ data: null, isShow: false })
 
   const columns: ColumnDef<Product>[] = [
     {
@@ -162,22 +198,36 @@ const Product = () => {
     {
       id: 'actions',
       enableHiding: false,
-      cell: () => {
+      cell: ({ row }) => {
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild className='text-end float-right'>
-              <Button variant='ghost' className='h-8 w-8 p-0'>
-                <span className='sr-only'>Open menu</span>
-                <DotsThree size={20} weight='bold' />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align='end'>
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem>Edit</DropdownMenuItem>
-              <DropdownMenuItem>Hidden</DropdownMenuItem>
-              <DropdownMenuItem>Delete</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className='bg-white'>
+            <Dialog>
+              <DropdownMenu modal={false}>
+                <DropdownMenuTrigger asChild className='text-end float-right'>
+                  <DotsThree size={20} weight='bold' className='cursor-pointer' />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align='end'>
+                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                  <DialogTrigger asChild>
+                    <DropdownMenuItem>
+                      <span>Edit</span>
+                    </DropdownMenuItem>
+                  </DialogTrigger>
+                  <DropdownMenuItem onClick={() => setConfirmDisableDialog({ data: row.original, isShow: true })}>
+                    Disabled
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setConfirmDeleteDialog({ data: row.original, isShow: true })}>
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <DialogContent className='w-[360px] sm:min-w-[400px] md:w-[600px] xl:w-[700px] max-w-2xl'>
+                <DialogTitle className='hidden' />
+                <DialogDescription className='hidden' />
+                <ModalAddEditProduct type='edit' product={row.original} />
+              </DialogContent>
+            </Dialog>
+          </div>
         )
       },
     },
@@ -211,7 +261,9 @@ const Product = () => {
             </Button>
           </DialogTrigger>
           <DialogContent className='w-[360px] sm:min-w-[400px] md:w-[600px] xl:w-[700px] max-w-2xl'>
-            <ModalAddEditProduct />
+            <DialogTitle className='hidden' />
+            <DialogDescription className='hidden' />
+            <ModalAddEditProduct type='add' />
           </DialogContent>
         </Dialog>
       </p>
@@ -291,6 +343,50 @@ const Product = () => {
           </div>
         </div>
       </div>
+      <AlertDialog
+        open={confirmDisableDialog.isShow}
+        onOpenChange={() => setConfirmDisableDialog({ data: null, isShow: false })}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action will disable your product and customer will not see it.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setConfirmDisableDialog({ data: null, isShow: false })}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={() => setConfirmDisableDialog({ data: null, isShow: false })}>
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={confirmDeleteDialog.isShow}
+        onOpenChange={() => setConfirmDeleteDialog({ data: null, isShow: false })}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your product and remove your data from our
+              servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setConfirmDeleteDialog({ data: null, isShow: false })}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={() => setConfirmDeleteDialog({ data: null, isShow: false })}>
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

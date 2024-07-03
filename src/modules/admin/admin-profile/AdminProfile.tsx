@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { PencilSimpleLine } from '@phosphor-icons/react'
-import { useRef } from 'react'
 import { Switch } from '@/components/ui/switch'
 
 type FormData = {
@@ -15,7 +14,6 @@ type FormData = {
 
 const AdminProfile = () => {
   const { t } = useTranslation()
-  const inputNameRef = useRef<HTMLInputElement>(null)
   const formSchema = z.object({
     name: z.string().min(1, { message: t('login.err_input_need_filled') }),
   })
@@ -26,14 +24,6 @@ const AdminProfile = () => {
 
   const onSubmit = (data: FormData) => {
     console.log(data)
-  }
-
-  const handleEditName = () => {
-    console.log(inputNameRef.current)
-    if (inputNameRef.current) {
-      inputNameRef.current.disabled = false
-      inputNameRef.current.focus()
-    }
   }
 
   return (
@@ -55,25 +45,9 @@ const AdminProfile = () => {
                   <FormItem className='relative w-60 md:w-80'>
                     <FormLabel className='text-black dark:text-white'>Name</FormLabel>
                     <FormControl>
-                      <Input
-                        {...field}
-                        className='focus-visible:ring-offset-0'
-                        disabled
-                        ref={inputNameRef}
-                        onBlur={() => {
-                          if (inputNameRef.current) {
-                            inputNameRef.current.disabled = true
-                          }
-                        }}
-                      />
+                      <Input {...field} className='focus-visible:ring-offset-0' />
                     </FormControl>
-                    {inputNameRef.current && inputNameRef.current.disabled && (
-                      <PencilSimpleLine
-                        size={20}
-                        className='absolute top-1/2 -translate-y-1/5 right-4 cursor-pointer'
-                        onClick={handleEditName}
-                      />
-                    )}
+                    <PencilSimpleLine size={20} className='absolute top-1/2 -translate-y-1/5 right-4 cursor-pointer' />
                     <FormMessage />
                   </FormItem>
                 )}
@@ -89,7 +63,7 @@ const AdminProfile = () => {
                       Active Shop
                     </FormLabel>
                     <FormControl>
-                      <Switch id='active-mode' />
+                      <Switch id='active-mode' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

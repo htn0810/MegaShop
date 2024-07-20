@@ -5,7 +5,8 @@ import {
   LOGIN_ROUTE_BLOCK,
   PRODUCTS_ROUTE_BLOCK,
   PRODUCT_DETAIL_ROUTE_BLOCK,
-  SIGN_UP_ROUTE_BLOCK
+  SIGN_UP_ROUTE_BLOCK,
+  SUPER_ADMIN_ROUTE_BLOCK,
 } from '@/constants/routes.constant'
 import PrimaryLayout from '@/layouts/primary_layout'
 import { AppRoute, AppRouteBlock } from '@/types/route.type'
@@ -41,6 +42,7 @@ const App = () => {
           {renderRoutesOfBlock(PRODUCT_DETAIL_ROUTE_BLOCK)}
           {renderRoutesOfBlock(CART_ROUTE_BLOCK)}
           {renderRoutesOfBlock(ADMIN_ROUTE_BLOCK)}
+          {renderRoutesOfBlock(SUPER_ADMIN_ROUTE_BLOCK)}
         </Routes>
       </PrimaryLayout>
     </Fragment>

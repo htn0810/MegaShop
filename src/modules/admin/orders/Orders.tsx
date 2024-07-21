@@ -1,5 +1,15 @@
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Calendar, CheckSquareOffset, FileX, Scroll, Truck, UserCheck } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
-import { CaretDown, CaretUpDown, DotsThree, Plus } from '@phosphor-icons/react'
+import { CaretDown, CaretUpDown } from '@phosphor-icons/react'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -16,8 +26,6 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
@@ -26,8 +34,6 @@ import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useState } from 'react'
 import { DataTablePagination } from '@/components/ui/data-table-pagination'
-import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import ModalAddEditProduct from '@/modules/admin/modal-add-edit-product'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,9 +43,12 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import ModalOrder from '@/modules/admin/modal-order'
 
-const data: Product[] = [
+const dummyData: Product[] = [
   {
     id: 'm5gr84i9',
     quantity: 316,
@@ -120,20 +129,13 @@ type Product = {
   order: 'order' | 'confirm' | 'delivery' | 'success' | 'cancel'
 }
 
-type ConfirmDialog = {
-  data: Product | null
-  isShow: boolean
-}
-
-const Product = () => {
+const Orders = () => {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
 
-  const [status, setStatus] = useState<Product['status'] | 'all'>('all')
-  const [confirmDisableDialog, setConfirmDisableDialog] = useState<ConfirmDialog>({ data: null, isShow: false })
-  const [confirmDeleteDialog, setConfirmDeleteDialog] = useState<ConfirmDialog>({ data: null, isShow: false })
+  const [data, setData] = useState<Product[]>(dummyData)
 
   const columns: ColumnDef<Product>[] = [
     {
@@ -151,12 +153,15 @@ const Product = () => {
           <div className='w-20 h-20'>
             <img src={row.original.image} alt='ProductImg' className='w-full h-full bg-cover' />
           </div>
-          <span className='truncate'>{row.original.name}</span>
+          <div className='flex flex-col'>
+            <span className='truncate'>{row.original.name}</span>
+            <span className='text-gray-500 font-semibold text-sm'>x2</span>
+          </div>
         </div>
       ),
     },
     {
-      accessorKey: 'status',
+      accessorKey: 'order',
       header: () => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -167,23 +172,25 @@ const Product = () => {
           </DropdownMenuTrigger>
           <DropdownMenuContent className='w-56'>
             <DropdownMenuRadioGroup
-              value={status}
-              onValueChange={(value: string) => setStatus(value as Product['status'] | 'all')}
+              value={'all'}
+              // onValueChange={(value: string) => setStatus(value as Product['order'] | 'all')}
             >
               <DropdownMenuRadioItem value='all'>All</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value='in stock'>In Stock</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value='out of stock'>Out of Stock</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value='disabled'>Disabled</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value='order'>Order</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value='confirm'>Confirm</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value='delivery'>Delivery</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value='success'>Success</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value='cancel'>Cancel</DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>
       ),
-      cell: ({ row }) => <div className='capitalize'>{row.getValue('status')}</div>,
+      cell: ({ row }) => <div className='capitalize'>{row.getValue('order')}</div>,
     },
     {
-      accessorKey: 'quantity',
-      header: () => <div className='text-center font-bold text-black text-base dark:text-white'>Quantity</div>,
-      cell: ({ row }) => <div className='text-center font-medium'>{row.original.quantity}</div>,
+      accessorKey: 'paymentMethod',
+      header: () => <div className='text-center font-bold text-black text-base dark:text-white'>Payment method</div>,
+      cell: () => <div className='text-center font-medium'>{'Ship cod'}</div>,
     },
     {
       accessorKey: 'price',
@@ -201,37 +208,95 @@ const Product = () => {
       },
     },
     {
-      id: 'actions',
-      enableHiding: false,
+      accessorKey: 'action',
+      header: () => <div className='text-center font-bold text-black text-base dark:text-white'>Action</div>,
       cell: ({ row }) => {
-        return (
-          <div className='bg-white'>
-            <Dialog>
-              <DropdownMenu modal={false}>
-                <DropdownMenuTrigger asChild className='text-end float-right'>
-                  <DotsThree size={20} weight='bold' className='cursor-pointer' />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align='end'>
-                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        let content
+        switch (row.original.order) {
+          case 'order':
+            content = (
+              <>
+                <Dialog>
                   <DialogTrigger asChild>
-                    <DropdownMenuItem>
-                      <span>Edit</span>
-                    </DropdownMenuItem>
+                    <span className='text-blue-600 cursor-pointer hover:text-blue-800'>Xác nhận</span>
                   </DialogTrigger>
-                  <DropdownMenuItem onClick={() => setConfirmDisableDialog({ data: row.original, isShow: true })}>
-                    Disabled
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setConfirmDeleteDialog({ data: row.original, isShow: true })}>
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <DialogContent className='w-[360px] sm:min-w-[400px] md:w-[600px] xl:w-[700px] max-w-2xl'>
-                <DialogTitle className='hidden' />
-                <DialogDescription className='hidden' />
-                <ModalAddEditProduct type='edit' product={row.original} />
-              </DialogContent>
-            </Dialog>
+                  <DialogContent className='w-[360px] sm:min-w-[400px] md:w-[600px] xl:w-[700px] max-w-2xl'>
+                    <DialogTitle className='hidden' />
+                    <DialogDescription className='hidden' />
+                    <ModalOrder order={row.original} updateData={setData} />
+                  </DialogContent>
+                </Dialog>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <span className='text-red-600 cursor-pointer hover:text-red-800'>Hủy đơn</span>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently cancel your customer's order remove data
+                        from our servers.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel asChild>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => {
+                          setData((prev) =>
+                            prev.map((prevOrder) => {
+                              if (prevOrder.id === row.original.id) return { ...row.original, order: 'cancel' }
+                              return prevOrder
+                            }),
+                          )
+                        }}
+                      >
+                        Continue
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </>
+            )
+            break
+          case 'confirm':
+            content = (
+              <>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <span className='text-blue-600 cursor-pointer hover:text-blue-800'>Chuyển giao</span>
+                  </DialogTrigger>
+                  <DialogContent className='w-[360px] sm:min-w-[400px] md:w-[600px] xl:w-[700px] max-w-2xl'>
+                    <DialogTitle className='hidden' />
+                    <DialogDescription className='hidden' />
+                    <ModalOrder order={row.original} updateData={setData} />
+                  </DialogContent>
+                </Dialog>
+                <span className='text-red-600 cursor-pointer hover:text-red-800'>Hủy đơn</span>
+              </>
+            )
+            break
+          case 'delivery':
+          case 'success':
+          case 'cancel':
+            content = (
+              <Dialog>
+                <DialogTrigger asChild>
+                  <span className='text-blue-600 cursor-pointer hover:text-blue-800'>Xem chi tiết</span>
+                </DialogTrigger>
+                <DialogContent className='w-[360px] sm:min-w-[400px] md:w-[600px] xl:w-[700px] max-w-2xl'>
+                  <DialogTitle className='hidden' />
+                  <DialogDescription className='hidden' />
+                  <ModalOrder order={row.original} updateData={setData} />
+                </DialogContent>
+              </Dialog>
+            )
+            break
+          default:
+            content = <span className='text-blue-600 cursor-pointer hover:text-blue-800'>Xem chi tiết</span>
+        }
+        return (
+          <div className='flex gap-x-2 justify-center' key={row.id}>
+            {content}
           </div>
         )
       },
@@ -256,23 +321,66 @@ const Product = () => {
       rowSelection,
     },
   })
+
   return (
     <div>
-      <p className='text-end'>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button className='py-2 px-3'>
-              <Plus size={20} weight='bold' />
-            </Button>
-          </DialogTrigger>
-          <DialogContent className='w-[360px] sm:min-w-[400px] md:w-[600px] xl:w-[700px] max-w-2xl'>
-            <DialogTitle className='hidden' />
-            <DialogDescription className='hidden' />
-            <ModalAddEditProduct type='add' />
-          </DialogContent>
-        </Dialog>
-      </p>
-
+      <div>
+        <div className='flex items-center justify-between mb-4'>
+          <h5 className='font-bold 2xl:text-lg md:text-base text-sm'>Tổng quan</h5>
+          <Select>
+            <SelectTrigger className='w-[160px] focus:ring-0 focus:ring-offset-0'>
+              <div className='flex items-center gap-x-2'>
+                <Calendar size={22} />
+                <SelectValue placeholder='Select a fruit' />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Thời gian</SelectLabel>
+                <SelectItem value='apple'>Apple</SelectItem>
+                <SelectItem value='banana'>Banana</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className='grid grid-cols-5 gap-x-4'>
+          <div className='md:p-4 p-2 bg-blue-200 rounded-md'>
+            <span>Tổng đơn hàng</span>
+            <div className='flex items-center justify-between text-blue-900'>
+              <span className='font-bold md:text-xl text-base'>340</span>
+              <Scroll size={28} />
+            </div>
+          </div>
+          <div className='md:p-4 p-2 bg-yellow-100 rounded-md'>
+            <span>Đơn hàng đã chuyển giao</span>
+            <div className='flex items-center justify-between text-yellow-900'>
+              <span className='font-bold md:text-xl text-base'>50</span>
+              <UserCheck size={28} />
+            </div>
+          </div>
+          <div className='md:p-4 p-2 bg-violet-200 rounded-md'>
+            <span>Đơn hàng đang giao</span>
+            <div className='flex items-center justify-between text-violet-900'>
+              <span className='font-bold md:text-xl text-base'>89</span>
+              <Truck size={28} />
+            </div>
+          </div>
+          <div className='md:p-4 p-2 bg-green-200 rounded-md'>
+            <span>Đơn hàng hoàn thành</span>
+            <div className='flex items-center justify-between text-green-900'>
+              <span className='font-bold md:text-xl text-base'>150</span>
+              <CheckSquareOffset size={28} />
+            </div>
+          </div>
+          <div className='md:p-4 p-2 bg-red-200 rounded-md'>
+            <span>Đơn hàng bị hủy</span>
+            <div className='flex items-center justify-between text-red-900'>
+              <span className='font-bold md:text-xl text-base'>51</span>
+              <FileX size={28} />
+            </div>
+          </div>
+        </div>
+      </div>
       <div>
         <div className='w-full'>
           <div className='flex items-center py-4 gap-x-2'>
@@ -280,7 +388,7 @@ const Product = () => {
               placeholder='Filter products...'
               value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
               onChange={(event) => table.getColumn('name')?.setFilterValue(event.target.value)}
-              className='max-w-sm'
+              className='w-full focus-visible:ring-0 focus-visible:ring-offset-0'
             />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -324,7 +432,7 @@ const Product = () => {
                   </TableRow>
                 ))}
               </TableHeader>
-              <TableBody>
+              <TableBody className='w-full'>
                 {table.getRowModel().rows?.length ? (
                   table.getRowModel().rows.map((row) => (
                     <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
@@ -348,52 +456,8 @@ const Product = () => {
           </div>
         </div>
       </div>
-      <AlertDialog
-        open={confirmDisableDialog.isShow}
-        onOpenChange={() => setConfirmDisableDialog({ data: null, isShow: false })}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action will disable your product and customer will not see it.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setConfirmDisableDialog({ data: null, isShow: false })}>
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={() => setConfirmDisableDialog({ data: null, isShow: false })}>
-              Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <AlertDialog
-        open={confirmDeleteDialog.isShow}
-        onOpenChange={() => setConfirmDeleteDialog({ data: null, isShow: false })}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your product and remove your data from our
-              servers.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setConfirmDeleteDialog({ data: null, isShow: false })}>
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={() => setConfirmDeleteDialog({ data: null, isShow: false })}>
-              Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   )
 }
 
-export default Product
+export default Orders

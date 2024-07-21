@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import Product from '@/modules/admin/product'
 import AdminProfile from '@/modules/admin/admin-profile'
 import Dashboard from '@/modules/admin/dashboard'
+import Orders from '@/modules/admin/orders'
 
 const Admin = () => {
   return (
@@ -27,8 +28,17 @@ const Admin = () => {
         >
           <Dashboard />
         </TabsContent>
-        <TabsContent value='products' className='border border-gray-300 px-4 py-2 rounded-md mt-4'>
+        <TabsContent
+          value='products'
+          className='md:border md:border-gray-300 md:dark:border-none md:px-4 py-2 rounded-md mt-4 bg-none  md:bg-gray-50 md:dark:bg-gray-800'
+        >
           <Product />
+        </TabsContent>
+        <TabsContent
+          value='orders'
+          className='md:border md:border-gray-300 md:dark:border-none md:px-4 py-2 rounded-md mt-4 bg-none  md:bg-gray-50 md:dark:bg-gray-800'
+        >
+          <Orders />
         </TabsContent>
         <TabsContent value='revenue'>
           <Card>

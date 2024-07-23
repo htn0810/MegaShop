@@ -7,6 +7,7 @@ import Product from '@/modules/admin/product'
 import AdminProfile from '@/modules/admin/admin-profile'
 import Dashboard from '@/modules/admin/dashboard'
 import Orders from '@/modules/admin/orders'
+import Revenue from '@/modules/admin/revenue'
 
 const Admin = () => {
   return (
@@ -40,26 +41,11 @@ const Admin = () => {
         >
           <Orders />
         </TabsContent>
-        <TabsContent value='revenue'>
-          <Card>
-            <CardHeader>
-              <CardTitle>Password</CardTitle>
-              <CardDescription>Change your password here. After saving, you'll be logged out.</CardDescription>
-            </CardHeader>
-            <CardContent className='space-y-2'>
-              <div className='space-y-1'>
-                <Label htmlFor='current'>Current password</Label>
-                <Input id='current' type='password' />
-              </div>
-              <div className='space-y-1'>
-                <Label htmlFor='new'>New password</Label>
-                <Input id='new' type='password' />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button>Save password</Button>
-            </CardFooter>
-          </Card>
+        <TabsContent
+          value='revenue'
+          className='md:border md:border-gray-300 md:dark:border-none md:px-4 py-2 rounded-md mt-4 bg-none  md:bg-gray-50 md:dark:bg-gray-800'
+        >
+          <Revenue />
         </TabsContent>
         <TabsContent value='profile'>
           <AdminProfile />

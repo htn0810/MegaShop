@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Calendar, CheckSquareOffset, FileX, Scroll, Truck, UserCheck } from '@phosphor-icons/react'
+import { Calendar, CheckSquareOffset, FileX, Scroll, Spinner, Truck, UserCheck } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { CaretDown, CaretUpDown } from '@phosphor-icons/react'
 import {
@@ -323,7 +323,7 @@ const Orders = () => {
   })
 
   return (
-    <div>
+    <>
       <div>
         <div className='flex items-center justify-between mb-4'>
           <h5 className='font-bold 2xl:text-lg md:text-base text-sm'>Tổng quan</h5>
@@ -343,7 +343,7 @@ const Orders = () => {
             </SelectContent>
           </Select>
         </div>
-        <div className='grid grid-cols-5 gap-x-4'>
+        <div className='grid grid-cols-2 lg:grid-cols-6 gap-4'>
           <div className='md:p-4 p-2 bg-blue-200 rounded-md'>
             <span>Tổng đơn hàng</span>
             <div className='flex items-center justify-between text-blue-900'>
@@ -351,14 +351,21 @@ const Orders = () => {
               <Scroll size={28} />
             </div>
           </div>
-          <div className='md:p-4 p-2 bg-yellow-100 rounded-md'>
+          <div className='md:p-4 p-2  bg-cyan-100 rounded-md'>
+            <span>Đơn hàng cần xác nhận</span>
+            <div className='flex items-center justify-between text-cyan-900'>
+              <span className='font-bold md:text-xl text-base'>15</span>
+              <Spinner size={28} />
+            </div>
+          </div>
+          <div className='md:p-4 p-2  bg-yellow-100 rounded-md'>
             <span>Đơn hàng đã chuyển giao</span>
             <div className='flex items-center justify-between text-yellow-900'>
               <span className='font-bold md:text-xl text-base'>50</span>
               <UserCheck size={28} />
             </div>
           </div>
-          <div className='md:p-4 p-2 bg-violet-200 rounded-md'>
+          <div className='md:p-4 p-2  bg-violet-200 rounded-md'>
             <span>Đơn hàng đang giao</span>
             <div className='flex items-center justify-between text-violet-900'>
               <span className='font-bold md:text-xl text-base'>89</span>
@@ -456,7 +463,7 @@ const Orders = () => {
           </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 

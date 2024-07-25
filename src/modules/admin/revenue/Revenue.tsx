@@ -59,7 +59,7 @@ const Revenue = () => {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
 
-  const [data, setData] = useState<Revenue[]>(dummyRevenue)
+  const [data, _setData] = useState<Revenue[]>(dummyRevenue)
 
   const columns: ColumnDef<Revenue>[] = [
     {

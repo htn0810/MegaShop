@@ -345,45 +345,45 @@ const Orders = () => {
         </div>
         <div className='grid grid-cols-2 lg:grid-cols-6 gap-4'>
           <div className='md:p-4 p-2 bg-blue-200 rounded-md'>
-            <span>Tổng đơn hàng</span>
+            <span className='text-black text-xs md:text-base'>Tổng đơn hàng</span>
             <div className='flex items-center justify-between text-blue-900'>
               <span className='font-bold md:text-xl text-base'>340</span>
-              <Scroll size={28} />
+              <Scroll className='md:size-7 size-5' />
             </div>
           </div>
           <div className='md:p-4 p-2  bg-cyan-100 rounded-md'>
-            <span>Đơn hàng cần xác nhận</span>
+            <span className='text-black text-xs md:text-base'>Đơn hàng cần xác nhận</span>
             <div className='flex items-center justify-between text-cyan-900'>
               <span className='font-bold md:text-xl text-base'>15</span>
-              <Spinner size={28} />
+              <Spinner className='md:size-7 size-5' />
             </div>
           </div>
           <div className='md:p-4 p-2  bg-yellow-100 rounded-md'>
-            <span>Đơn hàng đã chuyển giao</span>
+            <span className='text-black text-xs md:text-base'>Đơn hàng đã chuyển giao</span>
             <div className='flex items-center justify-between text-yellow-900'>
               <span className='font-bold md:text-xl text-base'>50</span>
-              <UserCheck size={28} />
+              <UserCheck className='md:size-7 size-5' />
             </div>
           </div>
           <div className='md:p-4 p-2  bg-violet-200 rounded-md'>
-            <span>Đơn hàng đang giao</span>
+            <span className='text-black text-xs md:text-base'>Đơn hàng đang giao</span>
             <div className='flex items-center justify-between text-violet-900'>
               <span className='font-bold md:text-xl text-base'>89</span>
-              <Truck size={28} />
+              <Truck className='md:size-7 size-5' />
             </div>
           </div>
           <div className='md:p-4 p-2 bg-green-200 rounded-md'>
-            <span>Đơn hàng hoàn thành</span>
+            <span className='text-black text-xs md:text-base'>Đơn hàng hoàn thành</span>
             <div className='flex items-center justify-between text-green-900'>
               <span className='font-bold md:text-xl text-base'>150</span>
-              <CheckSquareOffset size={28} />
+              <CheckSquareOffset className='md:size-7 size-5' />
             </div>
           </div>
           <div className='md:p-4 p-2 bg-red-200 rounded-md'>
-            <span>Đơn hàng bị hủy</span>
+            <span className='text-black text-xs md:text-base'>Đơn hàng bị hủy</span>
             <div className='flex items-center justify-between text-red-900'>
               <span className='font-bold md:text-xl text-base'>51</span>
-              <FileX size={28} />
+              <FileX className='md:size-7 size-5' />
             </div>
           </div>
         </div>
@@ -424,7 +424,7 @@ const Orders = () => {
           </div>
           <div className='rounded-md border'>
             <Table>
-              <TableHeader>
+              <TableHeader className='bg-blue-100'>
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {

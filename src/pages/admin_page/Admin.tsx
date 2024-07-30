@@ -4,6 +4,7 @@ import AdminProfile from '@/modules/admin/admin-profile'
 import Dashboard from '@/modules/admin/dashboard'
 import Orders from '@/modules/admin/orders'
 import Revenue from '@/modules/admin/revenue'
+import Discount from '@/modules/admin/discount'
 
 const Admin = () => {
   return (
@@ -42,6 +43,12 @@ const Admin = () => {
           className='md:border md:border-gray-300 md:dark:border-none md:px-4 py-2 rounded-md mt-4 bg-none  md:bg-gray-50 md:dark:bg-gray-800'
         >
           <Revenue />
+        </TabsContent>
+        <TabsContent
+          value='discount'
+          className='md:border md:border-gray-300 md:dark:border-none md:px-4 py-2 rounded-md mt-4 bg-none  md:bg-gray-50 md:dark:bg-gray-800'
+        >
+          <Discount />
         </TabsContent>
         <TabsContent value='profile'>
           <AdminProfile />

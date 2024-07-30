@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
-import { CaretDown, CaretUpDown, DotsThree, Plus } from '@phosphor-icons/react'
+import { CaretDown, CaretUp, CaretUpDown, DotsThree, Plus } from '@phosphor-icons/react'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -139,11 +139,25 @@ const Product = () => {
     {
       accessorKey: 'name',
       header: ({ column }) => {
+        let sortedIcon
+        switch (column.getIsSorted()) {
+          case 'asc':
+            sortedIcon = <CaretUp className='md:size-6 size-5' />
+            break
+          case 'desc':
+            sortedIcon = <CaretDown className='md:size-6 size-5' />
+            break
+          default:
+            sortedIcon = <CaretUpDown className='md:size-6 size-5' />
+        }
         return (
-          <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+          <div
+            className='flex gap-x-2 cursor-pointer'
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
             <span className='font-bold text-black text-base dark:text-white'>Name</span>
-            <CaretUpDown size={18} weight='bold' />
-          </Button>
+            {sortedIcon}
+          </div>
         )
       },
       cell: ({ row }) => (
@@ -309,7 +323,7 @@ const Product = () => {
           </div>
           <div className='rounded-md border'>
             <Table>
-              <TableHeader>
+              <TableHeader className='bg-blue-100'>
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {

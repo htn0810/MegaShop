@@ -175,7 +175,7 @@ const ModalDiscountProduct = (props: AddProps | EditProps) => {
             <FormField
               control={form.control}
               name='products'
-              render={({ field }) => (
+              render={() => (
                 <FormItem className='mt-[8px_!important] flex flex-col'>
                   <FormLabel className='text-black dark:text-white'>Sản phẩm áp dụng</FormLabel>
                   <FormControl></FormControl>

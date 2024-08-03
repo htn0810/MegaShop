@@ -140,22 +140,17 @@ const Orders = () => {
   const columns: ColumnDef<Product>[] = [
     {
       accessorKey: 'name',
-      header: ({ column }) => {
-        return (
-          <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-            <span className='font-bold text-black text-base dark:text-white'>Name</span>
-            <CaretUpDown size={18} weight='bold' />
-          </Button>
-        )
+      header: () => {
+        return <div className='text-xs md:text-sm text-left text-black font-semibold dark:text-white'>Name</div>
       },
       cell: ({ row }) => (
         <div className='flex gap-x-2 md:gap-x-4 items-center'>
-          <div className='w-20 h-20'>
+          <div className='size-12 md:size-16'>
             <img src={row.original.image} alt='ProductImg' className='w-full h-full bg-cover' />
           </div>
-          <div className='flex flex-col'>
+          <div className='flex flex-col text-xs md:text-sm'>
             <span className='truncate'>{row.original.name}</span>
-            <span className='text-gray-500 font-semibold text-sm'>x2</span>
+            <span className='text-gray-500 font-semibold'>x2</span>
           </div>
         </div>
       ),
@@ -166,35 +161,51 @@ const Orders = () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <div className='flex gap-x-2 items-center cursor-pointer'>
-              <span className='font-bold text-black text-base dark:text-white'>Status</span>
-              <CaretDown size={20} weight='bold' />
+              <span className='text-xs md:text-sm text-left text-black font-semibold dark:text-white'>Status</span>
+              <CaretDown className='text-sm md:text-xl' />
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className='w-56'>
+          <DropdownMenuContent className='md:w-40'>
             <DropdownMenuRadioGroup
               value={'all'}
               // onValueChange={(value: string) => setStatus(value as Product['order'] | 'all')}
             >
-              <DropdownMenuRadioItem value='all'>All</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value='order'>Order</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value='confirm'>Confirm</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value='delivery'>Delivery</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value='success'>Success</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value='cancel'>Cancel</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem className='text-xs md:text-sm' value='all'>
+                All
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem className='text-xs md:text-sm' value='order'>
+                Order
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem className='text-xs md:text-sm' value='confirm'>
+                Confirm
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem className='text-xs md:text-sm' value='delivery'>
+                Delivery
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem className='text-xs md:text-sm' value='success'>
+                Success
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem className='text-xs md:text-sm' value='cancel'>
+                Cancel
+              </DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>
       ),
-      cell: ({ row }) => <div className='capitalize'>{row.getValue('order')}</div>,
+      cell: ({ row }) => <div className='text-xs md:text-sm'>{row.getValue('order')}</div>,
     },
     {
       accessorKey: 'paymentMethod',
-      header: () => <div className='text-center font-bold text-black text-base dark:text-white'>Payment method</div>,
-      cell: () => <div className='text-center font-medium'>{'Ship cod'}</div>,
+      header: () => (
+        <div className='text-xs md:text-sm text-center text-black font-semibold dark:text-white'>Payment method</div>
+      ),
+      cell: () => <div className='text-xs text-center md:text-sm'>{'Ship cod'}</div>,
     },
     {
       accessorKey: 'price',
-      header: () => <div className='text-center font-bold text-black text-base dark:text-white'>Price</div>,
+      header: () => (
+        <div className='text-xs md:text-sm text-center text-black font-semibold dark:text-white'>Price</div>
+      ),
       cell: ({ row }) => {
         const price = parseFloat(row.getValue('price'))
 
@@ -204,12 +215,14 @@ const Orders = () => {
           currency: 'USD',
         }).format(price)
 
-        return <div className='text-center font-medium'>{formatted}</div>
+        return <div className='text-xs md:text-sm text-center'>{formatted}</div>
       },
     },
     {
       accessorKey: 'action',
-      header: () => <div className='text-center font-bold text-black text-base dark:text-white'>Action</div>,
+      header: () => (
+        <div className='text-xs md:text-sm text-center text-black font-semibold dark:text-white'>Action</div>
+      ),
       cell: ({ row }) => {
         let content
         switch (row.original.order) {
@@ -218,7 +231,9 @@ const Orders = () => {
               <>
                 <Dialog>
                   <DialogTrigger asChild>
-                    <span className='text-blue-600 cursor-pointer hover:text-blue-800'>Xác nhận</span>
+                    <span className='text-blue-600 cursor-pointer hover:text-blue-800 text-xs md:text-sm'>
+                      Xác nhận
+                    </span>
                   </DialogTrigger>
                   <DialogContent className='w-[360px] sm:min-w-[400px] md:w-[600px] xl:w-[700px] max-w-2xl'>
                     <DialogTitle className='hidden' />
@@ -228,7 +243,7 @@ const Orders = () => {
                 </Dialog>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <span className='text-red-600 cursor-pointer hover:text-red-800'>Hủy đơn</span>
+                    <span className='text-red-600 cursor-pointer hover:text-red-800 text-xs md:text-sm'>Hủy đơn</span>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
@@ -263,7 +278,9 @@ const Orders = () => {
               <>
                 <Dialog>
                   <DialogTrigger asChild>
-                    <span className='text-blue-600 cursor-pointer hover:text-blue-800'>Chuyển giao</span>
+                    <span className='text-blue-600 cursor-pointer hover:text-blue-800 text-xs md:text-sm'>
+                      Chuyển giao
+                    </span>
                   </DialogTrigger>
                   <DialogContent className='w-[360px] sm:min-w-[400px] md:w-[600px] xl:w-[700px] max-w-2xl'>
                     <DialogTitle className='hidden' />
@@ -271,7 +288,7 @@ const Orders = () => {
                     <ModalOrder order={row.original} updateData={setData} />
                   </DialogContent>
                 </Dialog>
-                <span className='text-red-600 cursor-pointer hover:text-red-800'>Hủy đơn</span>
+                <span className='text-red-600 cursor-pointer hover:text-red-800 text-xs md:text-sm'>Hủy đơn</span>
               </>
             )
             break
@@ -281,7 +298,9 @@ const Orders = () => {
             content = (
               <Dialog>
                 <DialogTrigger asChild>
-                  <span className='text-blue-600 cursor-pointer hover:text-blue-800'>Xem chi tiết</span>
+                  <span className='text-blue-600 cursor-pointer hover:text-blue-800 text-xs md:text-sm'>
+                    Xem chi tiết
+                  </span>
                 </DialogTrigger>
                 <DialogContent className='w-[360px] sm:min-w-[400px] md:w-[600px] xl:w-[700px] max-w-2xl'>
                   <DialogTitle className='hidden' />
@@ -292,7 +311,9 @@ const Orders = () => {
             )
             break
           default:
-            content = <span className='text-blue-600 cursor-pointer hover:text-blue-800'>Xem chi tiết</span>
+            content = (
+              <span className='text-blue-600 cursor-pointer hover:text-blue-800 text-xs md:text-sm'>Xem chi tiết</span>
+            )
         }
         return (
           <div className='flex gap-x-2 justify-center' key={row.id}>
@@ -328,63 +349,67 @@ const Orders = () => {
         <div className='flex items-center justify-between mb-4'>
           <h5 className='font-bold 2xl:text-lg md:text-base text-sm'>Tổng quan</h5>
           <Select>
-            <SelectTrigger className='w-[160px] focus:ring-0 focus:ring-offset-0'>
-              <div className='flex items-center gap-x-2'>
-                <Calendar size={22} />
+            <SelectTrigger className='w-[140px] md:w-[160px] focus:ring-0 focus:ring-offset-0'>
+              <div className='flex items-center gap-x-2 text-xs md:text-sm'>
+                <Calendar className='text-sm md:text-xl' />
                 <SelectValue placeholder='Select a fruit' />
               </div>
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Thời gian</SelectLabel>
-                <SelectItem value='apple'>Apple</SelectItem>
-                <SelectItem value='banana'>Banana</SelectItem>
+                <SelectLabel className='text-xs md:text-sm'>Thời gian</SelectLabel>
+                <SelectItem value='apple' className='text-xs md:text-sm'>
+                  Apple
+                </SelectItem>
+                <SelectItem value='banana' className='text-xs md:text-sm'>
+                  Banana
+                </SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
         </div>
         <div className='grid grid-cols-2 lg:grid-cols-6 gap-4'>
-          <div className='md:p-4 p-2 bg-blue-200 rounded-md'>
-            <span className='text-black text-xs md:text-base'>Tổng đơn hàng</span>
-            <div className='flex items-center justify-between text-blue-900'>
+          <div className='md:p-4 p-2 bg-blue-200 rounded-md flex items-center justify-between'>
+            <div className='flex flex-col gap-y-1 text-blue-900'>
+              <span className='text-black text-xs md:text-base'>Tổng đơn hàng</span>
               <span className='font-bold md:text-xl text-base'>340</span>
-              <Scroll className='md:size-7 size-5' />
             </div>
+            <Scroll className='md:size-7 size-5' />
           </div>
-          <div className='md:p-4 p-2  bg-cyan-100 rounded-md'>
-            <span className='text-black text-xs md:text-base'>Đơn hàng cần xác nhận</span>
-            <div className='flex items-center justify-between text-cyan-900'>
+          <div className='md:p-4 p-2  bg-cyan-100 rounded-md  flex items-center justify-between'>
+            <div className='flex flex-col gap-y-1 text-cyan-900'>
+              <span className='text-black text-xs md:text-base'>Đơn hàng cần xác nhận</span>
               <span className='font-bold md:text-xl text-base'>15</span>
-              <Spinner className='md:size-7 size-5' />
             </div>
+            <Spinner className='md:size-7 size-5' />
           </div>
-          <div className='md:p-4 p-2  bg-yellow-100 rounded-md'>
-            <span className='text-black text-xs md:text-base'>Đơn hàng đã chuyển giao</span>
-            <div className='flex items-center justify-between text-yellow-900'>
+          <div className='md:p-4 p-2  bg-yellow-100 rounded-md  flex items-center justify-between'>
+            <div className='flex flex-col gap-y-1 text-yellow-900'>
+              <span className='text-black text-xs md:text-base'>Đơn hàng đã chuyển giao</span>
               <span className='font-bold md:text-xl text-base'>50</span>
-              <UserCheck className='md:size-7 size-5' />
             </div>
+            <UserCheck className='md:size-7 size-5' />
           </div>
-          <div className='md:p-4 p-2  bg-violet-200 rounded-md'>
-            <span className='text-black text-xs md:text-base'>Đơn hàng đang giao</span>
-            <div className='flex items-center justify-between text-violet-900'>
+          <div className='md:p-4 p-2  bg-violet-200 rounded-md  flex items-center justify-between'>
+            <div className='flex flex-col gap-y-1 text-violet-900'>
+              <span className='text-black text-xs md:text-base'>Đơn hàng đang giao</span>
               <span className='font-bold md:text-xl text-base'>89</span>
-              <Truck className='md:size-7 size-5' />
             </div>
+            <Truck className='md:size-7 size-5' />
           </div>
-          <div className='md:p-4 p-2 bg-green-200 rounded-md'>
-            <span className='text-black text-xs md:text-base'>Đơn hàng hoàn thành</span>
-            <div className='flex items-center justify-between text-green-900'>
+          <div className='md:p-4 p-2 bg-green-200 rounded-md  flex items-center justify-between'>
+            <div className='flex flex-col gap-y-1 text-green-900'>
+              <span className='text-black text-xs md:text-base'>Đơn hàng hoàn thành</span>
               <span className='font-bold md:text-xl text-base'>150</span>
-              <CheckSquareOffset className='md:size-7 size-5' />
             </div>
+            <CheckSquareOffset className='md:size-7 size-5' />
           </div>
-          <div className='md:p-4 p-2 bg-red-200 rounded-md'>
-            <span className='text-black text-xs md:text-base'>Đơn hàng bị hủy</span>
-            <div className='flex items-center justify-between text-red-900'>
+          <div className='md:p-4 p-2 bg-red-200 rounded-md  flex items-center justify-between'>
+            <div className='flex flex-col gap-y-1 text-red-900'>
+              <span className='text-black text-xs md:text-base'>Đơn hàng bị hủy</span>
               <span className='font-bold md:text-xl text-base'>51</span>
-              <FileX className='md:size-7 size-5' />
             </div>
+            <FileX className='md:size-7 size-5' />
           </div>
         </div>
       </div>
@@ -395,12 +420,12 @@ const Orders = () => {
               placeholder='Filter products...'
               value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
               onChange={(event) => table.getColumn('name')?.setFilterValue(event.target.value)}
-              className='w-full focus-visible:ring-0 focus-visible:ring-offset-0'
+              className='w-full focus-visible:ring-0 focus-visible:ring-offset-0 text-xs md:text-sm'
             />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant='outline' className='ml-auto'>
-                  Columns <CaretDown size={20} weight='bold' />
+                <Button variant='outline' className='ml-auto text-xs md:text-sm'>
+                  Columns <CaretDown className='text-xs md:text-xl ml-1 md:ml-2' weight='bold' />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align='end'>
@@ -411,7 +436,7 @@ const Orders = () => {
                     return (
                       <DropdownMenuCheckboxItem
                         key={column.id}
-                        className='capitalize'
+                        className='capitalize text-xs md:text-sm'
                         checked={column.getIsVisible()}
                         onCheckedChange={(value) => column.toggleVisibility(!!value)}
                       >

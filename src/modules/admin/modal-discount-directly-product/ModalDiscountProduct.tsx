@@ -11,10 +11,13 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Switch } from '@/components/ui/switch'
 import { cn } from '@/lib/utils'
+import ModalSelectDiscountProduct from '@/modules/admin/modal-select-discount-product'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Calendar as CalendarIcon, Plus } from '@phosphor-icons/react'
 import { format } from 'date-fns'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -34,6 +37,7 @@ type Discount = {
   endDate: Date
   products: []
   percent: number
+  limit: number | undefined
 }
 
 // type Props = {
@@ -54,6 +58,7 @@ type EditProps = {
 }
 
 const ModalDiscountProduct = (props: AddProps | EditProps) => {
+  const [isLimitVoucher, setIsLimitVoucher] = useState<boolean>(false)
   const { kind, type } = props
 
   const formSchema = z.object({
@@ -64,7 +69,8 @@ const ModalDiscountProduct = (props: AddProps | EditProps) => {
       required_error: 'End date is required.',
     }),
     products: z.custom<Product[]>(),
-    percent: z.number(),
+    percent: z.number().min(1),
+    limit: z.number().optional(),
   })
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -76,6 +82,7 @@ const ModalDiscountProduct = (props: AddProps | EditProps) => {
             endDate: undefined,
             products: [],
             percent: 0,
+            limit: 0,
           },
   })
 
@@ -84,7 +91,7 @@ const ModalDiscountProduct = (props: AddProps | EditProps) => {
   }
   return (
     <div>
-      <h3 className='text-lg md:text-xl font-bold capitalize'>
+      <h3 className='text-base md:text-lg xl:text-xl font-bold capitalize'>
         {type === 'add' ? 'Tạo' : 'Thêm'} mã giảm giá trực tiếp cho sản phẩm
       </h3>
       <Form {...form}>
@@ -95,13 +102,16 @@ const ModalDiscountProduct = (props: AddProps | EditProps) => {
               name='startDate'
               render={({ field }) => (
                 <FormItem className='flex flex-col'>
-                  <FormLabel>Bắt đầu</FormLabel>
+                  <FormLabel className='text-sm md:text-base'>Bắt đầu</FormLabel>
                   <Popover modal={true}>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
                           variant={'outline'}
-                          className={cn('w-full pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}
+                          className={cn(
+                            'w-full pl-3 text-left font-normal md:text-sm text-xs',
+                            !field.value && 'text-muted-foreground',
+                          )}
                         >
                           {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
                           <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
@@ -113,7 +123,7 @@ const ModalDiscountProduct = (props: AddProps | EditProps) => {
                         mode='single'
                         selected={field.value}
                         onSelect={field.onChange}
-                        disabled={(date: Date) => date > new Date() || date < new Date('1900-01-01')}
+                        disabled={(date: Date) => date < new Date()}
                         initialFocus
                       />
                     </PopoverContent>
@@ -125,37 +135,38 @@ const ModalDiscountProduct = (props: AddProps | EditProps) => {
             <FormField
               control={form.control}
               name='endDate'
-              render={({ field }) => {
-                console.log(form.getValues('startDate'))
-                return (
-                  <FormItem className='flex flex-col'>
-                    <FormLabel>Kết thúc</FormLabel>
-                    <Popover modal={true}>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={'outline'}
-                            className={cn('w-full pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}
-                          >
-                            {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
-                            <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className='w-auto p-0' align='start'>
-                        <Calendar
-                          mode='single'
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date: Date) => date < form.getValues('startDate')}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )
-              }}
+              render={({ field }) => (
+                <FormItem className='flex flex-col'>
+                  <FormLabel className='text-sm md:text-base'>Kết thúc</FormLabel>
+                  <Popover modal={true}>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={'outline'}
+                          className={cn(
+                            'w-full pl-3 text-left font-normal md:text-sm text-xs',
+                            !field.value && 'text-muted-foreground',
+                          )}
+                        >
+                          {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
+                          <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className='w-auto p-0' align='start'>
+                      <Calendar
+                        mode='single'
+                        className='md:text-sm text-xs'
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date: Date) => date < form.getValues('startDate')}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
           </div>
           <FormField
@@ -163,9 +174,30 @@ const ModalDiscountProduct = (props: AddProps | EditProps) => {
             name='percent'
             render={({ field }) => (
               <FormItem className='mt-[8px_!important]'>
-                <FormLabel className='text-black dark:text-white'>Mức giảm</FormLabel>
+                <FormLabel className='text-black dark:text-white text-sm md:text-base'>Mức giảm (%)</FormLabel>
                 <FormControl>
-                  <Input {...field} className='focus-visible:ring-offset-0' />
+                  <Input {...field} className='focus-visible:ring-offset-0 md:text-sm text-xs' />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='limit'
+            render={({ field }) => (
+              <FormItem className='mt-[8px_!important]'>
+                <div className='flex items-center gap-x-2'>
+                  <FormLabel className='text-black dark:text-white text-sm md:text-base'>Giới hạn số lượng</FormLabel>
+                  <Switch id='limit-voucher' onCheckedChange={() => setIsLimitVoucher((prev) => !prev)} />
+                </div>
+                <FormControl>
+                  <Input
+                    {...field}
+                    className='focus-visible:ring-offset-0 md:text-sm text-xs'
+                    placeholder='Không giới hạn số lượng'
+                    disabled={isLimitVoucher}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -189,7 +221,7 @@ const ModalDiscountProduct = (props: AddProps | EditProps) => {
                     <DialogContent className='w-[360px] sm:min-w-[400px] md:w-[600px] xl:w-[700px] max-w-2xl'>
                       <DialogTitle>Chọn Sản Phẩm</DialogTitle>
                       <DialogDescription className='hidden' />
-                      Vui lòng thêm sản phẩm
+                      <ModalSelectDiscountProduct />
                     </DialogContent>
                   </Dialog>
 
@@ -200,11 +232,13 @@ const ModalDiscountProduct = (props: AddProps | EditProps) => {
           )}
           <div className='flex gap-x-2 justify-end'>
             <DialogClose asChild>
-              <Button type='reset' variant={'outline'} className='bg-gray-50'>
+              <Button type='reset' variant={'outline'} className='bg-gray-50 text-sm md:text-base'>
                 Hủy
               </Button>
             </DialogClose>
-            <Button type='submit'>{type === 'add' ? 'Thêm' : 'Cập nhật'}</Button>
+            <Button className='text-sm md:text-base' type='submit'>
+              {type === 'add' ? 'Thêm' : 'Cập nhật'}
+            </Button>
           </div>
         </form>
       </Form>

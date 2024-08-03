@@ -5,7 +5,7 @@ import { GlobeSimple } from '@phosphor-icons/react/dist/ssr'
 import { Input } from '@/components/ui/input'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { HEADER_NAV } from '@/constants/header.constant'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { languages } from '@/i18n'
 import { useTranslation } from 'react-i18next'
 import ThemeToggle from '@/modules/home/theme_toggle'
@@ -69,6 +69,8 @@ const Header = () => {
               <List size={24} className='cursor-pointer xl:hidden hover:text-gray-500' />
             </SheetTrigger>
             <SheetContent className='flex flex-col p-10 dark:bg-gray-700'>
+              <SheetTitle className='hidden' />
+              <SheetDescription className='hidden' />
               {HEADER_NAV.map((item) => (
                 <Link to={item.path} className='font-bold hover:text-gray-500' key={item.id}>
                   {t(`home.header.${item.name}`)}

@@ -9,6 +9,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
 import { DataTablePagination } from '@/components/ui/data-table-pagination'
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -64,33 +65,49 @@ const Discount = () => {
   const columns: ColumnDef<Discount>[] = [
     {
       accessorKey: 'percent',
-      header: () => <div className='font-bold text-black text-base dark:text-white text-center'>Mức giảm giá</div>,
-      cell: ({ row }) => <div className='text-center'>{row.original.percent}</div>,
+      header: () => (
+        <div className='text-xs md:text-sm text-center text-black font-semibold dark:text-white'>Mức giảm giá</div>
+      ),
+      cell: ({ row }) => <div className='text-center text-xs md:text-sm'>{row.original.percent}</div>,
     },
     {
       accessorKey: 'startDate',
-      header: () => <div className='font-bold text-black text-base dark:text-white text-center'>Thơi gian bắt đầu</div>,
-      cell: ({ row }) => <div className='text-center'>{row.original.startDate.toLocaleDateString()}</div>,
+      header: () => (
+        <div className='text-xs md:text-sm text-center text-black font-semibold dark:text-white'>Thơi gian bắt đầu</div>
+      ),
+      cell: ({ row }) => (
+        <div className='text-center text-xs md:text-sm '>{row.original.startDate.toLocaleDateString()}</div>
+      ),
     },
     {
       accessorKey: 'endDate',
       header: () => (
-        <div className='font-bold text-black text-base dark:text-white text-center'>Thơi gian kết thúc</div>
+        <div className='text-xs md:text-sm text-center text-black font-semibold dark:text-white'>
+          Thơi gian kết thúc
+        </div>
       ),
-      cell: ({ row }) => <div className='text-center'>{row.original.endDate.toLocaleDateString()}</div>,
+      cell: ({ row }) => (
+        <div className='text-center text-xs md:text-sm '>{row.original.endDate.toLocaleDateString()}</div>
+      ),
     },
     {
       accessorKey: 'products',
-      header: () => <div className='text-center font-bold text-black text-base dark:text-white'>Sản phẩm áp dụng</div>,
+      header: () => (
+        <div className='text-xs md:text-sm text-center text-black font-semibold dark:text-white'>Sản phẩm áp dụng</div>
+      ),
       cell: ({ row }) => (
-        <div className='text-center'>{row.original.kind === 'all' ? 'Tất cả sản phẩm' : 'Sản phẩm chỉ định'}</div>
+        <div className='text-center text-xs md:text-sm '>
+          {row.original.kind === 'all' ? 'Tất cả sản phẩm' : 'Sản phẩm chỉ định'}
+        </div>
       ),
     },
     {
       accessorKey: 'action',
-      header: () => <div className='text-center font-bold text-black text-base dark:text-white'>Action</div>,
+      header: () => (
+        <div className='text-xs md:text-sm text-center text-black font-semibold dark:text-white'>Action</div>
+      ),
       cell: ({ row }) => (
-        <div className='flex gap-x-2 justify-center'>
+        <div className='flex gap-x-2 justify-center items-center text-xs md:text-sm '>
           <Dialog>
             <DialogTrigger asChild>
               <span className='text-blue-600 cursor-pointer hover:text-blue-800'>Cập nhật</span>
@@ -107,15 +124,19 @@ const Discount = () => {
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
+                <AlertDialogTitle className='text-sm md:text-base'>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription className='text-xs md:text-sm'>
                   This action cannot be undone. This will permanently delete your discount and remove data from our
                   servers.
                 </AlertDialogDescription>
               </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel asChild>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={() => {}}>Continue</AlertDialogAction>
+              <AlertDialogFooter className='flex flex-row gap-x-2 items-center justify-end'>
+                <AlertDialogCancel asChild className='text-sm md:text-base'>
+                  <Button className='text-black text-sm md:text-base mt-0'>Cancel</Button>
+                </AlertDialogCancel>
+                <AlertDialogAction className='text-sm md:text-base' onClick={() => {}}>
+                  Continue
+                </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
@@ -147,9 +168,9 @@ const Discount = () => {
     <>
       <div>
         <h5 className='font-bold 2xl:text-lg md:text-base text-sm'>Khuyến mãi</h5>
-        <div className='mt-6 flex gap-x-8'>
-          <div className='flex gap-x-4 items-center'>
-            <span className='flex size-16 rounded-full bg-blue-100 items-center justify-center text-blue-600'>
+        <div className='mt-6 flex gap-x-8 gap-y-2 md:flex-row flex-col'>
+          <div className='flex gap-x-2 md:gap-x-4 items-center'>
+            <span className='flex shrink-0 size-12 md:size-16 rounded-full bg-blue-100 items-center justify-center text-blue-600'>
               <Tag className='md:size-7 size-5' />
             </span>
             <div>
@@ -171,8 +192,8 @@ const Discount = () => {
               </Dialog>
             </div>
           </div>
-          <div className='flex gap-x-4 items-center'>
-            <span className='flex size-16 rounded-full bg-blue-100 items-center justify-center text-blue-600'>
+          <div className='flex gap-x-2 md:gap-x-4 items-center'>
+            <span className='flex shrink-0 size-12 md:size-16 rounded-full bg-blue-100 items-center justify-center text-blue-600'>
               <SealPercent className='md:size-7 size-5' />
             </span>
             <div>

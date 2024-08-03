@@ -5,20 +5,58 @@ import Dashboard from '@/modules/admin/dashboard'
 import Orders from '@/modules/admin/orders'
 import Revenue from '@/modules/admin/revenue'
 import Discount from '@/modules/admin/discount'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 const Admin = () => {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const subPath: string | undefined = location.pathname.split('/admin/')[1]
   return (
     <div className='py-6'>
-      <Tabs defaultValue='dashboard' className='w-full'>
+      <Tabs defaultValue={subPath !== undefined ? subPath : 'dashboard'} className='w-full'>
         <TabsList className='grid w-full grid-cols-3 md:grid-cols-6 h-auto'>
-          <TabsTrigger value='dashboard'>Dashboard</TabsTrigger>
-          <TabsTrigger value='products' className='data-[state]'>
+          <TabsTrigger
+            className=' text-xs sm:text-sm'
+            value='dashboard'
+            onClick={() => navigate('/admin', { replace: true })}
+          >
+            Dashboard
+          </TabsTrigger>
+          <TabsTrigger
+            value='products'
+            className='data-[state] text-xs sm:text-sm'
+            onClick={() => navigate('/admin/products', { replace: true })}
+          >
             Products
           </TabsTrigger>
-          <TabsTrigger value='orders'>Orders</TabsTrigger>
-          <TabsTrigger value='revenue'>Revenue</TabsTrigger>
-          <TabsTrigger value='discount'>Discount</TabsTrigger>
-          <TabsTrigger value='profile'>Profile</TabsTrigger>
+          <TabsTrigger
+            className='text-xs sm:text-sm'
+            value='orders'
+            onClick={() => navigate('/admin/orders', { replace: true })}
+          >
+            Orders
+          </TabsTrigger>
+          <TabsTrigger
+            className='text-xs sm:text-sm'
+            value='revenue'
+            onClick={() => navigate('/admin/revenue', { replace: true })}
+          >
+            Revenue
+          </TabsTrigger>
+          <TabsTrigger
+            className='text-xs sm:text-sm'
+            value='discount'
+            onClick={() => navigate('/admin/discount', { replace: true })}
+          >
+            Discount
+          </TabsTrigger>
+          <TabsTrigger
+            className='text-xs sm:text-sm'
+            value='profile'
+            onClick={() => navigate('/admin/profile', { replace: true })}
+          >
+            Profile
+          </TabsTrigger>
         </TabsList>
         <TabsContent
           value='dashboard'

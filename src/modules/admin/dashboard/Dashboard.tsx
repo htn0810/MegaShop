@@ -60,17 +60,21 @@ const Dashboard = () => {
           <div className='flex items-center justify-between mb-4'>
             <h5 className='font-bold 2xl:text-lg md:text-base text-sm'>Tổng quan</h5>
             <Select>
-              <SelectTrigger className='w-[160px] focus:ring-0 focus:ring-offset-0'>
-                <div className='flex items-center gap-x-2'>
-                  <Calendar size={22} />
+              <SelectTrigger className='w-[140px] md:w-[160px] focus:ring-0 focus:ring-offset-0'>
+                <div className='flex items-center text-xs md:text-sm'>
+                  <Calendar className='size-4 md:size-6 mr-1 md:mr-2' />
                   <SelectValue placeholder='Select a fruit' />
                 </div>
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Thời gian</SelectLabel>
-                  <SelectItem value='apple'>Apple</SelectItem>
-                  <SelectItem value='banana'>Banana</SelectItem>
+                  <SelectLabel className='text-xs md:text-sm'>Thời gian</SelectLabel>
+                  <SelectItem value='apple' className='text-xs md:text-sm'>
+                    Apple
+                  </SelectItem>
+                  <SelectItem value='banana' className='text-xs md:text-sm'>
+                    Banana
+                  </SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -81,21 +85,21 @@ const Dashboard = () => {
                 <span className='text-black text-xs md:text-base'>Tổng đơn hàng</span>
                 <span className='font-bold text-base md:text-xl text-blue-900'>340</span>
               </div>
-              <Scroll size={28} className='text-blue-900' />
+              <Scroll className='text-blue-900 md:size-7 size-5' />
             </div>
             <div className='flex items-center justify-between md:p-4 p-2 rounded-md bg-pink-100'>
               <div className='flex flex-col gap-y-2'>
                 <span className='text-black text-xs md:text-base'>Doanh thu</span>
                 <span className='font-bold text-base md:text-xl text-pink-900'>34.5 Tr</span>
               </div>
-              <Coins size={28} className='text-pink-900' />
+              <Coins className='text-pink-900 md:size-7 size-5' />
             </div>
             <div className='flex items-center justify-between md:p-4 p-2 rounded-md bg-yellow-100'>
               <div className='flex flex-col gap-y-2'>
                 <span className='text-black text-xs md:text-base'>Doanh thu tuan</span>
                 <span className='font-bold text-base md:text-xl text-yellow-900'>14 Tr</span>
               </div>
-              <Coin size={28} className='text-yellow-900' />
+              <Coin className='text-yellow-900 md:size-7 size-5' />
             </div>
           </div>
         </div>
@@ -103,17 +107,21 @@ const Dashboard = () => {
           <div className='flex items-center justify-between mb-4'>
             <h5 className='font-bold 2xl:text-lg md:text-base text-sm'>Doanh thu</h5>
             <Select>
-              <SelectTrigger className='w-[160px] focus:ring-0 focus:ring-offset-0'>
-                <div className='flex items-center gap-x-2'>
-                  <Calendar size={22} />
+              <SelectTrigger className='w-[140px] md:w-[160px] focus:ring-0 focus:ring-offset-0'>
+                <div className='flex items-center text-xs md:text-sm'>
+                  <Calendar className='md:size-6 size-4 mr-1 md:mr-2' />
                   <SelectValue placeholder='Select time' />
                 </div>
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Thời gian</SelectLabel>
-                  <SelectItem value='apple'>Apple</SelectItem>
-                  <SelectItem value='banana'>Banana</SelectItem>
+                  <SelectLabel className='text-xs md:text-sm'>Thời gian</SelectLabel>
+                  <SelectItem value='apple' className='text-xs md:text-sm'>
+                    Apple
+                  </SelectItem>
+                  <SelectItem value='banana' className='text-xs md:text-sm'>
+                    Banana
+                  </SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -127,10 +135,10 @@ const Dashboard = () => {
           <Table>
             <TableHeader className='rounded-tl-md rounded-tr-lg'>
               <TableRow className='bg-blue-100 hover:bg-blue-100 dark:bg-blue-950'>
-                <TableHead className='text-black dark:text-white'>Name</TableHead>
-                <TableHead className='text-black dark:text-white'>Price</TableHead>
-                <TableHead className='text-black dark:text-white'>Quantity</TableHead>
-                <TableHead className='text-black dark:text-white text-right'>Revenue</TableHead>
+                <TableHead className='text-black dark:text-white text-xs md:text-sm'>Name</TableHead>
+                <TableHead className='text-black dark:text-white text-xs md:text-sm'>Price</TableHead>
+                <TableHead className='text-black dark:text-white text-xs md:text-sm'>Quantity</TableHead>
+                <TableHead className='text-black dark:text-white text-right text-xs md:text-sm'>Revenue</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -138,13 +146,17 @@ const Dashboard = () => {
                 <TableRow key={product.id}>
                   <TableCell className='font-medium'>
                     <div className='flex gap-x-2 items-center'>
-                      <img src={product.image} alt='ProductImg' className='size-16 flex-shrink-0' />
-                      <span className='block truncate'>{product.name}</span>
+                      <img src={product.image} alt='ProductImg' className='size-12 md:size-16 flex-shrink-0' />
+                      <span className='block truncate text-xs md:text-sm'>{product.name}</span>
                     </div>
                   </TableCell>
-                  <TableCell align='center'>{product.price}</TableCell>
-                  <TableCell align='center'>{20}</TableCell>
-                  <TableCell className='text-right'>{(10000000).toLocaleString()}</TableCell>
+                  <TableCell align='center' className='text-xs md:text-sm'>
+                    {product.price}
+                  </TableCell>
+                  <TableCell align='center' className='text-xs md:text-sm'>
+                    {20}
+                  </TableCell>
+                  <TableCell className='text-right text-xs md:text-sm'>{(10000000).toLocaleString()}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -164,24 +176,24 @@ const Dashboard = () => {
                 <img
                   src='https://images.unsplash.com/photo-1721188092446-a66a2cef2676?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
                   alt=''
-                  className='size-16 rounded-full'
+                  className='size-12 md:size-16 rounded-full'
                 />
                 <div className='flex flex-col'>
-                  <span className='font-semibold'>Dennis Nguyen</span>
+                  <span className='font-semibold text-sm md:text-base'>Dennis Nguyen</span>
                   <Rating val={4} />
                 </div>
               </div>
-              <span>2h</span>
+              <span className='text-sm md:text-base'>2h</span>
             </div>
-            <span className='block mt-2 text-sm font-semibold text-gray-400'>Giày Nike version 2</span>
-            <p className='mt-4 line-clamp-3'>
+            <span className='block mt-2 text-xs md:text-sm font-semibold text-gray-400'>Giày Nike version 2</span>
+            <p className='mt-1 md:mt-4 line-clamp-3 text-xs md:text-sm'>
               Lorem ipsum dolor, sit amet consectetur adipisicing elit. Laborum reiciendis animi inventore eaque sed
               excepturi pariatur voluptatibus numquam quis, laudantium autem aliquam expedita. Libero accusantium sequi,
               iste illum quasi non.
             </p>
             <div className='flex mt-4 items-center gap-x-4 cursor-pointer text-blue-900 dark:text-blue-300'>
-              <ArrowBendUpLeft size={22} />
-              <span>Trả lời</span>
+              <ArrowBendUpLeft className='size-4 md:size-6' />
+              <span className='text-sm md:text-base'>Trả lời</span>
             </div>
           </div>
           <div className='px-6 py-4 rounded-sm bg-white dark:bg-gray-900 shadow-md mt-4'>
@@ -190,24 +202,24 @@ const Dashboard = () => {
                 <img
                   src='https://images.unsplash.com/photo-1721188092446-a66a2cef2676?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
                   alt=''
-                  className='size-16 rounded-full'
+                  className='size-12 md:size-16 rounded-full'
                 />
                 <div className='flex flex-col'>
-                  <span className='font-semibold'>Dennis Nguyen</span>
+                  <span className='font-semibold text-sm md:text-base'>Dennis Nguyen</span>
                   <Rating val={4} />
                 </div>
               </div>
-              <span>2h</span>
+              <span className='text-sm md:text-base'>2h</span>
             </div>
-            <span className='block mt-2 text-sm font-semibold text-gray-400'>Giày Nike version 2</span>
-            <p className='mt-4 line-clamp-3'>
+            <span className='block mt-2 text-xs md:text-sm font-semibold text-gray-400'>Giày Nike version 2</span>
+            <p className='mt-1 md:mt-4 line-clamp-3 text-xs md:text-sm'>
               Lorem ipsum dolor, sit amet consectetur adipisicing elit. Laborum reiciendis animi inventore eaque sed
               excepturi pariatur voluptatibus numquam quis, laudantium autem aliquam expedita. Libero accusantium sequi,
               iste illum quasi non.
             </p>
             <div className='flex mt-4 items-center gap-x-4 cursor-pointer text-blue-900 dark:text-blue-300'>
-              <ArrowBendUpLeft size={22} />
-              <span>Trả lời</span>
+              <ArrowBendUpLeft className='size-4 md:size-6' />
+              <span className='text-sm md:text-base'>Trả lời</span>
             </div>
           </div>
         </div>

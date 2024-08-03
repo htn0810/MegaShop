@@ -41,7 +41,7 @@ export const CART_PAGE_ROUTE: AppRoute = {
 
 export const ADMIN_PAGE_ROUTE: AppRoute = {
   pageTitleKey: 'PageTitle_AdminPage',
-  path: BASE_ROUTE_PATH + 'admin',
+  path: BASE_ROUTE_PATH + 'admin/*',
   component: MegaLazyLoad(import('@/pages/admin_page/Admin')),
 }
 

@@ -142,30 +142,30 @@ const Product = () => {
         let sortedIcon
         switch (column.getIsSorted()) {
           case 'asc':
-            sortedIcon = <CaretUp className='md:size-6 size-5' />
+            sortedIcon = <CaretUp className='md:text-lg text-sm' />
             break
           case 'desc':
-            sortedIcon = <CaretDown className='md:size-6 size-5' />
+            sortedIcon = <CaretDown className='md:text-lg text-sm' />
             break
           default:
-            sortedIcon = <CaretUpDown className='md:size-6 size-5' />
+            sortedIcon = <CaretUpDown className='md:text-lg text-sm' />
         }
         return (
           <div
             className='flex gap-x-2 cursor-pointer'
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           >
-            <span className='font-bold text-black text-base dark:text-white'>Name</span>
+            <span className='font-semibold text-black text-xs md:text-sm dark:text-white'>Name</span>
             {sortedIcon}
           </div>
         )
       },
       cell: ({ row }) => (
         <div className='flex gap-x-2 md:gap-x-4 items-center'>
-          <div className='w-20 h-20'>
+          <div className='md:size-16 size-12'>
             <img src={row.original.image} alt='ProductImg' className='w-full h-full bg-cover' />
           </div>
-          <span className='truncate'>{row.original.name}</span>
+          <span className='truncate text-xs md:text-sm'>{row.original.name}</span>
         </div>
       ),
     },
@@ -175,33 +175,45 @@ const Product = () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <div className='flex gap-x-2 items-center cursor-pointer'>
-              <span className='font-bold text-black text-base dark:text-white'>Status</span>
-              <CaretDown size={20} weight='bold' />
+              <span className='font-semibold text-black text-xs md:text-sm dark:text-white'>Status</span>
+              <CaretDown className='md:text-lg text-sm' />
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className='w-56'>
+          <DropdownMenuContent>
             <DropdownMenuRadioGroup
               value={status}
               onValueChange={(value: string) => setStatus(value as Product['status'] | 'all')}
             >
-              <DropdownMenuRadioItem value='all'>All</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value='in stock'>In Stock</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value='out of stock'>Out of Stock</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value='disabled'>Disabled</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value='all' className='text-xs md:text-sm'>
+                All
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value='in stock' className='text-xs md:text-sm'>
+                In Stock
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value='out of stock' className='text-xs md:text-sm'>
+                Out of Stock
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value='disabled' className='text-xs md:text-sm'>
+                Disabled
+              </DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>
       ),
-      cell: ({ row }) => <div className='capitalize'>{row.getValue('status')}</div>,
+      cell: ({ row }) => <div className='capitalize text-xs md:text-sm'>{row.getValue('status')}</div>,
     },
     {
       accessorKey: 'quantity',
-      header: () => <div className='text-center font-bold text-black text-base dark:text-white'>Quantity</div>,
-      cell: ({ row }) => <div className='text-center font-medium'>{row.original.quantity}</div>,
+      header: () => (
+        <div className='font-semibold text-center text-black text-xs md:text-sm dark:text-white'>Quantity</div>
+      ),
+      cell: ({ row }) => <div className='text-center text-xs md:text-sm'>{row.original.quantity}</div>,
     },
     {
       accessorKey: 'price',
-      header: () => <div className='text-center font-bold text-black text-base dark:text-white'>Price</div>,
+      header: () => (
+        <div className='font-semibold text-center text-black text-xs md:text-sm dark:text-white'>Price</div>
+      ),
       cell: ({ row }) => {
         const price = parseFloat(row.getValue('price'))
 
@@ -211,7 +223,7 @@ const Product = () => {
           currency: 'USD',
         }).format(price)
 
-        return <div className='text-center font-medium'>{formatted}</div>
+        return <div className='text-center text-xs md:text-sm'>{formatted}</div>
       },
     },
     {
@@ -226,16 +238,22 @@ const Product = () => {
                   <DotsThree size={20} weight='bold' className='cursor-pointer' />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align='end'>
-                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                  <DropdownMenuLabel className='text-xs md:text-sm'>Actions</DropdownMenuLabel>
                   <DialogTrigger asChild>
                     <DropdownMenuItem>
-                      <span>Edit</span>
+                      <span className='text-xs md:text-sm'>Edit</span>
                     </DropdownMenuItem>
                   </DialogTrigger>
-                  <DropdownMenuItem onClick={() => setConfirmDisableDialog({ data: row.original, isShow: true })}>
+                  <DropdownMenuItem
+                    className='text-xs md:text-sm'
+                    onClick={() => setConfirmDisableDialog({ data: row.original, isShow: true })}
+                  >
                     Disabled
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setConfirmDeleteDialog({ data: row.original, isShow: true })}>
+                  <DropdownMenuItem
+                    className='text-xs md:text-sm'
+                    onClick={() => setConfirmDeleteDialog({ data: row.original, isShow: true })}
+                  >
                     Delete
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -276,7 +294,7 @@ const Product = () => {
         <Dialog>
           <DialogTrigger asChild>
             <Button className='py-2 px-3'>
-              <Plus size={20} weight='bold' />
+              <Plus className='md:size-6 size-4' weight='bold' />
             </Button>
           </DialogTrigger>
           <DialogContent className='w-[360px] sm:min-w-[400px] md:w-[600px] xl:w-[700px] max-w-2xl'>
@@ -294,12 +312,12 @@ const Product = () => {
               placeholder='Filter products...'
               value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
               onChange={(event) => table.getColumn('name')?.setFilterValue(event.target.value)}
-              className='max-w-sm'
+              className='max-w-sm  text-xs md:text-sm'
             />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant='outline' className='ml-auto'>
-                  Columns <CaretDown size={20} weight='bold' />
+                <Button variant='outline' className='ml-auto text-xs md:text-sm'>
+                  Columns <CaretDown className='text-sm md:text-lg ml-1 md:ml-2' weight='bold' />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align='end'>
@@ -310,7 +328,7 @@ const Product = () => {
                     return (
                       <DropdownMenuCheckboxItem
                         key={column.id}
-                        className='capitalize'
+                        className='capitalize text-xs md:text-sm'
                         checked={column.getIsVisible()}
                         onCheckedChange={(value) => column.toggleVisibility(!!value)}
                       >
@@ -368,16 +386,22 @@ const Product = () => {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className='text-sm md:text-base'>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription className='text-xs md:text-sm'>
               This action will disable your product and customer will not see it.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setConfirmDisableDialog({ data: null, isShow: false })}>
+          <AlertDialogFooter className='flex flex-row gap-x-2 justify-end'>
+            <AlertDialogCancel
+              className='text-sm md:text-base mt-0'
+              onClick={() => setConfirmDisableDialog({ data: null, isShow: false })}
+            >
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction onClick={() => setConfirmDisableDialog({ data: null, isShow: false })}>
+            <AlertDialogAction
+              className='text-sm md:text-base'
+              onClick={() => setConfirmDisableDialog({ data: null, isShow: false })}
+            >
               Continue
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -390,17 +414,23 @@ const Product = () => {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className='text-sm md:text-base'>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription className='text-xs md:text-sm'>
               This action cannot be undone. This will permanently delete your product and remove your data from our
               servers.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setConfirmDeleteDialog({ data: null, isShow: false })}>
+          <AlertDialogFooter className='flex flex-row gap-x-2 justify-end'>
+            <AlertDialogCancel
+              className='text-sm md:text-base mt-0'
+              onClick={() => setConfirmDeleteDialog({ data: null, isShow: false })}
+            >
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction onClick={() => setConfirmDeleteDialog({ data: null, isShow: false })}>
+            <AlertDialogAction
+              className='text-sm md:text-base'
+              onClick={() => setConfirmDeleteDialog({ data: null, isShow: false })}
+            >
               Continue
             </AlertDialogAction>
           </AlertDialogFooter>

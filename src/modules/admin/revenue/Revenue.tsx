@@ -64,31 +64,29 @@ const Revenue = () => {
   const columns: ColumnDef<Revenue>[] = [
     {
       accessorKey: 'date',
-      header: ({ column }) => {
-        return (
-          <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-            <span className='font-bold text-black text-xs md:text-base dark:text-white'>Date</span>
-          </Button>
-        )
+      header: () => {
+        return <span className='font-semibold text-black text-xs md:text-sm dark:text-white'>Date</span>
       },
-      cell: ({ row }) => <span>{row.original.date}</span>,
+      cell: ({ row }) => <span className='text-xs md:text-sm'>{row.original.date}</span>,
     },
     {
       accessorKey: 'ordersQuantity',
-      header: () => <span className='text-xs md:text-base'>Order Quantity</span>,
-      cell: ({ row }) => <div className='capitalize'>{row.original.ordersQuantity}</div>,
+      header: () => (
+        <div className='text-xs md:text-sm text-center text-black font-semibold dark:text-white'>Order Quantity</div>
+      ),
+      cell: ({ row }) => <div className='text-xs md:text-sm text-center'>{row.original.ordersQuantity}</div>,
     },
     {
       accessorKey: 'totalBill',
       header: () => (
-        <span className='text-center font-bold text-black text-xs md:text-base dark:text-white'>Total bill</span>
+        <div className='text-xs md:text-sm text-center text-black font-semibold dark:text-white'>Total bill</div>
       ),
-      cell: ({ row }) => <div className='text-center font-medium'>{row.original.totalBill}</div>,
+      cell: ({ row }) => <div className='text-xs md:text-sm text-center'>{row.original.totalBill}</div>,
     },
     {
       accessorKey: 'totalDiscount',
       header: () => (
-        <div className='text-center font-bold text-black text-xs md:text-base dark:text-white'>Total discount</div>
+        <div className='text-xs md:text-sm text-center text-black font-semibold dark:text-white'>Total discount</div>
       ),
       cell: ({ row }) => {
         // Format the price as a dollar price
@@ -97,19 +95,21 @@ const Revenue = () => {
           currency: 'USD',
         }).format(row.original.totalDiscount)
 
-        return <div className='text-center font-medium'>{formatted}</div>
+        return <div className='text-xs md:text-sm text-center'>{formatted}</div>
       },
     },
     {
       accessorKey: 'income',
-      header: () => <div className='text-center font-bold text-black text-xs md:text-base dark:text-white'>Income</div>,
+      header: () => (
+        <div className='text-xs md:text-sm text-center text-black font-semibold dark:text-white'>Income</div>
+      ),
       cell: ({ row }) => {
         // Format the price as a dollar price
         const formatted = new Intl.NumberFormat('en-US', {
           style: 'currency',
           currency: 'USD',
         }).format(row.original.income)
-        return <div className='text-center font-medium'>{formatted}</div>
+        return <div className='text-xs md:text-sm text-center'>{formatted}</div>
       },
     },
   ]
@@ -143,21 +143,21 @@ const Revenue = () => {
               <span className='text-black text-xs md:text-base'>Tổng doanh thu</span>
               <span className='font-bold text-base md:text-xl text-blue-900'>340</span>
             </div>
-            <Money size={28} className='text-blue-900' />
+            <Money className='text-blue-900 md:size-7 size-5' />
           </div>
           <div className='flex items-center justify-between md:p-4 p-2 rounded-md bg-pink-100'>
             <div className='flex flex-col gap-y-2'>
               <span className='text-black text-xs md:text-base'>Doanh thu tháng này</span>
               <span className='font-bold text-base md:text-xl text-pink-900'>34.5 Tr</span>
             </div>
-            <Coins size={28} className='text-pink-900' />
+            <Coins className='text-pink-900 md:size-7 size-5' />
           </div>
           <div className='flex items-center justify-between md:p-4 p-2 rounded-md bg-yellow-100'>
             <div className='flex flex-col gap-y-2'>
               <span className='text-black text-xs md:text-base'>Doanh thu tuần</span>
               <span className='font-bold text-base md:text-xl text-yellow-900'>14 Tr</span>
             </div>
-            <Coin size={28} className='text-yellow-900' />
+            <Coin className='text-yellow-900 md:size-7 size-5' />
           </div>
         </div>
       </div>

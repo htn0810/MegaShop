@@ -35,6 +35,7 @@ type Discount = {
   products: []
   percent: number
   kind: 'all' | 'specific'
+  limit: number | undefined
 }
 
 const discountData: Discount[] = [
@@ -44,6 +45,7 @@ const discountData: Discount[] = [
     products: [],
     percent: 20,
     kind: 'all',
+    limit: undefined,
   },
   {
     startDate: new Date('05/04/2024'),
@@ -51,6 +53,7 @@ const discountData: Discount[] = [
     products: [],
     percent: 35,
     kind: 'specific',
+    limit: 20,
   },
 ]
 

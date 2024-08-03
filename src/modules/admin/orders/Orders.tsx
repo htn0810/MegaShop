@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/select'
 import { Calendar, CheckSquareOffset, FileX, Scroll, Spinner, Truck, UserCheck } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
-import { CaretDown, CaretUpDown } from '@phosphor-icons/react'
+import { CaretDown } from '@phosphor-icons/react'
 import {
   ColumnDef,
   ColumnFiltersState,

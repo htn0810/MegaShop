@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import Product from '@/modules/admin/product'
-import AdminProfile from '@/modules/admin/admin-profile'
+import AdminProfile from '@/modules/admin/admin_profile'
 import Dashboard from '@/modules/admin/dashboard'
 import Orders from '@/modules/admin/orders'
 import Revenue from '@/modules/admin/revenue'
@@ -10,10 +10,11 @@ import { useLocation, useNavigate } from 'react-router-dom'
 const Admin = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const subPath: string | undefined = location.pathname.split('/admin/')[1]
+  const path = location.pathname.split('/admin/')[1] ?? 'dashboard'
+
   return (
     <div className='py-6'>
-      <Tabs defaultValue={subPath !== undefined ? subPath : 'dashboard'} className='w-full'>
+      <Tabs value={path} className='w-full'>
         <TabsList className='grid w-full grid-cols-3 md:grid-cols-6 h-auto'>
           <TabsTrigger
             className=' text-xs sm:text-sm'

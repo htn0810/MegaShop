@@ -47,8 +47,8 @@ export const ADMIN_PAGE_ROUTE: AppRoute = {
 
 export const SUPER_ADMIN_PAGE_ROUTE: AppRoute = {
   pageTitleKey: 'PageTitle_AdminPage',
-  path: BASE_ROUTE_PATH + 'super-admin',
-  component: MegaLazyLoad(import('@/pages/super-admin-page/SuperAdmin')),
+  path: BASE_ROUTE_PATH + 'super-admin/*',
+  component: MegaLazyLoad(import('@/pages/super_admin_page/SuperAdmin')),
 }
 
 export const DEFAULT_ROUTE_BLOCK: AppRouteBlock = {

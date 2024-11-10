@@ -4,10 +4,13 @@ import { Input } from '@/components/ui/input'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Eye, EyeSlash } from '@phosphor-icons/react'
+import { Eye, EyeSlash, X } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import AuthAPI from '@/apis/auth/auth'
+import { toast } from 'sonner'
+import { useMegaStore } from '@/store/store'
 
 type FormData = {
   email: string
@@ -16,6 +19,8 @@ type FormData = {
 
 const Login = () => {
   const { t } = useTranslation()
+  const navigate = useNavigate()
+  const setUser = useMegaStore((state) => state.setUser)
   const [isHiddenPassword, setIsHiddenPassword] = useState(true)
   const formSchema = z.object({
     email: z
@@ -29,18 +34,29 @@ const Login = () => {
       .regex(/[A-Z]/, { message: t('login.err_miss_upper_character') })
       .regex(/[a-z]/, { message: t('login.err_miss_lower_character') })
       .regex(/[`!@#$%^&*()_\-+=\[\]{};':"\\|,.<>\/?~ ]/, { message: t('login.err_miss_special_character') })
-      .regex(/[\d]/, { message: t('login.err_miss_digit') })
+      .regex(/[\d]/, { message: t('login.err_miss_digit') }),
   })
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
-      password: ''
-    }
+      password: '',
+    },
   })
 
-  const onSubmit = (data: FormData) => {
-    console.log(data)
+  const onSubmit = async (data: FormData) => {
+    try {
+      const response = await AuthAPI.login({ ...data })
+      setUser(response.data.user)
+      toast.success('Login successfully!', {
+        description: new Date().toLocaleString(),
+      })
+      navigate('/')
+    } catch (error) {
+      toast.error('Your email/password incorrect!', {
+        description: new Date().toLocaleString(),
+      })
+    }
   }
   return (
     <div className='flex items-center justify-center'>

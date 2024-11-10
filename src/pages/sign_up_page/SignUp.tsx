@@ -8,22 +8,28 @@ import { Eye, EyeSlash } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
+import { useRegister } from '@/apis/auth/queries'
+import { AxiosError } from 'axios'
+import { toast } from 'sonner'
 
 type FormData = {
   password: string
   confirm: string
   email: string
+  fullName: string
 }
 
 const SignUp = () => {
   const { t } = useTranslation()
   const [isHiddenPassword, setIsHiddenPassword] = useState({ password: true, confirm: true })
+  const { mutate, error, data } = useRegister()
   const formSchema = z
     .object({
       email: z
         .string()
         .min(1, { message: t('sign_up.err_input_need_filled') })
         .email(t('sign_up.err_unvalid_email')),
+      fullName: z.string().min(6, { message: t('sign_up.err_input_need_filled') }),
       password: z
         .string()
         .min(6, { message: t('sign_up.err_min_length_password') })
@@ -32,23 +38,42 @@ const SignUp = () => {
         .regex(/[a-z]/, { message: t('sign_up.err_miss_lower_character') })
         .regex(/[`!@#$%^&*()_\-+=\[\]{};':"\\|,.<>\/?~ ]/, { message: t('sign_up.err_miss_special_character') })
         .regex(/[\d]/, { message: t('sign_up.err_miss_digit') }),
-      confirm: z.string()
+      confirm: z.string(),
     })
     .refine((data) => data.password === data.confirm, {
       message: t('sign_up.err_password_not_match'),
-      path: ['confirm'] // path of error
+      path: ['confirm'], // path of error
     })
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
+      fullName: '',
       password: '',
-      confirm: ''
-    }
+      confirm: '',
+    },
   })
 
-  const onSubmit = (data: FormData) => {
-    console.log(data)
+  const onSubmit = (formData: FormData) => {
+    console.log(formData)
+    const { confirm, ...request } = formData
+    mutate(request, {
+      onSuccess: (data) => {
+        console.log('Registration successful:', data)
+      },
+      onError: (error: Error | AxiosError) => {
+        console.log('Registration failed:', error)
+        const errorMessage: string = (error as AxiosError).response?.data as string
+        console.log((error as AxiosError).response?.data)
+        toast.error(errorMessage, {
+          description: new Date().toLocaleDateString(),
+          action: {
+            label: 'Remove',
+            onClick: () => console.log('remove'),
+          },
+        })
+      },
+    })
   }
   return (
     <div className='flex items-center justify-center'>
@@ -73,6 +98,19 @@ const SignUp = () => {
           />
           <FormField
             control={form.control}
+            name='fullName'
+            render={({ field }) => (
+              <FormItem className='mt-[8px_!important]'>
+                <FormLabel className='text-black dark:text-white'>Fullname</FormLabel>
+                <FormControl>
+                  <Input {...field} className='focus-visible:ring-offset-0 ' />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
             name='password'
             render={({ field }) => (
               <FormItem className='mt-[8px_!important]'>
@@ -83,6 +121,7 @@ const SignUp = () => {
                       {...field}
                       className='focus-visible:ring-offset-0'
                       type={isHiddenPassword.password ? 'password' : 'text'}
+                      autoComplete='off'
                     />
                   </FormControl>
                   {isHiddenPassword.password && (
@@ -116,6 +155,7 @@ const SignUp = () => {
                       {...field}
                       className='focus-visible:ring-offset-0'
                       type={isHiddenPassword.confirm ? 'password' : 'text'}
+                      autoComplete='off'
                     />
                   </FormControl>
                   {isHiddenPassword.confirm && (

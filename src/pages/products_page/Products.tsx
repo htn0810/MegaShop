@@ -1,5 +1,5 @@
 import { BestSellingProducts } from '@/assets/dummyDatas/products'
-import ProductHeader from '@/modules/products-shop-header'
+import ProductHeader from '@/modules/products_shop_header'
 import ProductItem from '@/modules/products/product_item'
 import Sidebar from '@/modules/sidebar'
 import {
@@ -9,7 +9,7 @@ import {
   PaginationItem,
   PaginationLink,
   PaginationNext,
-  PaginationPrevious
+  PaginationPrevious,
 } from '@/components/ui/pagination'
 import { useState } from 'react'
 import { Layout } from '@/types/common.type'

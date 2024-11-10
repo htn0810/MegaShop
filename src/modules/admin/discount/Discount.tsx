@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button'
 import { DataTablePagination } from '@/components/ui/data-table-pagination'
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import ModalDiscountProduct from '@/modules/admin/modal-discount-directly-product'
+import ModalDiscountProduct from '@/modules/admin/modal_discount_directly_product'
 import { SealPercent, Tag } from '@phosphor-icons/react'
 import {
   ColumnDef,

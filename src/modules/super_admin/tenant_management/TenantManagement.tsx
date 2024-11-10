@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
-import { CaretDown, CaretUp, CaretUpDown, DotsThree, Plus } from '@phosphor-icons/react'
+import { CaretDown, CaretUp, CaretUpDown } from '@phosphor-icons/react'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -16,8 +16,6 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
@@ -26,8 +24,6 @@ import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useState } from 'react'
 import { DataTablePagination } from '@/components/ui/data-table-pagination'
-import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import ModalAddEditProduct from '@/modules/admin/modal_add_edit_product'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,104 +34,62 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import { AlertDialogTrigger } from '@radix-ui/react-alert-dialog'
 
-const data: Product[] = [
+type Tenant = {
+  id: string
+  name: string
+  status: 'active' | 'pending' | 'inactive'
+  image: string
+}
+
+const data: Tenant[] = [
   {
     id: 'm5gr84i9',
-    quantity: 316,
-    saleOff: 20,
-    isDisabled: false,
-    price: 100,
-    status: 'in stock',
-    description: '',
     name: 'ken99@yahoo.com',
-    order: 'order',
+    status: 'active',
     image:
       'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   },
   {
     id: '3u1reuv4',
-    quantity: 242,
-    saleOff: 20,
-    isDisabled: false,
-    price: 100,
-    status: 'in stock',
-    description: '',
     name: 'Abe45@gmail.com',
-    order: 'confirm',
+    status: 'inactive',
     image:
       'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   },
   {
     id: 'derv1ws0',
-    quantity: 837,
-    saleOff: 20,
-    isDisabled: true,
-    price: 100,
-    status: 'in stock',
-    description: '',
+    status: 'pending',
     name: 'Monserrat44@gmail.com',
-    order: 'delivery',
     image:
       'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   },
   {
     id: '5kma53ae',
-    quantity: 874,
-    saleOff: 20,
-    isDisabled: false,
-    price: 100,
-    status: 'out of stock',
-    description: '',
     name: 'Silas22@gmail.com',
-    order: 'success',
+    status: 'active',
     image:
       'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   },
   {
     id: 'bhqecj4p',
-    quantity: 721,
-    saleOff: 20,
-    isDisabled: false,
-    price: 100,
-    status: 'in stock',
-    description: '',
     name: 'carmella@hotmail.com',
-    order: 'order',
+    status: 'inactive',
     image:
       'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
   },
 ]
 
-type Product = {
-  id: string
-  quantity: number
-  name: string
-  description: string
-  status: 'in stock' | 'out of stock'
-  isDisabled: boolean
-  saleOff: number
-  image: string
-  price: number
-  order: 'order' | 'confirm' | 'delivery' | 'success' | 'cancel'
-}
-
-type ConfirmDialog = {
-  data: Product | null
-  isShow: boolean
-}
-
-const Product = () => {
+const TenantManagement = () => {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
 
-  const [status, setStatus] = useState<Product['status'] | 'all'>('all')
-  const [confirmDisableDialog, setConfirmDisableDialog] = useState<ConfirmDialog>({ data: null, isShow: false })
-  const [confirmDeleteDialog, setConfirmDeleteDialog] = useState<ConfirmDialog>({ data: null, isShow: false })
+  const [status, setStatus] = useState<Tenant['status'] | 'all'>('all')
 
-  const columns: ColumnDef<Product>[] = [
+  const columns: ColumnDef<Tenant>[] = [
     {
       accessorKey: 'name',
       header: ({ column }) => {
@@ -182,19 +136,19 @@ const Product = () => {
           <DropdownMenuContent>
             <DropdownMenuRadioGroup
               value={status}
-              onValueChange={(value: string) => setStatus(value as Product['status'] | 'all')}
+              onValueChange={(value: string) => setStatus(value as Tenant['status'] | 'all')}
             >
               <DropdownMenuRadioItem value='all' className='text-xs md:text-sm'>
                 All
               </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value='in stock' className='text-xs md:text-sm'>
-                In Stock
+              <DropdownMenuRadioItem value='active' className='text-xs md:text-sm'>
+                Active
               </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value='out of stock' className='text-xs md:text-sm'>
-                Out of Stock
+              <DropdownMenuRadioItem value='inactive' className='text-xs md:text-sm'>
+                Inactive
               </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value='disabled' className='text-xs md:text-sm'>
-                Disabled
+              <DropdownMenuRadioItem value='pending' className='text-xs md:text-sm'>
+                Pending
               </DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
@@ -203,68 +157,58 @@ const Product = () => {
       cell: ({ row }) => <div className='capitalize text-xs md:text-sm'>{row.getValue('status')}</div>,
     },
     {
-      accessorKey: 'quantity',
-      header: () => (
-        <div className='font-semibold text-center text-black text-xs md:text-sm dark:text-white'>Quantity</div>
-      ),
-      cell: ({ row }) => <div className='text-center text-xs md:text-sm'>{row.original.quantity}</div>,
-    },
-    {
-      accessorKey: 'price',
-      header: () => (
-        <div className='font-semibold text-center text-black text-xs md:text-sm dark:text-white'>Price</div>
-      ),
-      cell: ({ row }) => {
-        const price = parseFloat(row.getValue('price'))
-
-        // Format the price as a dollar price
-        const formatted = new Intl.NumberFormat('en-US', {
-          style: 'currency',
-          currency: 'USD',
-        }).format(price)
-
-        return <div className='text-center text-xs md:text-sm'>{formatted}</div>
-      },
-    },
-    {
       id: 'actions',
       enableHiding: false,
+      header: () => (
+        <div className='font-semibold text-black text-center text-xs md:text-sm dark:text-white'>Actions</div>
+      ),
       cell: ({ row }) => {
         return (
-          <div className='bg-white'>
-            <Dialog>
-              <DropdownMenu modal={false}>
-                <DropdownMenuTrigger asChild className='text-end float-right'>
-                  <DotsThree size={20} weight='bold' className='cursor-pointer' />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align='end'>
-                  <DropdownMenuLabel className='text-xs md:text-sm'>Actions</DropdownMenuLabel>
-                  <DialogTrigger asChild>
-                    <DropdownMenuItem>
-                      <span className='text-xs md:text-sm'>Edit</span>
-                    </DropdownMenuItem>
-                  </DialogTrigger>
-                  <DropdownMenuItem
-                    className='text-xs md:text-sm'
-                    onClick={() => setConfirmDisableDialog({ data: row.original, isShow: true })}
-                  >
-                    Disabled
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className='text-xs md:text-sm'
-                    onClick={() => setConfirmDeleteDialog({ data: row.original, isShow: true })}
-                  >
+          <>
+            {row.original.status !== 'pending' && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <div className='text-center text-xs md:text-sm text-red-500 cursor-pointer hover:text-red-700'>
                     Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <DialogContent className='w-[360px] sm:min-w-[400px] md:w-[600px] xl:w-[700px] max-w-2xl'>
-                <DialogTitle className='hidden' />
-                <DialogDescription className='hidden' />
-                <ModalAddEditProduct type='edit' product={row.original} />
-              </DialogContent>
-            </Dialog>
-          </div>
+                  </div>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className='text-sm md:text-base'>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription className='text-xs md:text-sm'>
+                      This action cannot be undone. This will permanently delete your product and remove your data from
+                      our servers.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter className='flex flex-row gap-x-2 justify-end'>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction>Continue</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
+            {row.original.status === 'pending' && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <div className='text-xs md:text-sm text-center text-green-600 cursor-pointer hover:text-green-800'>
+                    Approve
+                  </div>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className='text-sm md:text-base'>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription className='text-xs md:text-sm'>
+                      This tenant will active right now and tenant's owner can sell their items.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter className='flex flex-row gap-x-2 justify-end'>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction>Continue</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
+          </>
         )
       },
     },
@@ -290,26 +234,12 @@ const Product = () => {
   })
   return (
     <div>
-      <p className='text-end'>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button className='py-2 px-3'>
-              <Plus className='md:size-6 size-4' weight='bold' />
-            </Button>
-          </DialogTrigger>
-          <DialogContent className='w-[360px] sm:min-w-[400px] md:w-[600px] xl:w-[700px] max-w-2xl'>
-            <DialogTitle className='hidden' />
-            <DialogDescription className='hidden' />
-            <ModalAddEditProduct type='add' />
-          </DialogContent>
-        </Dialog>
-      </p>
-
+      <h2 className='font-bold text-sm md:text-base'>Tenant Management</h2>
       <div>
         <div className='w-full'>
           <div className='flex items-center py-4 gap-x-2'>
             <Input
-              placeholder='Filter products...'
+              placeholder='Filter names...'
               value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
               onChange={(event) => table.getColumn('name')?.setFilterValue(event.target.value)}
               className='max-w-sm  text-xs md:text-sm'
@@ -380,64 +310,8 @@ const Product = () => {
           </div>
         </div>
       </div>
-      <AlertDialog
-        open={confirmDisableDialog.isShow}
-        onOpenChange={() => setConfirmDisableDialog({ data: null, isShow: false })}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className='text-sm md:text-base'>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription className='text-xs md:text-sm'>
-              This action will disable your product and customer will not see it.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className='flex flex-row gap-x-2 justify-end'>
-            <AlertDialogCancel
-              className='text-sm md:text-base mt-0'
-              onClick={() => setConfirmDisableDialog({ data: null, isShow: false })}
-            >
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className='text-sm md:text-base'
-              onClick={() => setConfirmDisableDialog({ data: null, isShow: false })}
-            >
-              Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <AlertDialog
-        open={confirmDeleteDialog.isShow}
-        onOpenChange={() => setConfirmDeleteDialog({ data: null, isShow: false })}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className='text-sm md:text-base'>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription className='text-xs md:text-sm'>
-              This action cannot be undone. This will permanently delete your product and remove your data from our
-              servers.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className='flex flex-row gap-x-2 justify-end'>
-            <AlertDialogCancel
-              className='text-sm md:text-base mt-0'
-              onClick={() => setConfirmDeleteDialog({ data: null, isShow: false })}
-            >
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className='text-sm md:text-base'
-              onClick={() => setConfirmDeleteDialog({ data: null, isShow: false })}
-            >
-              Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   )
 }
 
-export default Product
+export default TenantManagement

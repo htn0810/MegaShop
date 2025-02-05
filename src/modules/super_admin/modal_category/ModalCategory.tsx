@@ -37,7 +37,7 @@ const ModalCategory = (props: AddProps | EditProps) => {
   const { t } = useTranslation()
 
   const [openModal, setOpenModal] = useState<boolean>(true)
-  const { file, preview, setPreview, handleDrop, handleDragOver, handleChange } = useDragDropImg()
+  const { preview, setPreview, handleDrop, handleDragOver, handleChange } = useDragDropImg()
 
   useEffect(() => {
     if (type === 'edit') {

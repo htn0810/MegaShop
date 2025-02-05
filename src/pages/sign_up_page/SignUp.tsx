@@ -22,7 +22,7 @@ type FormData = {
 const SignUp = () => {
   const { t } = useTranslation()
   const [isHiddenPassword, setIsHiddenPassword] = useState({ password: true, confirm: true })
-  const { mutate, error, data } = useRegister()
+  const { mutate } = useRegister()
   const formSchema = z
     .object({
       email: z

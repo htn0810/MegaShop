@@ -46,7 +46,7 @@ const ProductHeader = (props: Props) => {
               <SelectItem value='asc' className='font-semibold'>
                 {t('products.product_header.asc')}
               </SelectItem>
-              <SelectItem value='des' className='font-semibold' onClick={() => setSortPrice('des')}>
+              <SelectItem value='des' className='font-semibold'>
                 {t('products.product_header.des')}
               </SelectItem>
             </SelectGroup>

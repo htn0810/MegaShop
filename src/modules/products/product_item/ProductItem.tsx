@@ -8,23 +8,18 @@ import { useTranslation } from 'react-i18next'
 
 type Props = {
   product: IProduct
-  isShowAtCarousel?: boolean
   showType?: 'grid' | 'list'
 }
 
 const ProductItem = (props: Props) => {
   const { t } = useTranslation()
-  const { product, isShowAtCarousel, showType = 'grid' } = props
+  const { product, showType = 'grid' } = props
   return (
     <Card className='overflow-hidden border-none shadow-none cursor-pointer'>
       {showType === 'grid' ? (
         <>
           <div className='relative w-full group'>
-            <img
-              src={product.image}
-              alt='productImg'
-              className={`w-full sm:h-[250px] xl:h-[280px] bg-cover ${isShowAtCarousel ? 'h-[320px]' : 'h-[220px]'}`}
-            />
+            <img src={product.image} alt='productImg' className={`w-full aspect-portrait object-cover`} />
             <Button className='absolute bottom-0 left-0 right-0 w-full py-4 transition-all duration-500 ease-in-out rounded-none opacity-0 group-hover:opacity-100'>
               {t('product_detail.add_to_cart')}
             </Button>
@@ -53,7 +48,7 @@ const ProductItem = (props: Props) => {
             <img
               src={product.image}
               alt='productImg'
-              className='w-full h-[140px] sm:h-[200px] md:h-[230px] xl:h-[260px] 2xl:h-[300px] bg-cover rounded-xl'
+              className='w-full h-[140px] sm:h-[200px] md:h-[230px] xl:h-[260px] 2xl:h-[300px] object-cover rounded-xl'
             />
           </div>
           <div className='col-span-7 bg-gray-100 dark:bg-gray-700 rounded-xl px-4 py-2'>

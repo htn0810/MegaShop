@@ -26,7 +26,7 @@ const CarouselHighlight = (props: Props) => {
     <Fragment>
       <Carousel
         opts={{
-          align: 'start'
+          align: 'start',
         }}
         className='w-full'
       >
@@ -70,9 +70,9 @@ const CarouselHighlight = (props: Props) => {
           {type === 'product' &&
             products &&
             products.map((product) => (
-              <CarouselItem key={product.id} className='sm:basis-1/2 md:basis-1/3 lg:basis-1/4 2xl:basis-1/5'>
+              <CarouselItem key={product.id} className='basis-1/2 sm:basis-1/3 lg:basis-1/4 2xl:basis-1/5'>
                 <div className='p-1' onClick={() => navigate('/product_detail')}>
-                  <ProductItem product={product} isShowAtCarousel></ProductItem>
+                  <ProductItem product={product}></ProductItem>
                 </div>
               </CarouselItem>
             ))}
@@ -83,7 +83,7 @@ const CarouselHighlight = (props: Props) => {
                 <div className='p-1'>
                   <Card className='flex flex-col items-center justify-between p-6 border-2 cursor-pointer hover:border-black dark:bg-white'>
                     <div className='w-[100px] h-[100px] '>
-                      <img src={category.image} alt='CategoryImg' className='w-full h-full bg-cover' />
+                      <img src={category.image} alt='CategoryImg' className='w-full h-full object-cover' />
                     </div>
                     <h4 className='font-semibold dark:text-black'>{category.name}</h4>
                   </Card>

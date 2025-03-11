@@ -1,11 +1,9 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import ImageUploader from '@/components/image_uploader/ImageUploader'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import useDragDropImg from '@/custom_hooks/useDragDropImg'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { FilePlus } from '@phosphor-icons/react'
 import { ReactNode, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -37,12 +35,11 @@ const ModalCategory = (props: AddProps | EditProps) => {
   const { t } = useTranslation()
 
   const [openModal, setOpenModal] = useState<boolean>(true)
-  const { preview, setPreview, handleDrop, handleDragOver, handleChange } = useDragDropImg()
 
   useEffect(() => {
     if (type === 'edit') {
       console.log(props.category.image)
-      setPreview(props.category.image)
+      // setPreview(props.category.image)
     }
   }, [])
 
@@ -66,14 +63,6 @@ const ModalCategory = (props: AddProps | EditProps) => {
   }
 
   const handleClose = () => {
-    if (!openModal) {
-      setPreview('')
-      form.reset()
-    } else {
-      if (type === 'edit') {
-        setPreview(props.category.image)
-      }
-    }
     setOpenModal((prev) => !prev)
   }
 
@@ -86,42 +75,12 @@ const ModalCategory = (props: AddProps | EditProps) => {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
             <h6 className='md:text-lg text-base font-bold text-left capitalize'>{type} Category</h6>
-            <FormField
-              control={form.control}
+            <ImageUploader
+              form={form}
               name='image'
-              render={({ field: { onChange, value, ...rest } }) => (
-                <FormItem className='w-full'>
-                  <FormLabel className='text-black dark:text-white text-sm md:text-base'>Image</FormLabel>
-                  <div className='flex gap-x-2 justify-start'>
-                    <div className='relative h-full'>
-                      <FormControl>
-                        <Input
-                          {...rest}
-                          type='file'
-                          className='w-24 h-24 rounded-md focus-visible:ring-offset-0 text-xs md:text-sm'
-                          onChange={handleChange}
-                        />
-                      </FormControl>
-                      <FormLabel className='text-black dark:text-white text-sm md:text-base cursor-pointer'>
-                        <div
-                          onDragOver={handleDragOver}
-                          onDrop={handleDrop}
-                          className='bg-white w-24 h-24 absolute inset-0 rounded-md  border-2 border-black border-dashed hover:border-solid hover:border-blue-500 flex items-center justify-center'
-                        >
-                          <FilePlus size={28} />
-                        </div>
-                      </FormLabel>
-                    </div>
-                    {preview && (
-                      <Avatar className='w-24 h-24 rounded-md'>
-                        <AvatarImage src={preview} />
-                        <AvatarFallback className='rounded-none'>Mega</AvatarFallback>
-                      </Avatar>
-                    )}
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
+              multiple={false}
+              maxFiles={1}
+              defaultImages={type === 'edit' ? [props.category.image] : []}
             />
 
             <div className='mt-[8px_!important]'>

@@ -297,7 +297,7 @@ const Product = () => {
               <Plus className='md:size-6 size-4' weight='bold' />
             </Button>
           </DialogTrigger>
-          <DialogContent className='w-[360px] sm:min-w-[400px] md:w-[600px] xl:w-[700px] max-w-2xl'>
+          <DialogContent className='min-w-5xl max-w-5xl'>
             <DialogTitle className='hidden' />
             <DialogDescription className='hidden' />
             <ModalAddEditProduct type='add' />

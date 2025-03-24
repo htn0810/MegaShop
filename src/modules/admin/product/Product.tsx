@@ -258,7 +258,7 @@ const Product = () => {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <DialogContent className='w-[360px] sm:min-w-[400px] md:w-[600px] xl:w-[700px] max-w-2xl'>
+              <DialogContent className='min-w-5xl max-w-5xl'>
                 <DialogTitle className='hidden' />
                 <DialogDescription className='hidden' />
                 <ModalAddEditProduct type='edit' product={row.original} />

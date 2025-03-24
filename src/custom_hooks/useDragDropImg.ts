@@ -10,15 +10,16 @@ const useDragDropImg = (options: UseDragDropImgOptions = {}) => {
   const [previews, setPreviews] = useState<string[]>([])
   const [files, setFiles] = useState<File[]>([])
 
-  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault()
     const droppedFiles = event.dataTransfer.files
+
     if (droppedFiles && droppedFiles.length > 0) {
-      handleFiles(droppedFiles)
+      await handleFiles(droppedFiles)
     }
   }
 
-  const handleFiles = (newFiles: FileList) => {
+  const handleFiles = async (newFiles: FileList) => {
     const totalFiles = previews.length + (multiple ? newFiles.length : 1)
     if (totalFiles > maxFiles) {
       alert(`Maximum ${maxFiles} image${maxFiles > 1 ? 's' : ''} allowed`)
@@ -37,10 +38,10 @@ const useDragDropImg = (options: UseDragDropImgOptions = {}) => {
     event.stopPropagation()
   }
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = event.target.files
     if (selectedFiles && selectedFiles.length > 0) {
-      handleFiles(selectedFiles)
+      await handleFiles(selectedFiles)
     }
   }
 

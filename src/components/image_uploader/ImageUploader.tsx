@@ -3,7 +3,7 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/comp
 import { Input } from '@/components/ui/input'
 import useDragDropImg from '@/custom_hooks/useDragDropImg'
 import { FilePlus, X } from 'lucide-react'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { Path, PathValue, UseFormReturn } from 'react-hook-form'
 
 type ImageUploaderProps<T extends Record<string, unknown>> = {
@@ -28,6 +28,8 @@ const ImageUploader = <T extends Record<string, unknown>>({
     maxFiles,
   })
 
+  const isFirstRender = useRef(true)
+
   const handleRemoveImage = (index: number, fieldOnChange: (value: PathValue<T, Path<T>>) => void) => {
     setPreviews((prev) => {
       const newPreviews = prev.filter((_, i) => i !== index)
@@ -39,18 +41,27 @@ const ImageUploader = <T extends Record<string, unknown>>({
     setFiles((prev) => prev.filter((_, i) => i !== index))
   }
 
+  const handleAddImage = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    fieldOnChange: (value: PathValue<T, Path<T>>) => void,
+  ) => {
+    await handleChange(e)
+    fieldOnChange(multiple ? (previews as PathValue<T, Path<T>>) : ((previews[0] || '') as PathValue<T, Path<T>>))
+  }
+
   useEffect(() => {
-    if (defaultImages.length > 0) {
+    if (isFirstRender.current && defaultImages?.length > 0) {
       setPreviews(defaultImages)
       form.setValue(
         name,
         multiple ? (defaultImages as PathValue<T, Path<T>>) : (defaultImages[0] as PathValue<T, Path<T>>),
+        {
+          shouldValidate: true,
+        },
       )
-    } else {
-      setPreviews([])
-      setFiles([])
+      isFirstRender.current = false
     }
-  }, [defaultImages, setPreviews, setFiles, form, name, multiple])
+  }, [defaultImages, form, multiple, name])
 
   return (
     <FormField
@@ -70,17 +81,14 @@ const ImageUploader = <T extends Record<string, unknown>>({
                     multiple={multiple}
                     accept='image/*'
                     className='w-24 h-24 rounded-md focus-visible:ring-offset-0 text-xs md:text-sm'
-                    onChange={(e) => {
-                      handleChange(e)
-                      field.onChange(multiple ? previews : previews[0] || '')
-                    }}
+                    onChange={(e) => handleAddImage(e, field.onChange)}
                   />
                 </FormControl>
                 <FormLabel className='text-black dark:text-white text-sm md:text-base cursor-pointer'>
                   <div
                     onDragOver={handleDragOver}
-                    onDrop={(e) => {
-                      handleDrop(e)
+                    onDrop={async (e) => {
+                      await handleDrop(e)
                       field.onChange(multiple ? previews : previews[0] || '')
                     }}
                     className='bg-white w-24 h-24 absolute inset-0 rounded-md border-2 border-black border-dashed hover:border-solid hover:border-blue-500 flex items-center justify-center'

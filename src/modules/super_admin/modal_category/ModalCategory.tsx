@@ -33,41 +33,37 @@ type FormData = {
 const ModalCategory = (props: AddProps | EditProps) => {
   const { type, children } = props
   const { t } = useTranslation()
-
-  const [openModal, setOpenModal] = useState<boolean>(true)
-
-  useEffect(() => {
-    if (type === 'edit') {
-      console.log(props.category.image)
-      // setPreview(props.category.image)
-    }
-  }, [])
+  const [isOpen, setIsOpen] = useState(false)
 
   const formSchema = z.object({
     name: z.string().min(1, { message: t('login.err_input_need_filled') }),
     image: z.string(),
   })
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues:
-      type === 'add'
-        ? {
-            name: '',
-            image: '',
-          }
-        : props.category,
+    defaultValues: {
+      name: '',
+      image: '',
+    },
   })
+
+  useEffect(() => {
+    if (isOpen && type === 'edit') {
+      form.reset({
+        name: props.category.name,
+        image: props.category.image || '',
+      })
+    }
+  }, [isOpen, type])
 
   const onSubmit = (data: FormData) => {
     console.log(data)
-  }
-
-  const handleClose = () => {
-    setOpenModal((prev) => !prev)
+    setIsOpen(false)
   }
 
   return (
-    <Dialog onOpenChange={handleClose}>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className='w-[360px] sm:min-w-[400px] md:w-[600px] xl:w-[700px] max-w-2xl'>
         <DialogTitle className='hidden' />
@@ -75,14 +71,15 @@ const ModalCategory = (props: AddProps | EditProps) => {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
             <h6 className='md:text-lg text-base font-bold text-left capitalize'>{type} Category</h6>
-            <ImageUploader
-              form={form}
-              name='image'
-              multiple={false}
-              maxFiles={1}
-              defaultImages={type === 'edit' ? [props.category.image] : []}
-            />
-
+            {isOpen && (
+              <ImageUploader
+                form={form}
+                name='image'
+                multiple={false}
+                maxFiles={1}
+                defaultImages={type === 'edit' && props.category.image ? [props.category.image] : []}
+              />
+            )}
             <div className='mt-[8px_!important]'>
               <FormField
                 control={form.control}
@@ -103,7 +100,6 @@ const ModalCategory = (props: AddProps | EditProps) => {
             </Button>
           </form>
         </Form>
-        {/* </div> */}
       </DialogContent>
     </Dialog>
   )

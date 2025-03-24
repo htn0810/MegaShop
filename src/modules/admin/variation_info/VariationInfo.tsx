@@ -1,8 +1,11 @@
 import { Input } from '@/components/ui/input'
-import { t } from 'i18next'
 import { useEffect } from 'react'
-import { UseFormReturn } from 'react-hook-form'
-import { z } from 'zod'
+import { UseFormReturn, Path } from 'react-hook-form'
+
+type Attribute = {
+  name: string
+  values: string[]
+}
 
 type VariantCombination = {
   id: string
@@ -12,30 +15,22 @@ type VariantCombination = {
   saleOff: number
 }
 
-const formSchema = z.object({
-  name: z.string().min(1, { message: t('login.err_input_need_filled') }),
-  category: z.string(),
-  description: z.string().min(1, { message: t('login.err_input_need_filled') }),
-  attributes: z.array(
-    z.object({
-      name: z.string().min(1, { message: t('login.err_input_need_filled') }),
-      values: z.array(z.string().min(1, { message: t('login.err_input_need_filled') })),
-    }),
-  ),
-})
+type FormData = {
+  attributes: Attribute[]
+}
 
-type Props = {
-  form: UseFormReturn<z.infer<typeof formSchema>>
+type Props<T extends FormData> = {
+  form: UseFormReturn<T>
   variantCombinations: VariantCombination[]
   setVariantCombinations: React.Dispatch<React.SetStateAction<VariantCombination[]>>
 }
 
-const VariationInfo = (props: Props) => {
+const VariationInfo = <T extends FormData>(props: Props<T>) => {
   const { form, variantCombinations, setVariantCombinations } = props
 
   // Hàm để tạo tất cả các combination có thể có từ các variants
   const generateCombinations = () => {
-    const attributesData = form.watch('attributes') || []
+    const attributesData = (form.watch('attributes' as Path<T>) || []) as Attribute[]
     if (!attributesData.length) return
 
     const combinations: VariantCombination[] = []
@@ -72,7 +67,7 @@ const VariationInfo = (props: Props) => {
   // Thêm useEffect để tự động tạo combinations khi attributes thay đổi
   useEffect(() => {
     generateCombinations()
-  }, [form.watch('attributes')])
+  }, [form.watch('attributes' as Path<T>)])
   return (
     <>
       {/* Thêm bảng variants sau phần attributes */}

@@ -10,13 +10,13 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  useReactTable,
+  useReactTable
 } from '@tanstack/react-table'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -30,7 +30,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle,
+  AlertDialogTitle
 } from '@/components/ui/alert-dialog'
 import { AlertDialogTrigger } from '@radix-ui/react-alert-dialog'
 
@@ -49,7 +49,7 @@ const data: User[] = [
     mail: 'ken99@yahoo.com',
     tenant: null,
     image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
   {
     id: '3u1reuv4',
@@ -57,7 +57,7 @@ const data: User[] = [
     name: 'Nguyễn Đại Trung',
     tenant: 'Shop Áo Thun',
     image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
   {
     id: 'derv1ws0',
@@ -65,7 +65,7 @@ const data: User[] = [
     mail: 'Monserrat44@gmail.com',
     tenant: 'Mẹ và bé',
     image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
   {
     id: '5kma53ae',
@@ -73,7 +73,7 @@ const data: User[] = [
     mail: 'Silas22@gmail.com',
     tenant: 'Sỉ gia dụng miền Trung',
     image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
   {
     id: 'bhqecj4p',
@@ -81,8 +81,8 @@ const data: User[] = [
     name: 'Nguyễn Trung Tiến',
     tenant: null,
     image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  },
+      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+  }
 ]
 
 const UserManagement = () => {
@@ -123,17 +123,17 @@ const UserManagement = () => {
           </div>
           <span className='truncate text-xs md:text-sm'>{row.original.name}</span>
         </div>
-      ),
+      )
     },
     {
       accessorKey: 'mail',
       header: () => <div className='font-semibold text-black text-xs md:text-sm dark:text-white'>Email</div>,
-      cell: ({ row }) => <div className='capitalize text-xs md:text-sm'>{row.getValue('mail')}</div>,
+      cell: ({ row }) => <div className='capitalize text-xs md:text-sm'>{row.getValue('mail')}</div>
     },
     {
       accessorKey: 'tenant',
       header: () => <div className='font-semibold text-black text-xs md:text-sm dark:text-white'>Tenant</div>,
-      cell: ({ row }) => <div className='capitalize text-xs md:text-sm'>{row.getValue('tenant') ?? '/___'}</div>,
+      cell: ({ row }) => <div className='capitalize text-xs md:text-sm'>{row.getValue('tenant') ?? '/___'}</div>
     },
     {
       id: 'actions',
@@ -160,8 +160,8 @@ const UserManagement = () => {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-      ),
-    },
+      )
+    }
   ]
 
   const table = useReactTable({
@@ -179,8 +179,8 @@ const UserManagement = () => {
       sorting,
       columnFilters,
       columnVisibility,
-      rowSelection,
-    },
+      rowSelection
+    }
   })
   return (
     <div>

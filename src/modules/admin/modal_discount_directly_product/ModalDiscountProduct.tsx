@@ -6,7 +6,7 @@ import {
   DialogContent,
   DialogDescription,
   DialogTitle,
-  DialogTrigger,
+  DialogTrigger
 } from '@/components/ui/dialog'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
@@ -63,14 +63,14 @@ const ModalDiscountProduct = (props: AddProps | EditProps) => {
 
   const formSchema = z.object({
     startDate: z.date({
-      required_error: 'Start date is required.',
+      required_error: 'Start date is required.'
     }),
     endDate: z.date({
-      required_error: 'End date is required.',
+      required_error: 'End date is required.'
     }),
     products: z.custom<Product[]>(),
     percent: z.number().min(1),
-    limit: z.number().optional(),
+    limit: z.number().optional()
   })
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -82,8 +82,8 @@ const ModalDiscountProduct = (props: AddProps | EditProps) => {
             endDate: undefined,
             products: [],
             percent: 0,
-            limit: 0,
-          },
+            limit: 0
+          }
   })
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
@@ -110,7 +110,7 @@ const ModalDiscountProduct = (props: AddProps | EditProps) => {
                           variant={'outline'}
                           className={cn(
                             'w-full pl-3 text-left font-normal md:text-sm text-xs',
-                            !field.value && 'text-muted-foreground',
+                            !field.value && 'text-muted-foreground'
                           )}
                         >
                           {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
@@ -145,7 +145,7 @@ const ModalDiscountProduct = (props: AddProps | EditProps) => {
                           variant={'outline'}
                           className={cn(
                             'w-full pl-3 text-left font-normal md:text-sm text-xs',
-                            !field.value && 'text-muted-foreground',
+                            !field.value && 'text-muted-foreground'
                           )}
                         >
                           {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}

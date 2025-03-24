@@ -6,7 +6,7 @@ import {
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
-  useReactTable,
+  useReactTable
 } from '@tanstack/react-table'
 
 import { Button } from '@/components/ui/button'
@@ -23,7 +23,7 @@ const data: Product[] = [
     price: 1000000,
     name: 'ken99@yahoo.com',
     image:
-      'https://images.unsplash.com/photo-1722289086081-03cf9bfc07f5?q=80&w=1852&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      'https://images.unsplash.com/photo-1722289086081-03cf9bfc07f5?q=80&w=1852&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
   {
     id: '3u1reuv4',
@@ -31,7 +31,7 @@ const data: Product[] = [
     price: 12839000,
     name: 'Abe45@gmail.com',
     image:
-      'https://images.unsplash.com/photo-1722289086081-03cf9bfc07f5?q=80&w=1852&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      'https://images.unsplash.com/photo-1722289086081-03cf9bfc07f5?q=80&w=1852&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
   {
     id: 'derv1ws0',
@@ -39,7 +39,7 @@ const data: Product[] = [
     price: 4300000,
     name: 'Monserrat44@gmail.com',
     image:
-      'https://images.unsplash.com/photo-1722289086081-03cf9bfc07f5?q=80&w=1852&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      'https://images.unsplash.com/photo-1722289086081-03cf9bfc07f5?q=80&w=1852&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
   {
     id: '5kma53ae',
@@ -47,7 +47,7 @@ const data: Product[] = [
     price: 299000,
     name: 'Silas22@gmail.com',
     image:
-      'https://images.unsplash.com/photo-1722289086081-03cf9bfc07f5?q=80&w=1852&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      'https://images.unsplash.com/photo-1722289086081-03cf9bfc07f5?q=80&w=1852&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
   {
     id: 'bhqecj4p',
@@ -55,8 +55,8 @@ const data: Product[] = [
     price: 5999000,
     name: 'carmella@hotmail.com',
     image:
-      'https://images.unsplash.com/photo-1722289086081-03cf9bfc07f5?q=80&w=1852&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  },
+      'https://images.unsplash.com/photo-1722289086081-03cf9bfc07f5?q=80&w=1852&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+  }
 ]
 
 export type Product = {
@@ -85,7 +85,7 @@ export const columns: ColumnDef<Product>[] = [
       />
     ),
     enableSorting: false,
-    enableHiding: false,
+    enableHiding: false
   },
   {
     accessorKey: 'name',
@@ -97,14 +97,14 @@ export const columns: ColumnDef<Product>[] = [
         <img src={row.original.image} alt='ImgProduct' className='size-10' />
         <span>{row.getValue('name')}</span>
       </div>
-    ),
+    )
   },
   {
     accessorKey: 'inStock',
     header: () => <div className='text-center'>In Stock</div>,
     cell: ({ row }) => {
       return <div className='text-center font-medium'>{row.getValue('inStock')}</div>
-    },
+    }
   },
   {
     accessorKey: 'price',
@@ -115,12 +115,12 @@ export const columns: ColumnDef<Product>[] = [
       // Format the amount as a dollar amount
       const formatted = new Intl.NumberFormat('en-US', {
         style: 'currency',
-        currency: 'VND',
+        currency: 'VND'
       }).format(amount)
 
       return <div className='text-center font-medium'>{formatted}</div>
-    },
-  },
+    }
+  }
 ]
 
 const ModalSelectDiscountProduct = () => {
@@ -140,8 +140,8 @@ const ModalSelectDiscountProduct = () => {
     state: {
       columnFilters,
       columnVisibility,
-      rowSelection,
-    },
+      rowSelection
+    }
   })
 
   return (

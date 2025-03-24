@@ -38,7 +38,7 @@ const VariationInfo = <T extends FormData>(props: Props<T>) => {
     // Tạo mảng các options cho mỗi attribute
     const optionsArray = attributesData.map((attr) => ({
       name: attr.name,
-      values: attr.values,
+      values: attr.values
     }))
 
     // Hàm đệ quy để tạo tất cả các combinations
@@ -49,7 +49,7 @@ const VariationInfo = <T extends FormData>(props: Props<T>) => {
           combinations: { ...current },
           price: 0,
           stock: 0,
-          saleOff: 0,
+          saleOff: 0
         })
         return
       }

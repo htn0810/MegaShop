@@ -43,7 +43,7 @@ const orderStep = [
 ]
 
 const ModalOrder = (props: Props) => {
-  let { order, updateData } = props
+  const { order, updateData } = props
 
   const handleOrderStep = () => {
     let orderStatus: typeof order.order = order.order
@@ -68,7 +68,7 @@ const ModalOrder = (props: Props) => {
     <div className='px-6 py-4'>
       <ul className='steps w-full'>
         {orderStep.map((step) => {
-          let orderStepId = orderStep.find((step) => step.status === order.order)?.id || 0
+          const orderStepId = orderStep.find((step) => step.status === order.order)?.id || 0
           let clx = ''
           let stepName = step.name
           if (order.order !== 'cancel' && orderStepId >= step.id) {

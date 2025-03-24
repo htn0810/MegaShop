@@ -1,6 +1,5 @@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Color, COLORS } from '@/constants/common.constant'
-import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
 
 const SelectColor = () => {
@@ -35,7 +34,7 @@ const SelectColor = () => {
       <RadioGroup defaultValue='comfortable' className='flex'>
         <div className='flex items-center space-x-4'>
           {COLORS.map((color) => (
-            <div className='relative flex items-center' key={useId()}>
+            <div className='relative flex items-center' key={color}>
               <RadioGroupItem
                 value={color}
                 id={color}

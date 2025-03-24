@@ -7,7 +7,7 @@ import {
   SelectItem,
   SelectLabel,
   SelectTrigger,
-  SelectValue,
+  SelectValue
 } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Calendar, Coin, Coins, DownloadSimple, Money } from '@phosphor-icons/react'
@@ -21,7 +21,7 @@ import {
   getSortedRowModel,
   SortingState,
   useReactTable,
-  VisibilityState,
+  VisibilityState
 } from '@tanstack/react-table'
 import { useState } from 'react'
 
@@ -41,7 +41,7 @@ const dummyRevenue: Revenue[] = [
     ordersQuantity: 10,
     totalBill: 2000000,
     totalDiscount: 10000,
-    income: 1990000,
+    income: 1990000
   },
   {
     id: '3u1reuv4',
@@ -49,8 +49,8 @@ const dummyRevenue: Revenue[] = [
     ordersQuantity: 2,
     totalBill: 450000,
     totalDiscount: 22000,
-    income: 428000,
-  },
+    income: 428000
+  }
 ]
 
 const Revenue = () => {
@@ -67,21 +67,21 @@ const Revenue = () => {
       header: () => {
         return <span className='font-semibold text-black text-xs md:text-sm dark:text-white'>Date</span>
       },
-      cell: ({ row }) => <span className='text-xs md:text-sm'>{row.original.date}</span>,
+      cell: ({ row }) => <span className='text-xs md:text-sm'>{row.original.date}</span>
     },
     {
       accessorKey: 'ordersQuantity',
       header: () => (
         <div className='text-xs md:text-sm text-center text-black font-semibold dark:text-white'>Order Quantity</div>
       ),
-      cell: ({ row }) => <div className='text-xs md:text-sm text-center'>{row.original.ordersQuantity}</div>,
+      cell: ({ row }) => <div className='text-xs md:text-sm text-center'>{row.original.ordersQuantity}</div>
     },
     {
       accessorKey: 'totalBill',
       header: () => (
         <div className='text-xs md:text-sm text-center text-black font-semibold dark:text-white'>Total bill</div>
       ),
-      cell: ({ row }) => <div className='text-xs md:text-sm text-center'>{row.original.totalBill}</div>,
+      cell: ({ row }) => <div className='text-xs md:text-sm text-center'>{row.original.totalBill}</div>
     },
     {
       accessorKey: 'totalDiscount',
@@ -92,11 +92,11 @@ const Revenue = () => {
         // Format the price as a dollar price
         const formatted = new Intl.NumberFormat('en-US', {
           style: 'currency',
-          currency: 'USD',
+          currency: 'USD'
         }).format(row.original.totalDiscount)
 
         return <div className='text-xs md:text-sm text-center'>{formatted}</div>
-      },
+      }
     },
     {
       accessorKey: 'income',
@@ -107,11 +107,11 @@ const Revenue = () => {
         // Format the price as a dollar price
         const formatted = new Intl.NumberFormat('en-US', {
           style: 'currency',
-          currency: 'USD',
+          currency: 'USD'
         }).format(row.original.income)
         return <div className='text-xs md:text-sm text-center'>{formatted}</div>
-      },
-    },
+      }
+    }
   ]
 
   const table = useReactTable({
@@ -129,8 +129,8 @@ const Revenue = () => {
       sorting,
       columnFilters,
       columnVisibility,
-      rowSelection,
-    },
+      rowSelection
+    }
   })
 
   return (

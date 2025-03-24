@@ -60,7 +60,7 @@ const useDragDropImg = (options: UseDragDropImgOptions = {}) => {
     handleChange,
     removeImage,
     maxFiles,
-    multiple,
+    multiple
   }
 }
 

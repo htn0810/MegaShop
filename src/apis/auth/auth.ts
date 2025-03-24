@@ -9,7 +9,7 @@ export default class AuthAPI {
   public static register = async ({
     email,
     fullName,
-    password,
+    password
   }: {
     email: string
     fullName: string
@@ -28,7 +28,7 @@ export default class AuthAPI {
   public static changePassword = async ({
     userId,
     currentPassword,
-    newPassword,
+    newPassword
   }: {
     userId: number
     currentPassword: string

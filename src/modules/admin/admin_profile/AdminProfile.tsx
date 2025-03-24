@@ -15,11 +15,11 @@ type FormData = {
 const AdminProfile = () => {
   const { t } = useTranslation()
   const formSchema = z.object({
-    name: z.string().min(1, { message: t('login.err_input_need_filled') }),
+    name: z.string().min(1, { message: t('login.err_input_need_filled') })
   })
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { name: '' },
+    defaultValues: { name: '' }
   })
 
   const onSubmit = (data: FormData) => {

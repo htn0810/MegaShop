@@ -10,7 +10,7 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  useReactTable,
+  useReactTable
 } from '@tanstack/react-table'
 import {
   DropdownMenu,
@@ -20,7 +20,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -36,7 +36,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle,
+  AlertDialogTitle
 } from '@/components/ui/alert-dialog'
 
 const data: Product[] = [
@@ -51,7 +51,7 @@ const data: Product[] = [
     name: 'ken99@yahoo.com',
     order: 'order',
     image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
   {
     id: '3u1reuv4',
@@ -64,7 +64,7 @@ const data: Product[] = [
     name: 'Abe45@gmail.com',
     order: 'confirm',
     image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
   {
     id: 'derv1ws0',
@@ -77,7 +77,7 @@ const data: Product[] = [
     name: 'Monserrat44@gmail.com',
     order: 'delivery',
     image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
   {
     id: '5kma53ae',
@@ -90,7 +90,7 @@ const data: Product[] = [
     name: 'Silas22@gmail.com',
     order: 'success',
     image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
   {
     id: 'bhqecj4p',
@@ -103,8 +103,8 @@ const data: Product[] = [
     name: 'carmella@hotmail.com',
     order: 'order',
     image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  },
+      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+  }
 ]
 
 type Product = {
@@ -167,7 +167,7 @@ const Product = () => {
           </div>
           <span className='truncate text-xs md:text-sm'>{row.original.name}</span>
         </div>
-      ),
+      )
     },
     {
       accessorKey: 'status',
@@ -200,14 +200,14 @@ const Product = () => {
           </DropdownMenuContent>
         </DropdownMenu>
       ),
-      cell: ({ row }) => <div className='capitalize text-xs md:text-sm'>{row.getValue('status')}</div>,
+      cell: ({ row }) => <div className='capitalize text-xs md:text-sm'>{row.getValue('status')}</div>
     },
     {
       accessorKey: 'quantity',
       header: () => (
         <div className='font-semibold text-center text-black text-xs md:text-sm dark:text-white'>Quantity</div>
       ),
-      cell: ({ row }) => <div className='text-center text-xs md:text-sm'>{row.original.quantity}</div>,
+      cell: ({ row }) => <div className='text-center text-xs md:text-sm'>{row.original.quantity}</div>
     },
     {
       accessorKey: 'price',
@@ -220,11 +220,11 @@ const Product = () => {
         // Format the price as a dollar price
         const formatted = new Intl.NumberFormat('en-US', {
           style: 'currency',
-          currency: 'USD',
+          currency: 'USD'
         }).format(price)
 
         return <div className='text-center text-xs md:text-sm'>{formatted}</div>
-      },
+      }
     },
     {
       id: 'actions',
@@ -266,8 +266,8 @@ const Product = () => {
             </Dialog>
           </div>
         )
-      },
-    },
+      }
+    }
   ]
 
   const table = useReactTable({
@@ -285,8 +285,8 @@ const Product = () => {
       sorting,
       columnFilters,
       columnVisibility,
-      rowSelection,
-    },
+      rowSelection
+    }
   })
   return (
     <div>

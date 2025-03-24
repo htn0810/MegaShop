@@ -11,7 +11,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
+  DialogTitle
 } from '@/components/ui/dialog'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -35,7 +35,7 @@ const mockUser = {
       postalCode: '10001',
       country: 'USA',
       phone: '+1 234 567 8901',
-      isDefault: true,
+      isDefault: true
     },
     {
       id: '2',
@@ -47,8 +47,8 @@ const mockUser = {
       postalCode: '02108',
       country: 'USA',
       phone: '+1 234 567 8902',
-      isDefault: false,
-    },
+      isDefault: false
+    }
   ],
   orders: [
     {
@@ -62,16 +62,16 @@ const mockUser = {
           name: 'Wireless Headphones',
           price: 99.99,
           quantity: 1,
-          image: 'https://placehold.co/60x60',
+          image: 'https://placehold.co/60x60'
         },
         {
           id: '2',
           name: 'Smart Watch',
           price: 60.0,
           quantity: 1,
-          image: 'https://placehold.co/60x60',
-        },
-      ],
+          image: 'https://placehold.co/60x60'
+        }
+      ]
     },
     {
       id: 'ORD-002',
@@ -84,25 +84,25 @@ const mockUser = {
           name: 'Bluetooth Speaker',
           price: 79.99,
           quantity: 1,
-          image: 'https://placehold.co/60x60',
+          image: 'https://placehold.co/60x60'
         },
         {
           id: '4',
           name: 'Wireless Charger',
           price: 35.0,
           quantity: 2,
-          image: 'https://placehold.co/60x60',
+          image: 'https://placehold.co/60x60'
         },
         {
           id: '5',
           name: 'Phone Case',
           price: 25.0,
           quantity: 4,
-          image: 'https://placehold.co/60x60',
-        },
-      ],
-    },
-  ],
+          image: 'https://placehold.co/60x60'
+        }
+      ]
+    }
+  ]
 }
 
 const UserAddress = () => {
@@ -118,7 +118,7 @@ const UserAddress = () => {
     postalCode: z.string().min(1, { message: 'Postal code is required' }),
     country: z.string().min(1, { message: 'Country is required' }),
     phone: z.string().min(6, { message: 'Phone number is required' }),
-    isDefault: z.boolean().default(false),
+    isDefault: z.boolean().default(false)
   })
 
   // Address form
@@ -133,8 +133,8 @@ const UserAddress = () => {
       postalCode: '',
       country: '',
       phone: '',
-      isDefault: false,
-    },
+      isDefault: false
+    }
   })
 
   // Edit address
@@ -149,7 +149,7 @@ const UserAddress = () => {
       postalCode: address.postalCode,
       country: address.country,
       phone: address.phone,
-      isDefault: address.isDefault,
+      isDefault: address.isDefault
     })
     setAddressDialogOpen(true)
   }
@@ -166,7 +166,7 @@ const UserAddress = () => {
       postalCode: '',
       country: '',
       phone: '',
-      isDefault: false,
+      isDefault: false
     })
     setAddressDialogOpen(true)
   }

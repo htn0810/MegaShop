@@ -4,14 +4,11 @@ import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import VariationInfo from '@/modules/admin/variation_info/VariationInfo'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Plus, Trash2 } from 'lucide-react'
-import { useState } from 'react'
-import { useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import ImageUploader from '../../../components/image_uploader/ImageUploader'
 import { formAddEditProductSchema } from '@/utils/formValidator'
+import { useForm } from 'react-hook-form'
 
 type Product = {
   id?: number

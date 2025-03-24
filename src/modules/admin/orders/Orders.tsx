@@ -5,7 +5,7 @@ import {
   SelectItem,
   SelectLabel,
   SelectTrigger,
-  SelectValue,
+  SelectValue
 } from '@/components/ui/select'
 import { Calendar, CheckSquareOffset, FileX, Scroll, Spinner, Truck, UserCheck } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
@@ -20,7 +20,7 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  useReactTable,
+  useReactTable
 } from '@tanstack/react-table'
 import {
   DropdownMenu,
@@ -28,7 +28,7 @@ import {
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -43,7 +43,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
+  AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import ModalOrder from '@/modules/admin/modal_order'
@@ -60,7 +60,7 @@ const dummyData: Product[] = [
     name: 'ken99@yahoo.com',
     order: 'order',
     image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
   {
     id: '3u1reuv4',
@@ -73,7 +73,7 @@ const dummyData: Product[] = [
     name: 'Abe45@gmail.com',
     order: 'confirm',
     image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
   {
     id: 'derv1ws0',
@@ -86,7 +86,7 @@ const dummyData: Product[] = [
     name: 'Monserrat44@gmail.com',
     order: 'delivery',
     image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
   {
     id: '5kma53ae',
@@ -99,7 +99,7 @@ const dummyData: Product[] = [
     name: 'Silas22@gmail.com',
     order: 'success',
     image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
   {
     id: 'bhqecj4p',
@@ -112,8 +112,8 @@ const dummyData: Product[] = [
     name: 'carmella@hotmail.com',
     order: 'order',
     image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  },
+      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+  }
 ]
 
 type Product = {
@@ -153,7 +153,7 @@ const Orders = () => {
             <span className='text-gray-500 font-semibold'>x2</span>
           </div>
         </div>
-      ),
+      )
     },
     {
       accessorKey: 'order',
@@ -192,14 +192,14 @@ const Orders = () => {
           </DropdownMenuContent>
         </DropdownMenu>
       ),
-      cell: ({ row }) => <div className='text-xs md:text-sm'>{row.getValue('order')}</div>,
+      cell: ({ row }) => <div className='text-xs md:text-sm'>{row.getValue('order')}</div>
     },
     {
       accessorKey: 'paymentMethod',
       header: () => (
         <div className='text-xs md:text-sm text-center text-black font-semibold dark:text-white'>Payment method</div>
       ),
-      cell: () => <div className='text-xs text-center md:text-sm'>{'Ship cod'}</div>,
+      cell: () => <div className='text-xs text-center md:text-sm'>{'Ship cod'}</div>
     },
     {
       accessorKey: 'price',
@@ -212,11 +212,11 @@ const Orders = () => {
         // Format the price as a dollar price
         const formatted = new Intl.NumberFormat('en-US', {
           style: 'currency',
-          currency: 'USD',
+          currency: 'USD'
         }).format(price)
 
         return <div className='text-xs md:text-sm text-center'>{formatted}</div>
-      },
+      }
     },
     {
       accessorKey: 'action',
@@ -261,7 +261,7 @@ const Orders = () => {
                             prev.map((prevOrder) => {
                               if (prevOrder.id === row.original.id) return { ...row.original, order: 'cancel' }
                               return prevOrder
-                            }),
+                            })
                           )
                         }}
                       >
@@ -320,8 +320,8 @@ const Orders = () => {
             {content}
           </div>
         )
-      },
-    },
+      }
+    }
   ]
 
   const table = useReactTable({
@@ -339,8 +339,8 @@ const Orders = () => {
       sorting,
       columnFilters,
       columnVisibility,
-      rowSelection,
-    },
+      rowSelection
+    }
   })
 
   return (

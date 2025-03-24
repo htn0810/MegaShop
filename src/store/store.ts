@@ -12,9 +12,9 @@ export const useMegaStore = create<MegaState>()(
     persist(
       (set) => ({
         user: undefined,
-        setUser: (loginUser: IUser) => set(() => ({ user: loginUser })),
+        setUser: (loginUser: IUser) => set(() => ({ user: loginUser }))
       }),
-      { name: 'MegaStore', storage: createJSONStorage(() => localStorage) },
-    ),
-  ),
+      { name: 'MegaStore', storage: createJSONStorage(() => localStorage) }
+    )
+  )
 )

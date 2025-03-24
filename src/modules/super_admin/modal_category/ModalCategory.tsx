@@ -37,22 +37,22 @@ const ModalCategory = (props: AddProps | EditProps) => {
 
   const formSchema = z.object({
     name: z.string().min(1, { message: t('login.err_input_need_filled') }),
-    image: z.string(),
+    image: z.string()
   })
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
-      image: '',
-    },
+      image: ''
+    }
   })
 
   useEffect(() => {
     if (isOpen && type === 'edit') {
       form.reset({
         name: props.category.name,
-        image: props.category.image || '',
+        image: props.category.image || ''
       })
     }
   }, [isOpen, type])

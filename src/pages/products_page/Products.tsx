@@ -9,7 +9,7 @@ import {
   PaginationItem,
   PaginationLink,
   PaginationNext,
-  PaginationPrevious,
+  PaginationPrevious
 } from '@/components/ui/pagination'
 import { useState } from 'react'
 import { Layout } from '@/types/common.type'

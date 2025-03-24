@@ -8,8 +8,8 @@ import { Eye, EyeSlash } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { AxiosError } from 'axios'
-import { toast } from 'sonner'
+// import { AxiosError } from 'axios'
+// import { toast } from 'sonner'
 
 type FormData = {
   password: string

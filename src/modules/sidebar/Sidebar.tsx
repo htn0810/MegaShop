@@ -14,7 +14,7 @@ type PriceRange = {
 const Sidebar = () => {
   const { t } = useTranslation()
   const [priceRange, setPriceRange] = useState<PriceRange>({ minPrice: 1000, maxPrice: 5000000 })
-  const handleValueChange = (valueRange: any) => {
+  const handleValueChange = (valueRange: number[]) => {
     setPriceRange({ minPrice: valueRange[0], maxPrice: valueRange[1] })
   }
 

@@ -4,7 +4,7 @@ import { toast } from 'sonner'
 export const http = axios.create({
   baseURL: 'http://localhost:8080/mega/v1',
   withCredentials: true,
-  timeout: 1000 * 60 * 10,
+  timeout: 1000 * 60 * 10
 })
 
 // Catching error
@@ -18,5 +18,5 @@ http.interceptors.response.use(
     }
     toast.error(errorMessage)
     return Promise.reject(error)
-  },
+  }
 )

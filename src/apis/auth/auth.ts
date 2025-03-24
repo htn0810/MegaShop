@@ -15,7 +15,25 @@ export default class AuthAPI {
     fullName: string
     password: string
   }): Promise<RegisterResponse> => {
-    const { data } = await http.post('/auth/register', { email, fullName, password })
-    return data
+    return http.post('/auth/register', { email, fullName, password })
+  }
+
+  public static updateUser = async ({ avatar, name, userId }: { avatar: File; name: string; userId: number }) => {
+    const formData = new FormData()
+    formData.append('avatar', avatar)
+    formData.append('name', name)
+    return http.put(`/users/update/${userId}`, formData)
+  }
+
+  public static changePassword = async ({
+    userId,
+    currentPassword,
+    newPassword,
+  }: {
+    userId: number
+    currentPassword: string
+    newPassword: string
+  }) => {
+    return http.put(`/users/change-password/${userId}`, { currentPassword, newPassword })
   }
 }

@@ -1,123 +1,98 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import useDragDropImg from '@/custom_hooks/useDragDropImg'
-import { FilePlus, X } from 'lucide-react'
-import { useEffect, useRef } from 'react'
-import { Path, PathValue, UseFormReturn } from 'react-hook-form'
+import { FilePlus, XIcon } from 'lucide-react'
+import { useEffect } from 'react'
+import { toast } from 'sonner'
 
-type ImageUploaderProps<T extends Record<string, unknown>> = {
-  form: UseFormReturn<T>
-  name: Path<T>
-  label?: string
-  multiple?: boolean
-  maxFiles?: number
-  defaultImages?: string[]
-}
+type Props = {
+  files: File[]
+  setFiles: React.Dispatch<React.SetStateAction<File[]>>
+} & (
+  | {
+      multiple: false
+    }
+  | {
+      multiple: true
+      maxFiles: number
+    }
+)
 
-const ImageUploader = <T extends Record<string, unknown>>({
-  form,
-  name,
-  label = 'Image',
-  multiple = false,
-  maxFiles = 1,
-  defaultImages = [],
-}: ImageUploaderProps<T>) => {
-  const { previews, setPreviews, setFiles, handleDrop, handleDragOver, handleChange } = useDragDropImg({
-    multiple,
-    maxFiles,
-  })
-
-  const isFirstRender = useRef(true)
-
-  const handleRemoveImage = (index: number, fieldOnChange: (value: PathValue<T, Path<T>>) => void) => {
-    setPreviews((prev) => {
-      const newPreviews = prev.filter((_, i) => i !== index)
-      fieldOnChange(
-        multiple ? (newPreviews as PathValue<T, Path<T>>) : ((newPreviews[0] || '') as PathValue<T, Path<T>>),
-      )
-      return newPreviews
-    })
-    setFiles((prev) => prev.filter((_, i) => i !== index))
-  }
-
-  const handleAddImage = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-    fieldOnChange: (value: PathValue<T, Path<T>>) => void,
-  ) => {
-    await handleChange(e)
-    fieldOnChange(multiple ? (previews as PathValue<T, Path<T>>) : ((previews[0] || '') as PathValue<T, Path<T>>))
-  }
+const ImageUploader = (props: Props) => {
+  const { files, setFiles, multiple } = props
+  const maxFiles = multiple ? props.maxFiles : 1
 
   useEffect(() => {
-    if (isFirstRender.current && defaultImages?.length > 0) {
-      setPreviews(defaultImages)
-      form.setValue(
-        name,
-        multiple ? (defaultImages as PathValue<T, Path<T>>) : (defaultImages[0] as PathValue<T, Path<T>>),
-        {
-          shouldValidate: true,
-        },
-      )
-      isFirstRender.current = false
+    if (files?.length > maxFiles) {
+      toast.error(`Maximum files allowed is ${maxFiles}`)
     }
-  }, [defaultImages, form, multiple, name])
+  }, [files?.length])
 
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (files?.length && files.length >= maxFiles) {
+      toast.error(`Maximum files allowed is ${maxFiles}`)
+      return
+    }
+    const file = event.target.files?.[0]
+    if (file) {
+      setFiles((prev) => [...(prev ?? []), file])
+    }
+  }
+
+  const handleRemoveImage = (index: number) => {
+    setFiles((prev) => prev?.filter((_, idx) => idx !== index))
+  }
+
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+
+  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault()
+    const droppedFiles = event.dataTransfer.files
+    if (droppedFiles && droppedFiles.length > 0) {
+      console.log(droppedFiles)
+    }
+  }
   return (
-    <FormField
-      control={form.control}
-      name={name}
-      render={({ field }) => (
-        <FormItem className='w-full'>
-          <FormLabel className='text-black dark:text-white text-sm md:text-base'>
-            {label} {multiple && `(${previews.length || 0}/${maxFiles})`}
-          </FormLabel>
-          <div className='flex flex-wrap gap-2'>
-            {(!multiple || previews.length < maxFiles) && (
-              <div className='relative h-full'>
-                <FormControl>
-                  <Input
-                    type='file'
-                    multiple={multiple}
-                    accept='image/*'
-                    className='w-24 h-24 rounded-md focus-visible:ring-offset-0 text-xs md:text-sm'
-                    onChange={(e) => handleAddImage(e, field.onChange)}
-                  />
-                </FormControl>
-                <FormLabel className='text-black dark:text-white text-sm md:text-base cursor-pointer'>
-                  <div
-                    onDragOver={handleDragOver}
-                    onDrop={async (e) => {
-                      await handleDrop(e)
-                      field.onChange(multiple ? previews : previews[0] || '')
-                    }}
-                    className='bg-white w-24 h-24 absolute inset-0 rounded-md border-2 border-black border-dashed hover:border-solid hover:border-blue-500 flex items-center justify-center'
-                  >
-                    <FilePlus size={28} />
-                  </div>
-                </FormLabel>
+    <div className='w-full h-full'>
+      <label className='text-black dark:text-white text-sm md:text-base font-medium'>Image</label>
+      <div className='flex gap-x-2 justify-start'>
+        {files.length < maxFiles && (
+          <div className='relative h-full'>
+            <label className='text-black dark:text-white text-sm md:text-base cursor-pointer'>
+              <Input
+                type='file'
+                className='size-24 rounded-md focus-visible:ring-offset-0 text-xs md:text-sm'
+                multiple={multiple}
+                onChange={handleChange}
+              />
+              <div
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                className='bg-white size-24 absolute inset-0 rounded-md border-2 border-black border-dashed hover:border-solid flex items-center justify-center'
+              >
+                <FilePlus size={28} />
               </div>
-            )}
-            {previews.map((preview, index) => (
-              <div key={index} className='relative'>
-                <Avatar className='w-24 h-24 rounded-md object-cover'>
-                  <AvatarImage src={preview} />
-                  <AvatarFallback className='rounded-none'>MegaShop</AvatarFallback>
-                </Avatar>
-                <button
-                  type='button'
-                  onClick={() => handleRemoveImage(index, field.onChange)}
-                  className='absolute -top-2 -right-2 bg-red-500 rounded-full p-1 text-white hover:bg-red-600'
-                >
-                  <X size={16} />
-                </button>
-              </div>
-            ))}
+            </label>
           </div>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
+        )}
+        {files?.length > 0 &&
+          files.map((file, idx) => (
+            <div key={idx} className='relative h-full'>
+              <Avatar className='size-24 rounded-md'>
+                <AvatarImage src={URL.createObjectURL(file)} className='object-cover' />
+                <AvatarFallback className='rounded-none'>Mega</AvatarFallback>
+              </Avatar>
+              <XIcon
+                className='absolute -top-2 -right-2 bg-red-400 text-white rounded-full p-1 cursor-pointer hover:bg-red-500'
+                size={16}
+                onClick={() => handleRemoveImage(idx)}
+              />
+            </div>
+          ))}
+      </div>
+    </div>
   )
 }
 

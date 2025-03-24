@@ -7,100 +7,17 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import UserProfile from '@/modules/user/user_profile'
 import UserAddress from '@/modules/user/user_address'
 import UserOrder from '@/modules/user/user_order'
-
-// Mock data for demo purposes
-const mockUser = {
-  id: '1',
-  name: 'John Doe',
-  email: 'john.doe@example.com',
-  avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John',
-  createdAt: '2023-01-01',
-  addresses: [
-    {
-      id: '1',
-      title: 'Home',
-      fullName: 'John Doe',
-      street: '123 Main St',
-      city: 'New York',
-      state: 'NY',
-      postalCode: '10001',
-      country: 'USA',
-      phone: '+1 234 567 8901',
-      isDefault: true,
-    },
-    {
-      id: '2',
-      title: 'Work',
-      fullName: 'John Doe',
-      street: '456 Office Ave',
-      city: 'Boston',
-      state: 'MA',
-      postalCode: '02108',
-      country: 'USA',
-      phone: '+1 234 567 8902',
-      isDefault: false,
-    },
-  ],
-  orders: [
-    {
-      id: 'ORD-001',
-      date: '2023-05-15',
-      status: 'delivered',
-      total: 159.99,
-      items: [
-        {
-          id: '1',
-          name: 'Wireless Headphones',
-          price: 99.99,
-          quantity: 1,
-          image: 'https://placehold.co/60x60',
-        },
-        {
-          id: '2',
-          name: 'Smart Watch',
-          price: 60.0,
-          quantity: 1,
-          image: 'https://placehold.co/60x60',
-        },
-      ],
-    },
-    {
-      id: 'ORD-002',
-      date: '2023-06-20',
-      status: 'processing',
-      total: 249.99,
-      items: [
-        {
-          id: '3',
-          name: 'Bluetooth Speaker',
-          price: 79.99,
-          quantity: 1,
-          image: 'https://placehold.co/60x60',
-        },
-        {
-          id: '4',
-          name: 'Wireless Charger',
-          price: 35.0,
-          quantity: 2,
-          image: 'https://placehold.co/60x60',
-        },
-        {
-          id: '5',
-          name: 'Phone Case',
-          price: 25.0,
-          quantity: 4,
-          image: 'https://placehold.co/60x60',
-        },
-      ],
-    },
-  ],
-}
-
+import { useMegaStore } from '@/store/store'
 const User = () => {
   const navigate = useNavigate()
   const location = useLocation()
+  const user = useMegaStore((state) => state.user)
   const path = location.pathname.split('/user/')[1] ?? 'profile'
   const [activeTab, setActiveTab] = useState('profile')
+
+  if (!user) {
+    return navigate('/login')
+  }
 
   return (
     <div className='container mx-auto px-4 py-8'>
@@ -110,12 +27,12 @@ const User = () => {
           <div className='sticky'>
             <div className='flex items-center space-x-4 mb-8'>
               <Avatar className='h-12 w-12'>
-                <AvatarImage src={mockUser.avatar} alt={mockUser.name} />
-                <AvatarFallback>{mockUser.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+                <AvatarImage src={user.avatarUrl} alt={user.name} />
+                <AvatarFallback>{user.name.slice(0, 2).toUpperCase()}</AvatarFallback>
               </Avatar>
               <div>
-                <p className='font-medium'>{mockUser.name}</p>
-                <p className='text-sm text-gray-500'>{mockUser.email}</p>
+                <p className='font-medium'>{user?.name}</p>
+                <p className='text-sm text-gray-500'>{user?.email}</p>
               </div>
             </div>
             <nav className='space-y-2'>
@@ -128,7 +45,7 @@ const User = () => {
                 Profile
               </Button>
               <Button
-                variant={activeTab === 'addresses' ? 'default' : 'ghost'}
+                variant={activeTab === 'address' ? 'default' : 'ghost'}
                 className='w-full justify-start'
                 onClick={() => setActiveTab('address')}
               >
@@ -136,7 +53,7 @@ const User = () => {
                 Addresses
               </Button>
               <Button
-                variant={activeTab === 'orders' ? 'default' : 'ghost'}
+                variant={activeTab === 'order' ? 'default' : 'ghost'}
                 className='w-full justify-start'
                 onClick={() => setActiveTab('order')}
               >
@@ -179,7 +96,7 @@ const User = () => {
             value='profile'
             className='md:border md:border-gray-300 md:dark:border-none md:px-4 py-2 rounded-md mt-4 bg-none  md:bg-gray-50 md:dark:bg-gray-800'
           >
-            <UserProfile />
+            <UserProfile user={user} />
           </TabsContent>
           <TabsContent
             value='address'
@@ -198,7 +115,7 @@ const User = () => {
         {/* Main content */}
         <div className='flex-1 hidden lg:block'>
           {/* Profile Section */}
-          {activeTab === 'profile' && <UserProfile />}
+          {activeTab === 'profile' && <UserProfile user={user} />}
 
           {/* Addresses Section */}
           {activeTab === 'address' && <UserAddress />}

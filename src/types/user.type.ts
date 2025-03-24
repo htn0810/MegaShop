@@ -1,9 +1,9 @@
 export interface IUser {
-  fullName: string
+  id: number
+  name: string
+  avatarUrl?: string
   email: string
-  createdAt: Date
-  updatedAt: Date
-  role: IRole
+  role: IRole[]
 }
 
 export interface IRole {

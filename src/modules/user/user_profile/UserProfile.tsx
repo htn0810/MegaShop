@@ -2,112 +2,56 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import ImageUploader from '@/components/image_uploader/ImageUploader'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
+import { IUser } from '@/types/user.type'
+import { useEffect, useState } from 'react'
+import { convertImageUrlToFile } from '@/utils/convertImageUrlToFile'
+import { toast } from 'sonner'
+import AuthAPI from '@/apis/auth/auth'
+import { useMegaStore } from '@/store/store'
 
-const mockUser = {
-  id: '1',
-  name: 'John Doe',
-  email: 'john.doe@example.com',
-  avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John',
-  createdAt: '2023-01-01',
-  addresses: [
-    {
-      id: '1',
-      title: 'Home',
-      fullName: 'John Doe',
-      street: '123 Main St',
-      city: 'New York',
-      state: 'NY',
-      postalCode: '10001',
-      country: 'USA',
-      phone: '+1 234 567 8901',
-      isDefault: true,
-    },
-    {
-      id: '2',
-      title: 'Work',
-      fullName: 'John Doe',
-      street: '456 Office Ave',
-      city: 'Boston',
-      state: 'MA',
-      postalCode: '02108',
-      country: 'USA',
-      phone: '+1 234 567 8902',
-      isDefault: false,
-    },
-  ],
-  orders: [
-    {
-      id: 'ORD-001',
-      date: '2023-05-15',
-      status: 'delivered',
-      total: 159.99,
-      items: [
-        {
-          id: '1',
-          name: 'Wireless Headphones',
-          price: 99.99,
-          quantity: 1,
-          image: 'https://placehold.co/60x60',
-        },
-        {
-          id: '2',
-          name: 'Smart Watch',
-          price: 60.0,
-          quantity: 1,
-          image: 'https://placehold.co/60x60',
-        },
-      ],
-    },
-    {
-      id: 'ORD-002',
-      date: '2023-06-20',
-      status: 'processing',
-      total: 249.99,
-      items: [
-        {
-          id: '3',
-          name: 'Bluetooth Speaker',
-          price: 79.99,
-          quantity: 1,
-          image: 'https://placehold.co/60x60',
-        },
-        {
-          id: '4',
-          name: 'Wireless Charger',
-          price: 35.0,
-          quantity: 2,
-          image: 'https://placehold.co/60x60',
-        },
-        {
-          id: '5',
-          name: 'Phone Case',
-          price: 25.0,
-          quantity: 4,
-          image: 'https://placehold.co/60x60',
-        },
-      ],
-    },
-  ],
+type Props = {
+  user: IUser
 }
 
-const UserProfile = () => {
+const UserProfile = (props: Props) => {
+  const { user } = props
+  const setUser = useMegaStore((state) => state.setUser)
+  useEffect(() => {
+    handleLoadCurrentAvatar()
+  }, [user.avatarUrl])
+
+  const handleLoadCurrentAvatar = async () => {
+    let currentAvatar: File[] = []
+    if (user.avatarUrl) {
+      const file = await convertImageUrlToFile(user.avatarUrl)
+      currentAvatar = [file]
+    }
+    setUserAvatar(currentAvatar)
+  }
+
+  const [userAvatar, setUserAvatar] = useState<File[]>([])
   // Validation schemas
   const profileFormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
-    email: z.string().email({ message: 'Please enter a valid email address' }),
-    avatar: z.string().optional(),
   })
 
   const passwordFormSchema = z
     .object({
       currentPassword: z.string().min(8, { message: 'Password must be at least 8 characters' }),
-      newPassword: z.string().min(8, { message: 'Password must be at least 8 characters' }),
-      confirmPassword: z.string().min(8, { message: 'Password must be at least 8 characters' }),
+      newPassword: z
+        .string()
+        .min(8, 'Password must be at least 8 characters long')
+        .max(32, 'Password must be at most 32 characters long')
+        .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+        .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+        .regex(/\d/, 'Password must contain at least one number')
+        .regex(/[@$!%*?&]/, 'Password must contain at least one special character (@$!%*?&)'),
+      confirmPassword: z.string(),
     })
     .refine((data) => data.newPassword === data.confirmPassword, {
       message: "Passwords don't match",
@@ -118,9 +62,7 @@ const UserProfile = () => {
   const profileForm = useForm<z.infer<typeof profileFormSchema>>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      name: mockUser.name,
-      email: mockUser.email,
-      avatar: mockUser.avatar,
+      name: user.name,
     },
   })
 
@@ -136,15 +78,34 @@ const UserProfile = () => {
 
   // Handle profile update
   const onProfileSubmit = (data: z.infer<typeof profileFormSchema>) => {
-    console.log('Profile updated:', data)
-    // In a real app, send this data to your API
+    if (userAvatar.length === 0) {
+      toast.error('Please upload an avatar')
+      return
+    }
+    toast.promise(AuthAPI.updateUser({ avatar: userAvatar[0], name: data.name, userId: user.id }), {
+      loading: 'Updating profile...',
+      success: (response) => {
+        const updatedUser = response.data.data
+        setUser(updatedUser)
+        const message = response.data.message
+        return message
+      },
+    })
   }
 
   // Handle password update
   const onPasswordSubmit = (data: z.infer<typeof passwordFormSchema>) => {
-    console.log('Password updated:', data)
-    // In a real app, send this data to your API
-    passwordForm.reset()
+    toast.promise(
+      AuthAPI.changePassword({ userId: user.id, currentPassword: data.currentPassword, newPassword: data.newPassword }),
+      {
+        loading: 'Updating password...',
+        success: (response) => {
+          const message = response.data.message
+          passwordForm.reset()
+          return message
+        },
+      },
+    )
   }
 
   return (
@@ -159,31 +120,13 @@ const UserProfile = () => {
           <CardContent>
             <Form {...profileForm}>
               <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className='space-y-6'>
-                <FormField
-                  control={profileForm.control}
-                  name='avatar'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Profile Picture</FormLabel>
-                      <FormControl>
-                        <ImageUploader
-                          form={profileForm}
-                          name='avatar'
-                          label='Profile Picture'
-                          defaultImages={[mockUser.avatar]}
-                        />
-                      </FormControl>
-                      <FormDescription>Upload a profile picture.</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <ImageUploader files={userAvatar} setFiles={setUserAvatar} multiple={false} />
                 <FormField
                   control={profileForm.control}
                   name='name'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Full Name</FormLabel>
+                      <FormLabel>Name</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -191,19 +134,13 @@ const UserProfile = () => {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={profileForm.control}
-                  name='email'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input disabled value={user.email} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
                 <Button type='submit'>Save Changes</Button>
               </form>
             </Form>
@@ -225,7 +162,7 @@ const UserProfile = () => {
                     <FormItem>
                       <FormLabel>Current Password</FormLabel>
                       <FormControl>
-                        <Input type='password' {...field} />
+                        <Input type='text' {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -238,7 +175,7 @@ const UserProfile = () => {
                     <FormItem>
                       <FormLabel>New Password</FormLabel>
                       <FormControl>
-                        <Input type='password' {...field} />
+                        <Input type='text' {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -251,7 +188,7 @@ const UserProfile = () => {
                     <FormItem>
                       <FormLabel>Confirm New Password</FormLabel>
                       <FormControl>
-                        <Input type='password' {...field} />
+                        <Input type='text' {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

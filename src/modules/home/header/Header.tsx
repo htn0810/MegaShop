@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from 
 import { languages } from '@/i18n'
 import { useTranslation } from 'react-i18next'
 import ThemeToggle from '@/modules/home/theme_toggle'
+import { useMegaStore } from '@/store/store'
 
 const Header = () => {
   const { t, i18n } = useTranslation()
@@ -16,6 +17,8 @@ const Header = () => {
   const handleChangeLanguage = (lng: keyof typeof languages) => {
     i18n.changeLanguage(lng)
   }
+
+  const isLoggedIn = useMegaStore((state) => state.user)
   return (
     <section className='fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-800'>
       <div className='hidden py-3 text-center text-white bg-black dark:bg-gray-900 md:block'>
@@ -60,9 +63,15 @@ const Header = () => {
           <Link to='/cart'>
             <ShoppingCart size={24} className='cursor-pointer hover:text-gray-500' />
           </Link>
-          <Link to='/login'>
-            <UserCircle size={24} className='cursor-pointer hover:text-gray-500' />
-          </Link>
+          {isLoggedIn ? (
+            <Link to='/user'>
+              <UserCircle size={24} className='cursor-pointer hover:text-gray-500' />
+            </Link>
+          ) : (
+            <Link to='/login'>
+              <UserCircle size={24} className='cursor-pointer hover:text-gray-500' />
+            </Link>
+          )}
           <ThemeToggle />
           <Sheet>
             <SheetTrigger asChild>

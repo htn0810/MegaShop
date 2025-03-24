@@ -1,48 +1,33 @@
-import {
-  ADMIN_ROUTE_BLOCK,
-  CART_ROUTE_BLOCK,
-  DEFAULT_ROUTE_BLOCK,
-  LOGIN_ROUTE_BLOCK,
-  PRODUCTS_ROUTE_BLOCK,
-  PRODUCT_DETAIL_ROUTE_BLOCK,
-  SIGN_UP_ROUTE_BLOCK,
-  SUPER_ADMIN_ROUTE_BLOCK,
-} from '@/constants/routes.constant'
 import PrimaryLayout from '@/layouts/primary_layout'
-import { AppRoute, AppRouteBlock } from '@/types/route.type'
 import { Fragment } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import './i18n'
+import MegaLazyLoad from '@/components/lazy_load/MegaLazyLoad'
 
 const App = () => {
-  const renderSingleRoute = (route: AppRoute) => {
-    // if (!!route.isProtected && !isLoggedIn) return <></>
-    if (route.isIndexRoute) return <Route index element={route.component} />
-    return <Route path={route.path} element={route.component} />
-  }
+  const Home = MegaLazyLoad(import('@/pages/home_page/Home'))
+  const Login = MegaLazyLoad(import('@/pages/login_page/Login'))
+  const SignUp = MegaLazyLoad(import('@/pages/sign_up_page/SignUp'))
+  const Products = MegaLazyLoad(import('@/pages/products_page/Products'))
+  const ProductDetail = MegaLazyLoad(import('@/pages/product_detail_page/ProductDetail'))
+  const Cart = MegaLazyLoad(import('@/pages/cart_page/Cart'))
+  const User = MegaLazyLoad(import('@/pages/user_page/User'))
+  const Admin = MegaLazyLoad(import('@/pages/admin_page/Admin'))
+  const SuperAdmin = MegaLazyLoad(import('@/pages/super_admin_page/SuperAdmin'))
 
-  const renderRoutesOfBlock = (routeBlock: AppRouteBlock) => {
-    if (!routeBlock.childRoutes) return renderSingleRoute(routeBlock.parentRoute)
-    return (
-      <Route path={routeBlock.parentRoute.path} element={routeBlock.parentRoute.component}>
-        {routeBlock.childRoutes.map((childBlock) => (
-          <Fragment key={childBlock.parentRoute.pageTitleKey}>{renderRoutesOfBlock(childBlock)}</Fragment>
-        ))}
-      </Route>
-    )
-  }
   return (
     <Fragment>
       <PrimaryLayout>
         <Routes>
-          {renderRoutesOfBlock(DEFAULT_ROUTE_BLOCK)}
-          {renderRoutesOfBlock(LOGIN_ROUTE_BLOCK)}
-          {renderRoutesOfBlock(SIGN_UP_ROUTE_BLOCK)}
-          {renderRoutesOfBlock(PRODUCTS_ROUTE_BLOCK)}
-          {renderRoutesOfBlock(PRODUCT_DETAIL_ROUTE_BLOCK)}
-          {renderRoutesOfBlock(CART_ROUTE_BLOCK)}
-          {renderRoutesOfBlock(ADMIN_ROUTE_BLOCK)}
-          {renderRoutesOfBlock(SUPER_ADMIN_ROUTE_BLOCK)}
+          <Route path={'/'} element={Home} />
+          <Route path={'/login'} element={Login} />
+          <Route path={'/signup'} element={SignUp} />
+          <Route path={'/products'} element={Products} />
+          <Route path={'/product_detail'} element={ProductDetail} />
+          <Route path={'/cart'} element={Cart} />
+          <Route path={'/user'} element={User} />
+          <Route path={'/admin/*'} element={Admin} />
+          <Route path={'/super-admin/*'} element={SuperAdmin} />
         </Routes>
       </PrimaryLayout>
     </Fragment>

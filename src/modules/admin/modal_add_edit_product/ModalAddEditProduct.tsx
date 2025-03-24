@@ -57,7 +57,7 @@ const ModalAddEditProduct = (props: Props) => {
         <form onSubmit={form.handleSubmit(onSubmit)} className='md:p-4 space-y-8 w-full'>
           <h6 className='md:text-lg text-base font-bold text-left capitalize'>{type} product</h6>
           <ScrollArea className='max-h-[400px] flex flex-col gap-y-4 pr-4'>
-            <ImageUploader form={form} name='images' multiple maxFiles={5} />
+            <ImageUploader files={[]} setFiles={() => {}} multiple maxFiles={5} />
             <div className='grid grid-cols-1 md:grid-cols-6 gap-x-4 mt-[8px_!important]'>
               <FormField
                 control={form.control}

@@ -12,6 +12,7 @@ import ThemeToggle from '@/modules/home/theme_toggle'
 import { useMegaStore } from '@/store/store'
 import { LogOut, User } from 'lucide-react'
 import AuthAPI from '@/apis/auth/auth'
+import { toast } from 'sonner'
 
 const Header = () => {
   const { t, i18n } = useTranslation()
@@ -25,6 +26,9 @@ const Header = () => {
 
   const handleLogout = async () => {
     await AuthAPI.logout()
+    toast.success('Logout successfully!', {
+      description: 'Please login again to shop with us!',
+    })
     setUser(undefined)
   }
   return (

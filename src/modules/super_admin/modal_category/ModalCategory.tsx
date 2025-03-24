@@ -37,22 +37,22 @@ const ModalCategory = (props: AddProps | EditProps) => {
 
   const formSchema = z.object({
     name: z.string().min(1, { message: t('login.err_input_need_filled') }),
-    image: z.string()
+    image: z.string(),
   })
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
-      image: ''
-    }
+      image: '',
+    },
   })
 
   useEffect(() => {
     if (isOpen && type === 'edit') {
       form.reset({
         name: props.category.name,
-        image: props.category.image || ''
+        image: props.category.image || '',
       })
     }
   }, [isOpen, type])
@@ -71,7 +71,7 @@ const ModalCategory = (props: AddProps | EditProps) => {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
             <h6 className='md:text-lg text-base font-bold text-left capitalize'>{type} Category</h6>
-            {isOpen && (
+            {/* {isOpen && (
               <ImageUploader
                 form={form}
                 name='image'
@@ -79,7 +79,7 @@ const ModalCategory = (props: AddProps | EditProps) => {
                 maxFiles={1}
                 defaultImages={type === 'edit' && props.category.image ? [props.category.image] : []}
               />
-            )}
+            )} */}
             <div className='mt-[8px_!important]'>
               <FormField
                 control={form.control}

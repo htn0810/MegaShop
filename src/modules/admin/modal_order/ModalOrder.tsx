@@ -43,7 +43,8 @@ const orderStep = [
 ]
 
 const ModalOrder = (props: Props) => {
-  const { order, updateData } = props
+  const { updateData } = props
+  let { order } = props
 
   const handleOrderStep = () => {
     let orderStatus: typeof order.order = order.order

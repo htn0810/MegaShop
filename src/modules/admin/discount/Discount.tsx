@@ -63,7 +63,7 @@ const Discount = () => {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
 
-  const [data, setData] = useState<Discount[]>(discountData)
+  const [data, _setData] = useState<Discount[]>(discountData)
 
   const columns: ColumnDef<Discount>[] = [
     {

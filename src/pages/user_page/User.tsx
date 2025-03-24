@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { User as UserIcon, MapPin, ShoppingBag } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import UserProfile from '@/modules/user/user_profile'
 import UserAddress from '@/modules/user/user_address'
 import UserOrder from '@/modules/user/user_order'
@@ -16,7 +16,7 @@ const User = () => {
   const [activeTab, setActiveTab] = useState('profile')
 
   if (!user) {
-    return navigate('/login')
+    return <Navigate to='/login' replace />
   }
 
   return (

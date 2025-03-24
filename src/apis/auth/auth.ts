@@ -1,4 +1,4 @@
-import { RegisterResponse } from '@/apis/auth/authInterfaces'
+import { RefreshTokenResponse, RegisterResponse } from '@/apis/auth/authInterfaces'
 import { http } from '@/utils/interceptor'
 
 export default class AuthAPI {
@@ -20,6 +20,10 @@ export default class AuthAPI {
 
   public static logout = async () => {
     return http.post('/users/logout')
+  }
+
+  public static refreshToken = async (): Promise<RefreshTokenResponse> => {
+    return http.get('/users/refresh-token')
   }
 
   public static updateUser = async ({ avatar, name, userId }: { avatar: File; name: string; userId: number }) => {

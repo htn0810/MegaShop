@@ -9,13 +9,17 @@ export default class AuthAPI {
   public static register = async ({
     email,
     fullName,
-    password
+    password,
   }: {
     email: string
     fullName: string
     password: string
   }): Promise<RegisterResponse> => {
     return http.post('/auth/register', { email, fullName, password })
+  }
+
+  public static logout = async () => {
+    return http.post('/users/logout')
   }
 
   public static updateUser = async ({ avatar, name, userId }: { avatar: File; name: string; userId: number }) => {
@@ -28,7 +32,7 @@ export default class AuthAPI {
   public static changePassword = async ({
     userId,
     currentPassword,
-    newPassword
+    newPassword,
   }: {
     userId: number
     currentPassword: string

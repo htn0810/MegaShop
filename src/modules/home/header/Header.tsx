@@ -10,6 +10,8 @@ import { languages } from '@/i18n'
 import { useTranslation } from 'react-i18next'
 import ThemeToggle from '@/modules/home/theme_toggle'
 import { useMegaStore } from '@/store/store'
+import { LogOut, User } from 'lucide-react'
+import AuthAPI from '@/apis/auth/auth'
 
 const Header = () => {
   const { t, i18n } = useTranslation()
@@ -19,6 +21,12 @@ const Header = () => {
   }
 
   const isLoggedIn = useMegaStore((state) => state.user)
+  const setUser = useMegaStore((state) => state.setUser)
+
+  const handleLogout = async () => {
+    await AuthAPI.logout()
+    setUser(undefined)
+  }
   return (
     <section className='fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-800'>
       <div className='hidden py-3 text-center text-white bg-black dark:bg-gray-900 md:block'>
@@ -64,9 +72,23 @@ const Header = () => {
             <ShoppingCart size={24} className='cursor-pointer hover:text-gray-500' />
           </Link>
           {isLoggedIn ? (
-            <Link to='/user'>
-              <UserCircle size={24} className='cursor-pointer hover:text-gray-500' />
-            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <UserCircle size={24} className='cursor-pointer hover:text-gray-500' />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem
+                  className='cursor-pointer flex gap-x-2 items-center'
+                  onClick={() => navigate('/user')}
+                >
+                  <User size={16} /> Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem className='cursor-pointer flex gap-x-2 items-center' onClick={handleLogout}>
+                  <LogOut size={16} />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <Link to='/login'>
               <UserCircle size={24} className='cursor-pointer hover:text-gray-500' />

@@ -4,7 +4,7 @@ import { IUser } from '@/types/user.type'
 
 interface MegaState {
   user: IUser | undefined
-  setUser: (user: IUser) => void
+  setUser: (user: IUser | undefined) => void
 }
 
 export const useMegaStore = create<MegaState>()(
@@ -12,9 +12,9 @@ export const useMegaStore = create<MegaState>()(
     persist(
       (set) => ({
         user: undefined,
-        setUser: (loginUser: IUser) => set(() => ({ user: loginUser }))
+        setUser: (loginUser: IUser | undefined) => set(() => ({ user: loginUser })),
       }),
-      { name: 'MegaStore', storage: createJSONStorage(() => localStorage) }
-    )
-  )
+      { name: 'MegaStore', storage: createJSONStorage(() => localStorage) },
+    ),
+  ),
 )

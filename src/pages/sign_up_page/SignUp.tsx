@@ -8,7 +8,6 @@ import { Eye, EyeSlash } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { useRegister } from '@/apis/auth/queries'
 import { AxiosError } from 'axios'
 import { toast } from 'sonner'
 
@@ -22,7 +21,6 @@ type FormData = {
 const SignUp = () => {
   const { t } = useTranslation()
   const [isHiddenPassword, setIsHiddenPassword] = useState({ password: true, confirm: true })
-  const { mutate } = useRegister()
   const formSchema = z
     .object({
       email: z
@@ -56,24 +54,24 @@ const SignUp = () => {
 
   const onSubmit = (formData: FormData) => {
     console.log(formData)
-    const { confirm, ...request } = formData
-    mutate(request, {
-      onSuccess: (data) => {
-        console.log('Registration successful:', data)
-      },
-      onError: (error: Error | AxiosError) => {
-        console.log('Registration failed:', error)
-        const errorMessage: string = (error as AxiosError).response?.data as string
-        console.log((error as AxiosError).response?.data)
-        toast.error(errorMessage, {
-          description: new Date().toLocaleDateString(),
-          action: {
-            label: 'Remove',
-            onClick: () => console.log('remove'),
-          },
-        })
-      },
-    })
+    // const { confirm, ...request } = formData
+    // mutate(request, {
+    //   onSuccess: (data) => {
+    //     console.log('Registration successful:', data)
+    //   },
+    //   onError: (error: Error | AxiosError) => {
+    //     console.log('Registration failed:', error)
+    //     const errorMessage: string = (error as AxiosError).response?.data as string
+    //     console.log((error as AxiosError).response?.data)
+    //     toast.error(errorMessage, {
+    //       description: new Date().toLocaleDateString(),
+    //       action: {
+    //         label: 'Remove',
+    //         onClick: () => console.log('remove'),
+    //       },
+    //     })
+    //   },
+    // })
   }
   return (
     <div className='flex items-center justify-center'>

@@ -8,3 +8,8 @@ export interface RegisterResquest {
   fullName: string
   password: string
 }
+
+export interface LoginResquest {
+  email: string
+  password: string
+}

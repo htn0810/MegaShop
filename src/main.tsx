@@ -5,18 +5,14 @@ import { BrowserRouter } from 'react-router-dom'
 import './i18n'
 import { ThemeProvider } from '@/providers/ThemeProvider'
 import App from '@/App'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-
-// Create a client
-const queryClient = new QueryClient()
+import { Toaster } from '@/components/ui/sonner'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ThemeProvider defaultTheme='dark' storageKey='vite-ui-theme'>
       <BrowserRouter>
-        <QueryClientProvider client={queryClient}>
-          <App />
-        </QueryClientProvider>
+        <App />
+        <Toaster position='top-right' expand={false} richColors closeButton />
       </BrowserRouter>
     </ThemeProvider>
   </React.StrictMode>,

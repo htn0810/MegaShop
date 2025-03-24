@@ -13,7 +13,6 @@ import { AppRoute, AppRouteBlock } from '@/types/route.type'
 import { Fragment } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import './i18n'
-import { Toaster } from '@/components/ui/sonner'
 
 const App = () => {
   const renderSingleRoute = (route: AppRoute) => {
@@ -45,7 +44,6 @@ const App = () => {
           {renderRoutesOfBlock(ADMIN_ROUTE_BLOCK)}
           {renderRoutesOfBlock(SUPER_ADMIN_ROUTE_BLOCK)}
         </Routes>
-        <Toaster position='top-right' expand={false} richColors closeButton />
       </PrimaryLayout>
     </Fragment>
   )

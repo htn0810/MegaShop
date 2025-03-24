@@ -1,24 +1,22 @@
 import axios from 'axios'
+import { toast } from 'sonner'
 
 export const http = axios.create({
-  baseURL: 'http://localhost:8080/megashop', // Replace with your API URL
+  baseURL: 'http://localhost:8080/mega/v1',
+  withCredentials: true,
+  timeout: 1000 * 60 * 10,
 })
 
-// http.interceptors.request.use(
-//   (config) => {
-//     // Retrieve the JWT token from local storage (or wherever you store it)
-//     const token =
-//       'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJodG4wODEwMjAwMUBnbWFpbC5jb20iLCJpYXQiOjE3Mjc3OTQ5ODYsImV4cCI6MTcyNzc5ODU4Nn0.cFqE-peP55TrHSdoURd7bgsHKVrkUp-0XLm5G5BPmZI'
-
-//     // If the token exists, add it to the headers
-//     if (token) {
-//       config.headers.Authorization = `Bearer ${token}`
-//     }
-
-//     return config
-//   },
-//   (error) => {
-//     // Handle request errors
-//     return Promise.reject(error)
-//   },
-// )
+// Catching error
+http.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.log(error)
+    let errorMessage = error?.message
+    if (error.response?.data?.message) {
+      errorMessage = error.response?.data?.message
+    }
+    toast.error(errorMessage)
+    return Promise.reject(error)
+  },
+)

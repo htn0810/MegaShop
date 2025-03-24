@@ -3,7 +3,7 @@ import { http } from '@/utils/interceptor'
 
 export default class AuthAPI {
   public static login = async ({ email, password }: { email: string; password: string }) => {
-    return http.post('/auth/login', { email, password })
+    return http.post('/users/login', { email, password })
   }
 
   public static register = async ({

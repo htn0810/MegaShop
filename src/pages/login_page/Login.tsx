@@ -44,19 +44,17 @@ const Login = () => {
     },
   })
 
-  const onSubmit = async (data: FormData) => {
-    try {
-      const response = await AuthAPI.login({ ...data })
-      setUser(response.data.user)
-      toast.success('Login successfully!', {
-        description: new Date().toLocaleString(),
-      })
-      navigate('/')
-    } catch (error) {
-      toast.error('Your email/password incorrect!', {
-        description: new Date().toLocaleString(),
-      })
-    }
+  const onSubmit = (data: FormData) => {
+    toast.promise(AuthAPI.login({ ...data }), {
+      loading: 'Logging in...',
+      success: (response) => {
+        const { user } = response.data.data
+        setUser(user)
+        const message = response.data.message
+        navigate('/')
+        return message
+      },
+    })
   }
   return (
     <div className='flex items-center justify-center'>

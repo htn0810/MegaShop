@@ -18,7 +18,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 import { Combobox } from '@/components/ui/combobox'
-import { Province } from '@/apis/address/addressInterfaces'
+import { District, Province, Ward } from '@/apis/address/addressInterfaces'
 import AddressAPI from '@/apis/address/address'
 import { AutoComplete } from '@/components/autocomplete/AutoComplete'
 // import { provinces, getDistricts, getWards } from '@/data/location-data'
@@ -104,7 +104,7 @@ const UserAddress = () => {
         try {
           const response = await AddressAPI.getAllDistrictsByProvinceId(selectedProvince)
           if (response?.data?.data) {
-            const districts = response.data.data.map((district) => ({
+            const districts = response.data.data.map((district: District) => ({
               value: district.code,
               label: district.name,
             }))
@@ -139,7 +139,7 @@ const UserAddress = () => {
         try {
           const response = await AddressAPI.getAllWardsByDistrictId(selectedProvince, selectedDistrict)
           if (response?.data?.data) {
-            const wards = response.data.data.map((ward) => ({
+            const wards = response.data.data.map((ward: Ward) => ({
               value: ward.code,
               label: ward.name,
             }))
@@ -310,7 +310,7 @@ const UserAddress = () => {
                 <FormField
                   control={addressForm.control}
                   name='province'
-                  render={({ field }) => (
+                  render={({ field: _field }) => (
                     <FormItem>
                       <FormLabel>Province</FormLabel>
                       <FormControl>

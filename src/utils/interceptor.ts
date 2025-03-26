@@ -1,14 +1,18 @@
 import AuthAPI from '@/apis/auth/auth'
+import { RefreshTokenResponse } from '@/apis/auth/authInterfaces'
 import axios from 'axios'
 import { toast } from 'sonner'
 
+const BE_DOMAIN =
+  import.meta.env.VITE_MODE === 'production' ? import.meta.env.VITE_BE_DOMAIN_PROD : import.meta.env.VITE_BE_DOMAIN_DEV
+
 export const http = axios.create({
-  baseURL: 'http://localhost:8080/mega/v1',
+  baseURL: `${BE_DOMAIN}/mega/v1`,
   withCredentials: true,
   timeout: 1000 * 60 * 10,
 })
 
-let refreshTokenPromise: Promise<{ message: string; data: { accessToken: string } }> | null = null
+let refreshTokenPromise: Promise<RefreshTokenResponse> | null = null
 
 // Catching error
 http.interceptors.response.use(

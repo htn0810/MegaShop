@@ -2,7 +2,13 @@ import AuthAPI from '@/apis/auth/auth'
 import { RefreshTokenResponse } from '@/apis/auth/authInterfaces'
 import axios from 'axios'
 import { toast } from 'sonner'
+import { StoreApi } from 'zustand/vanilla'
+import { MegaState } from '@/store/store'
 
+let axiosStore: StoreApi<MegaState>
+export const injectStore = (store: StoreApi<MegaState>) => {
+  axiosStore = store
+}
 const BE_DOMAIN =
   import.meta.env.VITE_MODE === 'production' ? import.meta.env.VITE_BE_DOMAIN_PROD : import.meta.env.VITE_BE_DOMAIN_DEV
 
@@ -19,6 +25,12 @@ http.interceptors.response.use(
   (response) => response,
   async (error) => {
     console.log(error)
+
+    if (error.response?.status === 401) {
+      const logoutUser = axiosStore.getState().logoutUser
+      logoutUser()
+    }
+
     const originalRequests = error.config
     if (error.response?.status === 410 && !originalRequests._retry) {
       originalRequests._retry = true

@@ -2,9 +2,10 @@ import { createJSONStorage, devtools, persist } from 'zustand/middleware'
 import { create } from 'zustand'
 import { IUser } from '@/types/user.type'
 
-interface MegaState {
+export interface MegaState {
   user: IUser | undefined
-  setUser: (user: IUser | undefined) => void
+  setUser: (user: IUser) => void
+  logoutUser: () => void
 }
 
 export const useMegaStore = create<MegaState>()(
@@ -12,7 +13,8 @@ export const useMegaStore = create<MegaState>()(
     persist(
       (set) => ({
         user: undefined,
-        setUser: (loginUser: IUser | undefined) => set(() => ({ user: loginUser })),
+        setUser: (loginUser: IUser) => set(() => ({ user: loginUser })),
+        logoutUser: () => set(() => ({ user: undefined })),
       }),
       { name: 'MegaStore', storage: createJSONStorage(() => localStorage) },
     ),

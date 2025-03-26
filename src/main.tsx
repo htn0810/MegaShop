@@ -6,6 +6,11 @@ import './i18n'
 import { ThemeProvider } from '@/providers/ThemeProvider'
 import App from '@/App'
 import { Toaster } from '@/components/ui/sonner'
+import { injectStore } from '@/utils/interceptor'
+import { useMegaStore } from '@/store/store'
+
+// Inject store to axios
+injectStore(useMegaStore)
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -15,5 +20,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Toaster position='top-right' expand={false} richColors closeButton />
       </BrowserRouter>
     </ThemeProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 )

@@ -22,6 +22,7 @@ const Login = () => {
   const navigate = useNavigate()
   const setUser = useMegaStore((state) => state.setUser)
   const [isHiddenPassword, setIsHiddenPassword] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const formSchema = z.object({
     email: z
       .string()
@@ -45,14 +46,19 @@ const Login = () => {
   })
 
   const onSubmit = (data: FormData) => {
+    setIsLoading(true)
     toast.promise(AuthAPI.login({ ...data }), {
       loading: 'Logging in...',
       success: (response) => {
+        setIsLoading(false)
         const { user } = response.data.data
         setUser(user)
         const message = response.data.message
         navigate('/')
         return message
+      },
+      finally: () => {
+        setIsLoading(false)
       },
     })
   }
@@ -110,7 +116,7 @@ const Login = () => {
               </FormItem>
             )}
           />
-          <Button type='submit' className='w-full'>
+          <Button type='submit' className='w-full' disabled={isLoading}>
             {t('login.submit_btn')}
           </Button>
           <div className='text-end text-gray-500 text-sm font-semibold'>

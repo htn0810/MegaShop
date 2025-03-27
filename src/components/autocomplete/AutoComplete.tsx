@@ -1,147 +1,98 @@
-import { CommandGroup, CommandItem, CommandList, CommandInput } from '@/components/ui/command'
-import { Command as CommandPrimitive } from 'cmdk'
-import { useState, useRef, useCallback, type KeyboardEvent } from 'react'
+import { Input } from '@/components/ui/input'
+import { Option } from '@/types/common.type'
+import { CheckIcon } from 'lucide-react'
+import React, { useEffect, useRef, useState } from 'react'
 
-import { Skeleton } from '@/components/ui/skeleton'
-
-import { Check } from 'lucide-react'
-import { cn } from '@/lib/utils'
-
-export type Option = Record<'value' | 'label', string> & Record<string, string>
-
-type AutoCompleteProps = {
+type props = {
   options: Option[]
-  emptyMessage: string
-  value?: Option
-  onValueChange?: (value: Option) => void
-  isLoading?: boolean
-  disabled?: boolean
+  selectedOption: Option | null
+  onSelect: React.Dispatch<React.SetStateAction<Option | null>>
   placeholder?: string
+  className?: string
 }
+const AutoComplete = (props: props) => {
+  const { options, selectedOption, onSelect, placeholder, className } = props
+  const [inputValue, setInputValue] = useState('')
+  const [filteredOptions, setFilteredOptions] = useState<Option[]>([])
+  const [isOpen, setIsOpen] = useState(false)
 
-export const AutoComplete = ({
-  options,
-  placeholder,
-  emptyMessage,
-  value,
-  onValueChange,
-  disabled,
-  isLoading = false,
-}: AutoCompleteProps) => {
-  const inputRef = useRef<HTMLInputElement>(null)
+  const componentRef = useRef<HTMLDivElement>(null)
 
-  const [isOpen, setOpen] = useState(false)
-  const [selected, setSelected] = useState<Option>(value as Option)
-  const [inputValue, setInputValue] = useState<string>(value?.label || '')
-
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent<HTMLDivElement>) => {
-      const input = inputRef.current
-      if (!input) {
-        return
+  const handleClickOption = (option: Option) => {
+    if (option.value !== selectedOption?.value) {
+      onSelect(option)
+      setInputValue(option.label)
+      setIsOpen(false)
+    } else {
+      onSelect(null)
+      if (inputValue.trim() === option.label) {
+        setInputValue('')
       }
+    }
+  }
 
-      // Keep the options displayed when the user is typing
-      if (!isOpen) {
-        setOpen(true)
-      }
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    if (value.trim() === '') {
+      setInputValue('')
+      onSelect(null)
+      return
+    }
+    setInputValue(value)
+    const filtered = options.filter((option) => option.label.toLowerCase().includes(value.trim().toLowerCase()))
+    setFilteredOptions(filtered)
+    setIsOpen(true)
+  }
 
-      // This is not a default behaviour of the <input /> field
-      if (event.key === 'Enter' && input.value !== '') {
-        const optionToSelect = options.find((option) => option.label === input.value)
-        if (optionToSelect) {
-          setSelected(optionToSelect)
-          onValueChange?.(optionToSelect)
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (componentRef.current && !componentRef.current.contains(e.target as Node)) {
+        setIsOpen(false)
+        if (selectedOption && inputValue.trim() !== selectedOption.label) {
+          setInputValue(selectedOption.label)
         }
       }
+    }
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
+  }, [selectedOption, inputValue])
 
-      if (event.key === 'Escape') {
-        input.blur()
-      }
-    },
-    [isOpen, options, onValueChange],
-  )
+  useEffect(() => {
+    if (!selectedOption) {
+      setInputValue('')
+    }
+  }, [selectedOption])
 
-  const handleBlur = useCallback(() => {
-    setOpen(false)
-    setInputValue(selected?.label)
-  }, [selected])
-
-  const handleSelectOption = useCallback(
-    (selectedOption: Option) => {
-      setInputValue(selectedOption.label)
-
-      setSelected(selectedOption)
-      onValueChange?.(selectedOption)
-
-      // This is a hack to prevent the input from being focused after the user selects an option
-      // We can call this hack: "The next tick"
-      setTimeout(() => {
-        inputRef?.current?.blur()
-      }, 0)
-    },
-    [onValueChange],
-  )
+  useEffect(() => {
+    setFilteredOptions(options)
+  }, [options])
 
   return (
-    <CommandPrimitive onKeyDown={handleKeyDown}>
-      <div>
-        <CommandInput
-          ref={inputRef}
-          value={inputValue}
-          onValueChange={isLoading ? undefined : setInputValue}
-          onBlur={handleBlur}
-          onFocus={() => setOpen(true)}
-          placeholder={placeholder}
-          disabled={disabled}
-          className='text-base'
-        />
-      </div>
-      <div className='relative mt-1'>
-        <div
-          className={cn(
-            'animate-in fade-in-0 zoom-in-95 absolute top-0 z-10 w-full rounded-xl bg-white outline-none',
-            isOpen ? 'block' : 'hidden',
-          )}
-        >
-          <CommandList className='rounded-lg ring-1 ring-slate-200'>
-            {isLoading ? (
-              <CommandPrimitive.Loading>
-                <div className='p-1'>
-                  <Skeleton className='h-8 w-full' />
-                </div>
-              </CommandPrimitive.Loading>
-            ) : null}
-            {options.length > 0 && !isLoading ? (
-              <CommandGroup>
-                {options.map((option) => {
-                  const isSelected = selected?.value === option.value
-                  return (
-                    <CommandItem
-                      key={option.value}
-                      value={option.label}
-                      onMouseDown={(event) => {
-                        event.preventDefault()
-                        event.stopPropagation()
-                      }}
-                      onSelect={() => handleSelectOption(option)}
-                      className={cn('flex w-full items-center gap-2', !isSelected ? 'pl-8' : null)}
-                    >
-                      {isSelected ? <Check className='w-4' /> : null}
-                      {option.label}
-                    </CommandItem>
-                  )
-                })}
-              </CommandGroup>
-            ) : null}
-            {!isLoading ? (
-              <CommandPrimitive.Empty className='select-none rounded-sm px-2 py-3 text-center text-sm'>
-                {emptyMessage}
-              </CommandPrimitive.Empty>
-            ) : null}
-          </CommandList>
+    <div ref={componentRef} className={`relative w-full ${className}`}>
+      <Input
+        value={inputValue}
+        onChange={handleInputChange}
+        placeholder={placeholder}
+        onFocus={() => setIsOpen(true)}
+      />
+      {isOpen && filteredOptions.length > 0 && (
+        <div className='absolute top-10 left-0 h-[200px] overflow-y-auto w-full px-2 py-1 bg-white shadow-md rounded-md dark:bg-gray-800 dark:text-white'>
+          {filteredOptions.map((option) => (
+            <div
+              key={option.value}
+              className={`cursor-pointer flex items-center gap-x-1 px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md ${
+                selectedOption?.value === option.value ? 'font-medium bg-gray-100 dark:bg-gray-700' : ''
+              }`}
+              onClick={() => handleClickOption(option)}
+            >
+              <span>{option.label}</span>
+              {selectedOption?.value === option.value && <CheckIcon size={16} className='text-black dark:text-white' />}
+            </div>
+          ))}
         </div>
-      </div>
-    </CommandPrimitive>
+      )}
+    </div>
   )
 }
+
+export default AutoComplete

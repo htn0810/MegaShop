@@ -17,11 +17,10 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
-import { Combobox } from '@/components/ui/combobox'
-import { District, Province, Ward } from '@/apis/address/addressInterfaces'
+import { Address, AddressResponse, District, Province, Ward } from '@/apis/address/addressInterfaces'
 import AddressAPI from '@/apis/address/address'
-import { AutoComplete } from '@/components/autocomplete/AutoComplete'
-// import { provinces, getDistricts, getWards } from '@/data/location-data'
+import AutoComplete from '@/components/autocomplete/AutoComplete'
+import { Option } from '@/types/common.type'
 
 const mockUser = {
   id: '1',
@@ -44,18 +43,19 @@ const mockUser = {
 }
 
 const UserAddress = () => {
+  const [addresses, setAddresses] = useState<AddressResponse[]>([])
   const [addressDialogOpen, setAddressDialogOpen] = useState(false)
-  const [editAddressId, setEditAddressId] = useState<string | null>(null)
+  const [editAddressId, setEditAddressId] = useState<number | null>(null)
   const [provinces, setProvinces] = useState<Province[]>([])
-  const [availableDistricts, setAvailableDistricts] = useState([])
-  const [availableWards, setAvailableWards] = useState([])
+  const [districts, setDistricts] = useState<District[]>([])
+  const [wards, setWards] = useState<Ward[]>([])
+  const [selectedProvince, setSelectedProvince] = useState<Option | null>(null)
+  const [selectedDistrict, setSelectedDistrict] = useState<Option | null>(null)
+  const [selectedWard, setSelectedWard] = useState<Option | null>(null)
 
   const addressFormSchema = z.object({
     name: z.string().min(2, { message: 'Full name is required' }),
     phoneNumber: z.string().min(6, { message: 'Phone number is required' }),
-    province: z.string().min(2, { message: 'Province is required' }),
-    district: z.string().min(2, { message: 'District address is required' }),
-    ward: z.string().min(2, { message: 'Ward address is required' }),
     street: z.string().min(2, { message: 'Street address is required' }),
     isDefault: z.boolean().default(false),
   })
@@ -66,17 +66,10 @@ const UserAddress = () => {
     defaultValues: {
       name: '',
       phoneNumber: '',
-      province: '',
-      district: '',
-      ward: '',
       street: '',
       isDefault: false,
     },
   })
-
-  // Watch for province and district changes to update available options
-  const selectedProvince = addressForm.watch('province')
-  const selectedDistrict = addressForm.watch('district')
 
   const getAllProvinces = async () => {
     try {
@@ -93,86 +86,66 @@ const UserAddress = () => {
     }
   }
 
+  const getDistricts = async (provinceCode: string) => {
+    try {
+      const response = await AddressAPI.getAllDistrictsByProvinceId(provinceCode)
+      if (response?.data?.data) {
+        setDistricts(response.data.data)
+      }
+    } catch (error) {
+      console.error('Error fetching districts:', error)
+    }
+  }
+
+  const getWards = async (provinceCode: string, districtCode: string) => {
+    try {
+      const response = await AddressAPI.getAllWardsByDistrictId(provinceCode, districtCode)
+      if (response?.data?.data) {
+        setWards(response.data.data)
+      }
+    } catch (error) {
+      console.error('Error fetching wards:', error)
+    }
+  }
+
+  const getAllAddresses = async () => {
+    const response = await AddressAPI.getAllAddresses()
+    console.log('Addresses:', response)
+    if (response?.data?.data) {
+      setAddresses(response?.data?.data)
+    }
+  }
+
   useEffect(() => {
+    getAllAddresses()
     getAllProvinces()
   }, [])
 
   // Update districts when province changes
   useEffect(() => {
-    const getDistricts = async () => {
-      if (selectedProvince) {
-        try {
-          const response = await AddressAPI.getAllDistrictsByProvinceId(selectedProvince)
-          if (response?.data?.data) {
-            const districts = response.data.data.map((district: District) => ({
-              value: district.code,
-              label: district.name,
-            }))
-            setAvailableDistricts(districts)
-          } else {
-            setAvailableDistricts([])
-          }
-        } catch (error) {
-          console.error('Error fetching districts:', error)
-          setAvailableDistricts([])
-        }
-
-        // Reset district and ward if province changes
-        if (addressForm.getValues('district')) {
-          addressForm.setValue('district', '')
-          addressForm.setValue('ward', '')
-          setAvailableWards([])
-        }
-      } else {
-        setAvailableDistricts([])
-        setAvailableWards([])
-      }
+    if (selectedProvince && selectedProvince?.value) {
+      getDistricts(selectedProvince.value)
+    } else {
+      setDistricts([])
+      setSelectedDistrict(null)
     }
-
-    getDistricts()
-  }, [selectedProvince, addressForm])
+  }, [selectedProvince])
 
   // Update wards when district changes
   useEffect(() => {
-    const getWards = async () => {
-      if (selectedProvince && selectedDistrict) {
-        try {
-          const response = await AddressAPI.getAllWardsByDistrictId(selectedProvince, selectedDistrict)
-          if (response?.data?.data) {
-            const wards = response.data.data.map((ward: Ward) => ({
-              value: ward.code,
-              label: ward.name,
-            }))
-            setAvailableWards(wards)
-          } else {
-            setAvailableWards([])
-          }
-        } catch (error) {
-          console.error('Error fetching wards:', error)
-          setAvailableWards([])
-        }
-
-        // Reset ward if district changes
-        if (addressForm.getValues('ward')) {
-          addressForm.setValue('ward', '')
-        }
-      } else {
-        setAvailableWards([])
-      }
+    if (selectedProvince && selectedDistrict && selectedDistrict?.value) {
+      getWards(selectedProvince.value, selectedDistrict.value)
+    } else {
+      setWards([])
+      setSelectedWard(null)
     }
-
-    getWards()
-  }, [selectedProvince, selectedDistrict, addressForm])
-
+  }, [selectedDistrict, selectedProvince])
   // Edit address
-  const handleEditAddress = (address: (typeof mockUser.addresses)[0]) => {
+  const handleEditAddress = (address: AddressResponse) => {
     setEditAddressId(address.id)
     addressForm.reset({
       name: address.name,
       phoneNumber: address.phoneNumber,
-      province: address.province,
-      district: address.district,
-      ward: address.ward,
       street: address.street,
       isDefault: address.isDefault,
     })
@@ -185,9 +158,6 @@ const UserAddress = () => {
     addressForm.reset({
       name: '',
       phoneNumber: '',
-      province: '',
-      district: '',
-      ward: '',
       street: '',
       isDefault: false,
     })
@@ -195,18 +165,39 @@ const UserAddress = () => {
   }
 
   // Delete address
-  const handleDeleteAddress = (id: string) => {
+  const handleDeleteAddress = (id: number) => {
     console.log('Delete address:', id)
     // In a real app, send a delete request to your API
   }
 
   // Handle address form
-  const onAddressSubmit = (data: z.infer<typeof addressFormSchema>) => {
+  const onAddressSubmit = async (data: z.infer<typeof addressFormSchema>) => {
     console.log('Address submitted:', data, 'Edit mode:', editAddressId)
-    // In a real app, send this data to your API
-    setAddressDialogOpen(false)
+    if (selectedProvince && selectedDistrict && selectedWard) {
+      const address: Address = {
+        ...data,
+        provinceCode: selectedProvince.value,
+        districtCode: selectedDistrict.value,
+        wardCode: selectedWard.value,
+      }
+      console.log('Address:', address)
+      const response = await AddressAPI.createAddress(address)
+      if (response?.data?.data) {
+        resetAndCloseForm()
+      } else {
+        console.error('Error creating address:', response)
+      }
+    }
+  }
+
+  const resetAndCloseForm = () => {
     addressForm.reset()
     setEditAddressId(null)
+    setAddressDialogOpen(false)
+    setSelectedProvince(null)
+    setSelectedDistrict(null)
+    setSelectedWard(null)
+    setAddressDialogOpen(false)
   }
 
   return (
@@ -226,42 +217,43 @@ const UserAddress = () => {
         </Alert>
       ) : (
         <div className='grid gap-4 md:grid-cols-2'>
-          {mockUser.addresses.map((address) => (
-            <Card key={address.id} className={address.isDefault ? 'border-blue-500' : ''}>
-              <CardHeader className='pb-2'>
-                <div className='flex justify-between items-start'>
-                  <div>
-                    <CardTitle className='flex items-center'>
-                      {address.isDefault && (
-                        <Badge variant='outline' className='ml-2'>
-                          Default
-                        </Badge>
-                      )}
-                    </CardTitle>
-                    <CardDescription>{address.name}</CardDescription>
+          {addresses.length > 0 &&
+            addresses.map((address) => (
+              <Card key={address.id} className={address.isDefault ? 'border-blue-500' : ''}>
+                <CardHeader className='pb-2'>
+                  <div className='flex justify-between items-start'>
+                    <div>
+                      <CardTitle className='flex items-center'>
+                        {address.isDefault && (
+                          <Badge variant='outline' className='ml-2'>
+                            Default
+                          </Badge>
+                        )}
+                      </CardTitle>
+                      <CardDescription>{address.name}</CardDescription>
+                    </div>
+                    <div className='flex space-x-2'>
+                      <Button variant='ghost' size='icon' onClick={() => handleEditAddress(address)}>
+                        <Edit2 className='h-4 w-4' />
+                      </Button>
+                      <Button variant='ghost' size='icon' onClick={() => handleDeleteAddress(address.id)}>
+                        <X className='h-4 w-4' />
+                      </Button>
+                    </div>
                   </div>
-                  <div className='flex space-x-2'>
-                    <Button variant='ghost' size='icon' onClick={() => handleEditAddress(address)}>
-                      <Edit2 className='h-4 w-4' />
-                    </Button>
-                    <Button variant='ghost' size='icon' onClick={() => handleDeleteAddress(address.id)}>
-                      <X className='h-4 w-4' />
-                    </Button>
+                </CardHeader>
+                <CardContent>
+                  <div className='text-sm space-y-1'>
+                    <p>{address.street}</p>
+                    <p>
+                      {address.province.full_name}, {address.district.full_name} {address.ward.full_name}
+                    </p>
+                    <p>{address.street}</p>
+                    <p className='pt-2'>{address.phoneNumber}</p>
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className='text-sm space-y-1'>
-                  <p>{address.street}</p>
-                  <p>
-                    {address.province}, {address.district} {address.ward}
-                  </p>
-                  <p>{address.street}</p>
-                  <p className='pt-2'>{address.phoneNumber}</p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            ))}
         </div>
       )}
 
@@ -307,66 +299,42 @@ const UserAddress = () => {
                 />
               </div>
               <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-                <FormField
-                  control={addressForm.control}
-                  name='province'
-                  render={({ field: _field }) => (
-                    <FormItem>
-                      <FormLabel>Province</FormLabel>
-                      <FormControl>
-                        <AutoComplete
-                          options={provinces.map((province) => ({
-                            value: province.code,
-                            label: province.name,
-                          }))}
-                          emptyMessage='No provinces found.'
-                          placeholder='Select Province'
-                        ></AutoComplete>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={addressForm.control}
-                  name='district'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>District</FormLabel>
-                      <FormControl>
-                        <Combobox
-                          options={availableDistricts}
-                          value={field.value}
-                          onChange={field.onChange}
-                          placeholder='Select District'
-                          emptyMessage={!selectedProvince ? 'Select province first' : 'No districts found.'}
-                          disabled={!selectedProvince}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={addressForm.control}
-                  name='ward'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Ward</FormLabel>
-                      <FormControl>
-                        <Combobox
-                          options={availableWards}
-                          value={field.value}
-                          onChange={field.onChange}
-                          placeholder='Select Ward'
-                          emptyMessage={!selectedDistrict ? 'Select district first' : 'No wards found.'}
-                          disabled={!selectedDistrict}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className='flex flex-col gap-2'>
+                  <label htmlFor='province'>Province</label>
+                  <AutoComplete
+                    selectedOption={selectedProvince ?? null}
+                    onSelect={setSelectedProvince}
+                    options={provinces.map((province) => ({
+                      value: province.code,
+                      label: province.full_name,
+                    }))}
+                    placeholder='Select Province'
+                  ></AutoComplete>
+                </div>
+                <div className='flex flex-col gap-2'>
+                  <label htmlFor='district'>District</label>
+                  <AutoComplete
+                    selectedOption={selectedDistrict ?? null}
+                    onSelect={setSelectedDistrict}
+                    options={districts.map((district) => ({
+                      value: district.code,
+                      label: district.full_name,
+                    }))}
+                    placeholder='Select District'
+                  ></AutoComplete>
+                </div>
+                <div className='flex flex-col gap-2'>
+                  <label htmlFor='ward'>Ward</label>
+                  <AutoComplete
+                    selectedOption={selectedWard ?? null}
+                    onSelect={setSelectedWard}
+                    options={wards.map((ward) => ({
+                      value: ward.code,
+                      label: ward.full_name,
+                    }))}
+                    placeholder='Select Ward'
+                  ></AutoComplete>
+                </div>
               </div>
               <FormField
                 control={addressForm.control}

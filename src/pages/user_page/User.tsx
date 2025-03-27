@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { User as UserIcon, MapPin, ShoppingBag } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -8,12 +8,18 @@ import UserProfile from '@/modules/user/user_profile'
 import UserAddress from '@/modules/user/user_address'
 import UserOrder from '@/modules/user/user_order'
 import { useMegaStore } from '@/store/store'
+
 const User = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const user = useMegaStore((state) => state.user)
   const path = location.pathname.split('/user/')[1] ?? 'profile'
-  const [activeTab, setActiveTab] = useState('profile')
+  const [activeTab, setActiveTab] = useState(path || 'profile')
+
+  // Sync URL path with active tab state
+  useEffect(() => {
+    setActiveTab(path || 'profile')
+  }, [path])
 
   if (!user) {
     return <Navigate to='/login' replace />
@@ -39,7 +45,10 @@ const User = () => {
               <Button
                 variant={activeTab === 'profile' ? 'default' : 'ghost'}
                 className='w-full justify-start'
-                onClick={() => setActiveTab('profile')}
+                onClick={() => {
+                  setActiveTab('profile')
+                  navigate('/user', { replace: true })
+                }}
               >
                 <UserIcon className='mr-2 h-5 w-5' />
                 Profile
@@ -47,7 +56,10 @@ const User = () => {
               <Button
                 variant={activeTab === 'address' ? 'default' : 'ghost'}
                 className='w-full justify-start'
-                onClick={() => setActiveTab('address')}
+                onClick={() => {
+                  setActiveTab('address')
+                  navigate('/user/address', { replace: true })
+                }}
               >
                 <MapPin className='mr-2 h-5 w-5' />
                 Addresses
@@ -55,7 +67,10 @@ const User = () => {
               <Button
                 variant={activeTab === 'order' ? 'default' : 'ghost'}
                 className='w-full justify-start'
-                onClick={() => setActiveTab('order')}
+                onClick={() => {
+                  setActiveTab('order')
+                  navigate('/user/order', { replace: true })
+                }}
               >
                 <ShoppingBag className='mr-2 h-5 w-5' />
                 Orders
@@ -65,7 +80,7 @@ const User = () => {
         </div>
 
         {/* Sidebar - Mobile */}
-        <Tabs value={path} className='w-full  block lg:hidden'>
+        <Tabs value={path} className='w-full block lg:hidden'>
           <TabsList className='grid w-full grid-cols-3'>
             <TabsTrigger
               value='profile'

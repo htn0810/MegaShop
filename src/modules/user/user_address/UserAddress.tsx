@@ -22,26 +22,6 @@ import AddressAPI from '@/apis/address/address'
 import AutoComplete from '@/components/autocomplete/AutoComplete'
 import { Option } from '@/types/common.type'
 
-const mockUser = {
-  id: '1',
-  name: 'John Doe',
-  email: 'john.doe@example.com',
-  avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John',
-  createdAt: '2023-01-01',
-  addresses: [
-    {
-      id: '1',
-      name: 'John Doe',
-      phoneNumber: '+1 234 567 8901',
-      province: 'New York',
-      district: 'NY',
-      ward: '10001',
-      street: '123 Main St',
-      isDefault: true,
-    },
-  ],
-}
-
 const UserAddress = () => {
   const [addresses, setAddresses] = useState<AddressResponse[]>([])
   const [addressDialogOpen, setAddressDialogOpen] = useState(false)
@@ -149,6 +129,9 @@ const UserAddress = () => {
       street: address.street,
       isDefault: address.isDefault,
     })
+    setSelectedProvince({ value: address.provinceCode, label: address.province.full_name })
+    setSelectedDistrict({ value: address.districtCode, label: address.district.full_name })
+    setSelectedWard({ value: address.wardCode, label: address.ward.full_name })
     setAddressDialogOpen(true)
   }
 
@@ -209,7 +192,7 @@ const UserAddress = () => {
         </Button>
       </div>
 
-      {mockUser.addresses.length === 0 ? (
+      {addresses.length === 0 ? (
         <Alert>
           <AlertDescription>
             You haven't added any addresses yet. Add your first address to make checkout easier.

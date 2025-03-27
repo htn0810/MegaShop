@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import MetaLogo from '@/assets/images/mega-logo.png'
-import { List, ShoppingCart, UserCircle } from '@phosphor-icons/react'
+import { List, ShoppingCart, SignOut, UserCircle } from '@phosphor-icons/react'
 import { GlobeSimple } from '@phosphor-icons/react/dist/ssr'
 import { Input } from '@/components/ui/input'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
@@ -10,7 +10,6 @@ import { languages } from '@/i18n'
 import { useTranslation } from 'react-i18next'
 import ThemeToggle from '@/modules/home/theme_toggle'
 import { useMegaStore } from '@/store/store'
-import { LogOut, User } from 'lucide-react'
 import AuthAPI from '@/apis/auth/auth'
 import { toast } from 'sonner'
 
@@ -22,14 +21,14 @@ const Header = () => {
   }
 
   const isLoggedIn = useMegaStore((state) => state.user)
-  const setUser = useMegaStore((state) => state.setUser)
+  const logoutUser = useMegaStore((state) => state.logoutUser)
 
   const handleLogout = async () => {
     await AuthAPI.logout()
     toast.success('Logout successfully!', {
       description: 'Please login again to shop with us!',
     })
-    setUser(undefined)
+    logoutUser()
   }
   return (
     <section className='fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-800'>
@@ -76,23 +75,12 @@ const Header = () => {
             <ShoppingCart size={24} className='cursor-pointer hover:text-gray-500' />
           </Link>
           {isLoggedIn ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger>
+            <>
+              <Link to='/user'>
                 <UserCircle size={24} className='cursor-pointer hover:text-gray-500' />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem
-                  className='cursor-pointer flex gap-x-2 items-center'
-                  onClick={() => navigate('/user')}
-                >
-                  <User size={16} /> Profile
-                </DropdownMenuItem>
-                <DropdownMenuItem className='cursor-pointer flex gap-x-2 items-center' onClick={handleLogout}>
-                  <LogOut size={16} />
-                  Logout
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+              </Link>
+              <SignOut size={24} className='cursor-pointer hover:text-gray-500' onClick={handleLogout} />
+            </>
           ) : (
             <Link to='/login'>
               <UserCircle size={24} className='cursor-pointer hover:text-gray-500' />

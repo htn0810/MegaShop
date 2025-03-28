@@ -7,27 +7,28 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Eye, EyeSlash } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
-// import { AxiosError } from 'axios'
-// import { toast } from 'sonner'
+import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
+import AuthAPI from '@/apis/auth/auth'
+import { Loader2Icon } from 'lucide-react'
 
 type FormData = {
   password: string
   confirm: string
   email: string
-  fullName: string
 }
 
 const SignUp = () => {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const [isHiddenPassword, setIsHiddenPassword] = useState({ password: true, confirm: true })
+  const [isLoading, setIsLoading] = useState(false)
   const formSchema = z
     .object({
       email: z
         .string()
         .min(1, { message: t('sign_up.err_input_need_filled') })
         .email(t('sign_up.err_unvalid_email')),
-      fullName: z.string().min(6, { message: t('sign_up.err_input_need_filled') }),
       password: z
         .string()
         .min(6, { message: t('sign_up.err_min_length_password') })
@@ -46,32 +47,26 @@ const SignUp = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
-      fullName: '',
       password: '',
       confirm: '',
     },
   })
 
   const onSubmit = (formData: FormData) => {
-    console.log(formData)
-    // const { confirm, ...request } = formData
-    // mutate(request, {
-    //   onSuccess: (data) => {
-    //     console.log('Registration successful:', data)
-    //   },
-    //   onError: (error: Error | AxiosError) => {
-    //     console.log('Registration failed:', error)
-    //     const errorMessage: string = (error as AxiosError).response?.data as string
-    //     console.log((error as AxiosError).response?.data)
-    //     toast.error(errorMessage, {
-    //       description: new Date().toLocaleDateString(),
-    //       action: {
-    //         label: 'Remove',
-    //         onClick: () => console.log('remove'),
-    //       },
-    //     })
-    //   },
-    // })
+    setIsLoading(true)
+    toast.promise(AuthAPI.register(formData), {
+      loading: 'Signing up...',
+      success: (_response) => {
+        navigate('/login')
+        return 'Signed up successfully'
+      },
+      description: (_response) => {
+        return 'Please check your email to verify your account'
+      },
+      finally: () => {
+        setIsLoading(false)
+      },
+    })
   }
   return (
     <div className='flex items-center justify-center'>
@@ -96,19 +91,6 @@ const SignUp = () => {
           />
           <FormField
             control={form.control}
-            name='fullName'
-            render={({ field }) => (
-              <FormItem className='mt-[8px_!important]'>
-                <FormLabel className='text-black dark:text-white'>Fullname</FormLabel>
-                <FormControl>
-                  <Input {...field} className='focus-visible:ring-offset-0 ' />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
             name='password'
             render={({ field }) => (
               <FormItem className='mt-[8px_!important]'>
@@ -122,18 +104,18 @@ const SignUp = () => {
                       autoComplete='off'
                     />
                   </FormControl>
-                  {isHiddenPassword.password && (
+                  {!isHiddenPassword.password && (
                     <Eye
                       size={18}
                       className='cursor-pointer absolute right-4 top-0 translate-y-1/2 hover:text-gray-700'
-                      onClick={() => setIsHiddenPassword((prev) => ({ ...prev, password: false }))}
+                      onClick={() => setIsHiddenPassword((prev) => ({ ...prev, password: true }))}
                     />
                   )}
-                  {!isHiddenPassword.password && (
+                  {isHiddenPassword.password && (
                     <EyeSlash
                       size={18}
                       className='cursor-pointer absolute right-4 top-0 translate-y-1/2 hover:text-gray-700'
-                      onClick={() => setIsHiddenPassword((prev) => ({ ...prev, password: true }))}
+                      onClick={() => setIsHiddenPassword((prev) => ({ ...prev, password: false }))}
                     />
                   )}
                 </div>
@@ -156,18 +138,18 @@ const SignUp = () => {
                       autoComplete='off'
                     />
                   </FormControl>
-                  {isHiddenPassword.confirm && (
+                  {!isHiddenPassword.confirm && (
                     <Eye
                       size={18}
                       className='cursor-pointer absolute right-4 top-0 translate-y-1/2 hover:text-gray-700'
-                      onClick={() => setIsHiddenPassword((prev) => ({ ...prev, confirm: false }))}
+                      onClick={() => setIsHiddenPassword((prev) => ({ ...prev, confirm: true }))}
                     />
                   )}
-                  {!isHiddenPassword.confirm && (
+                  {isHiddenPassword.confirm && (
                     <EyeSlash
                       size={18}
                       className='cursor-pointer absolute right-4 top-0 translate-y-1/2 hover:text-gray-700'
-                      onClick={() => setIsHiddenPassword((prev) => ({ ...prev, confirm: true }))}
+                      onClick={() => setIsHiddenPassword((prev) => ({ ...prev, confirm: false }))}
                     />
                   )}
                 </div>
@@ -175,8 +157,13 @@ const SignUp = () => {
               </FormItem>
             )}
           />
-          <Button type='submit' className='w-full'>
-            {t('sign_up.submit_btn')}
+          <Button type='submit' className='w-full' disabled={isLoading}>
+            {!isLoading && t('sign_up.submit_btn')}
+            {isLoading && (
+              <span className='ml-2 flex items-center gap-x-2'>
+                {<Loader2Icon className='w-4 h-4 animate-spin' />} Signing up...
+              </span>
+            )}
           </Button>
           <div className='text-end text-gray-500 text-sm font-semibold'>
             <span>

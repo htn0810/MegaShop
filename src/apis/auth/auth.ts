@@ -1,4 +1,4 @@
-import { RefreshTokenResponse, RegisterResponse } from '@/apis/auth/authInterfaces'
+import { RefreshTokenResponse } from '@/apis/auth/authInterfaces'
 import { http } from '@/utils/interceptor'
 
 export default class AuthAPI {
@@ -6,16 +6,8 @@ export default class AuthAPI {
     return http.post('/users/login', { email, password })
   }
 
-  public static register = async ({
-    email,
-    fullName,
-    password,
-  }: {
-    email: string
-    fullName: string
-    password: string
-  }): Promise<RegisterResponse> => {
-    return http.post('/auth/register', { email, fullName, password })
+  public static register = async ({ email, password }: { email: string; password: string }) => {
+    return http.post('/users/register', { email, password })
   }
 
   public static logout = async () => {

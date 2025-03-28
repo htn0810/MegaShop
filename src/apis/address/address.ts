@@ -21,4 +21,12 @@ export default class AddressAPI {
   public static createAddress = async (address: Address) => {
     return http.post('/addresses', address)
   }
+
+  public static updateAddress = async (addressId: number, address: Address) => {
+    return http.put(`/addresses/${addressId}`, address)
+  }
+
+  public static deleteAddress = async (addressId: number) => {
+    return http.delete(`/addresses/${addressId}`)
+  }
 }

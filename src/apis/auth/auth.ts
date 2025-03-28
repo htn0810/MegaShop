@@ -10,6 +10,10 @@ export default class AuthAPI {
     return http.post('/users/register', { email, password })
   }
 
+  public static verifyAccount = async ({ email, token }: { email: string; token: string }) => {
+    return http.put('/users/verify', { email, token })
+  }
+
   public static logout = async () => {
     return http.post('/users/logout')
   }

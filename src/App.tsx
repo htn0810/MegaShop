@@ -8,12 +8,14 @@ const App = () => {
   const Home = MegaLazyLoad(import('@/pages/home_page/Home'))
   const Login = MegaLazyLoad(import('@/pages/login_page/Login'))
   const SignUp = MegaLazyLoad(import('@/pages/sign_up_page/SignUp'))
+  const VerifyAccount = MegaLazyLoad(import('@/pages/verify_account_page/VerifyAccount'))
   const Products = MegaLazyLoad(import('@/pages/products_page/Products'))
   const ProductDetail = MegaLazyLoad(import('@/pages/product_detail_page/ProductDetail'))
   const Cart = MegaLazyLoad(import('@/pages/cart_page/Cart'))
   const User = MegaLazyLoad(import('@/pages/user_page/User'))
   const Admin = MegaLazyLoad(import('@/pages/admin_page/Admin'))
   const SuperAdmin = MegaLazyLoad(import('@/pages/super_admin_page/SuperAdmin'))
+  const NotFound = MegaLazyLoad(import('@/pages/not_found_page/NotFound'))
 
   return (
     <Fragment>
@@ -22,12 +24,14 @@ const App = () => {
           <Route path={'/'} element={Home} />
           <Route path={'/login'} element={Login} />
           <Route path={'/signup'} element={SignUp} />
+          <Route path={'/account/verify'} element={VerifyAccount} />
           <Route path={'/products'} element={Products} />
           <Route path={'/product_detail'} element={ProductDetail} />
           <Route path={'/cart'} element={Cart} />
           <Route path={'/user/*'} element={User} />
           <Route path={'/admin/*'} element={Admin} />
           <Route path={'/super-admin/*'} element={SuperAdmin} />
+          <Route path={'*'} element={NotFound} />
         </Routes>
       </PrimaryLayout>
     </Fragment>

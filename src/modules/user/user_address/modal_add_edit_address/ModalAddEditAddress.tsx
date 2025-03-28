@@ -19,6 +19,7 @@ import { useEffect, useState } from 'react'
 import { Option } from '@/types/common.type'
 import { Loader2Icon } from 'lucide-react'
 import { toast } from 'sonner'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 type Props = {
   open: boolean
@@ -206,14 +207,80 @@ const ModalAddEditAddress = (props: Props) => {
           </DialogDescription>
         </DialogHeader>
         <Form {...addressForm}>
-          <form onSubmit={addressForm.handleSubmit(onAddressSubmit)} className='space-y-4'>
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+          <ScrollArea className='max-h-[50vh] pr-4'>
+            <form onSubmit={addressForm.handleSubmit(onAddressSubmit)} className='space-y-4'>
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                <FormField
+                  control={addressForm.control}
+                  name='name'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Full Name</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={addressForm.control}
+                  name='phoneNumber'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone Number</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+                <div className='flex flex-col gap-2'>
+                  <label htmlFor='province'>Province</label>
+                  <AutoComplete
+                    selectedOption={selectedProvince ?? null}
+                    onSelect={setSelectedProvince}
+                    options={provinces.map((province) => ({
+                      value: province.code,
+                      label: province.full_name,
+                    }))}
+                    placeholder='Select Province'
+                  ></AutoComplete>
+                </div>
+                <div className='flex flex-col gap-2'>
+                  <label htmlFor='district'>District</label>
+                  <AutoComplete
+                    selectedOption={selectedDistrict ?? null}
+                    onSelect={setSelectedDistrict}
+                    options={districts.map((district) => ({
+                      value: district.code,
+                      label: district.full_name,
+                    }))}
+                    placeholder='Select District'
+                  ></AutoComplete>
+                </div>
+                <div className='flex flex-col gap-2'>
+                  <label htmlFor='ward'>Ward</label>
+                  <AutoComplete
+                    selectedOption={selectedWard ?? null}
+                    onSelect={setSelectedWard}
+                    options={wards.map((ward) => ({
+                      value: ward.code,
+                      label: ward.full_name,
+                    }))}
+                    placeholder='Select Ward'
+                  ></AutoComplete>
+                </div>
+              </div>
               <FormField
                 control={addressForm.control}
-                name='name'
+                name='street'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Full Name</FormLabel>
+                    <FormLabel>Street Address</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -223,101 +290,37 @@ const ModalAddEditAddress = (props: Props) => {
               />
               <FormField
                 control={addressForm.control}
-                name='phoneNumber'
+                name='isDefault'
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone Number</FormLabel>
+                  <FormItem className='flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4'>
                     <FormControl>
-                      <Input {...field} />
+                      <input
+                        type='checkbox'
+                        checked={field.value}
+                        onChange={field.onChange}
+                        className='h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500'
+                      />
                     </FormControl>
-                    <FormMessage />
+                    <div className='space-y-1 leading-none'>
+                      <FormLabel>Make this my default address</FormLabel>
+                      <FormDescription>This address will be pre-selected during checkout</FormDescription>
+                    </div>
                   </FormItem>
                 )}
               />
-            </div>
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-              <div className='flex flex-col gap-2'>
-                <label htmlFor='province'>Province</label>
-                <AutoComplete
-                  selectedOption={selectedProvince ?? null}
-                  onSelect={setSelectedProvince}
-                  options={provinces.map((province) => ({
-                    value: province.code,
-                    label: province.full_name,
-                  }))}
-                  placeholder='Select Province'
-                ></AutoComplete>
-              </div>
-              <div className='flex flex-col gap-2'>
-                <label htmlFor='district'>District</label>
-                <AutoComplete
-                  selectedOption={selectedDistrict ?? null}
-                  onSelect={setSelectedDistrict}
-                  options={districts.map((district) => ({
-                    value: district.code,
-                    label: district.full_name,
-                  }))}
-                  placeholder='Select District'
-                ></AutoComplete>
-              </div>
-              <div className='flex flex-col gap-2'>
-                <label htmlFor='ward'>Ward</label>
-                <AutoComplete
-                  selectedOption={selectedWard ?? null}
-                  onSelect={setSelectedWard}
-                  options={wards.map((ward) => ({
-                    value: ward.code,
-                    label: ward.full_name,
-                  }))}
-                  placeholder='Select Ward'
-                ></AutoComplete>
-              </div>
-            </div>
-            <FormField
-              control={addressForm.control}
-              name='street'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Street Address</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={addressForm.control}
-              name='isDefault'
-              render={({ field }) => (
-                <FormItem className='flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4'>
-                  <FormControl>
-                    <input
-                      type='checkbox'
-                      checked={field.value}
-                      onChange={field.onChange}
-                      className='h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500'
-                    />
-                  </FormControl>
-                  <div className='space-y-1 leading-none'>
-                    <FormLabel>Make this my default address</FormLabel>
-                    <FormDescription>This address will be pre-selected during checkout</FormDescription>
-                  </div>
-                </FormItem>
-              )}
-            />
-            <DialogFooter>
-              <Button type='submit' disabled={isLoading}>
-                {isLoading && (
-                  <span className='flex items-center gap-2'>
-                    <Loader2Icon className='animate-spin' />
-                    Saving...
-                  </span>
-                )}
-                {!isLoading && (addressToEdit ? 'Save Changes' : 'Add Address')}
-              </Button>
-            </DialogFooter>
-          </form>
+              <DialogFooter>
+                <Button type='submit' disabled={isLoading}>
+                  {isLoading && (
+                    <span className='flex items-center gap-2'>
+                      <Loader2Icon className='animate-spin' />
+                      Saving...
+                    </span>
+                  )}
+                  {!isLoading && (addressToEdit ? 'Save Changes' : 'Add Address')}
+                </Button>
+              </DialogFooter>
+            </form>
+          </ScrollArea>
         </Form>
       </DialogContent>
     </Dialog>

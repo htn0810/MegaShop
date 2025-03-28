@@ -14,6 +14,10 @@ export default class AuthAPI {
     return http.put('/users/verify', { email, token })
   }
 
+  public static forgotPassword = async ({ email }: { email: string }) => {
+    return http.put('/users/forgot-password', { email })
+  }
+
   public static logout = async () => {
     return http.post('/users/logout')
   }

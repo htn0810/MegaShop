@@ -16,6 +16,7 @@ const App = () => {
   const Admin = MegaLazyLoad(import('@/pages/admin_page/Admin'))
   const SuperAdmin = MegaLazyLoad(import('@/pages/super_admin_page/SuperAdmin'))
   const NotFound = MegaLazyLoad(import('@/pages/not_found_page/NotFound'))
+  const ForgotPassword = MegaLazyLoad(import('@/pages/forgot_password_page/ForgotPassword'))
 
   return (
     <Fragment>
@@ -25,6 +26,7 @@ const App = () => {
           <Route path={'/login'} element={Login} />
           <Route path={'/signup'} element={SignUp} />
           <Route path={'/account/verify'} element={VerifyAccount} />
+          <Route path={'/account/forgot-password'} element={ForgotPassword} />
           <Route path={'/products'} element={Products} />
           <Route path={'/product_detail'} element={ProductDetail} />
           <Route path={'/cart'} element={Cart} />

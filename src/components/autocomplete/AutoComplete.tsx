@@ -79,7 +79,7 @@ const AutoComplete = (props: props) => {
         onFocus={() => setIsOpen(true)}
       />
       {isOpen && filteredOptions.length > 0 && (
-        <div className='absolute top-10 left-0 h-fit max-h-[200px] overflow-y-auto w-full px-2 py-1 bg-white shadow-md rounded-md dark:bg-gray-800 dark:text-white'>
+        <div className='absolute z-10 top-10 left-0 h-fit max-h-[200px] overflow-y-auto w-full px-2 py-1 bg-white shadow-md rounded-md dark:bg-gray-800 dark:text-white'>
           {filteredOptions.map((option) => (
             <div
               key={option.value}

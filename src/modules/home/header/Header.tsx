@@ -1,10 +1,9 @@
 import { Link, useNavigate } from 'react-router-dom'
 import MetaLogo from '@/assets/images/mega-logo.png'
-import { List, ShoppingCart, SignOut, UserCircle } from '@phosphor-icons/react'
+import { Bell, House, List, ShoppingBag, ShoppingCart, SignOut, UserCircle, UserGear } from '@phosphor-icons/react'
 import { GlobeSimple } from '@phosphor-icons/react/dist/ssr'
 import { Input } from '@/components/ui/input'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { HEADER_NAV } from '@/constants/header.constant'
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { languages } from '@/i18n'
 import { useTranslation } from 'react-i18next'
@@ -12,6 +11,14 @@ import ThemeToggle from '@/modules/home/theme_toggle'
 import { useMegaStore } from '@/store/store'
 import AuthAPI from '@/apis/auth/auth'
 import { toast } from 'sonner'
+import { HeaderNav } from '@/constants/header.constant'
+
+const HEADER_NAV: HeaderNav[] = [
+  { id: 1, icon: <House size={24} />, name: 'home_nav', path: '/' },
+  { id: 2, icon: <ShoppingBag size={24} />, name: 'products_nav', path: '/products' },
+  { id: 3, icon: <UserGear size={24} />, name: 'admin_nav', path: '/admin' },
+  { id: 4, icon: <UserGear size={24} />, name: 'super_admin_nav', path: '/super-admin' },
+]
 
 const Header = () => {
   const { t, i18n } = useTranslation()
@@ -54,18 +61,25 @@ const Header = () => {
           className='flex-1 outline-none md:min-w-80 md:flex-grow-0'
           placeholder={t('home.header.search_placeholder')}
         />
-        <div className='flex items-center gap-x-4'>
-          <div className='flex md:gap-x-4 gap-x-2'>
+
+        <div className='flex items-center md:gap-x-4 gap-x-1'>
+          <div className='hidden md:gap-x-4 gap-x-2 xl:flex'>
             <span className='hidden xl:inline'>{languages[i18n.language as keyof typeof languages]}</span>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <GlobeSimple size={24} className='cursor-pointer hover:text-gray-500' />
               </DropdownMenuTrigger>
               <DropdownMenuContent className='w-20'>
-                <DropdownMenuItem className='cursor-pointer' onClick={() => handleChangeLanguage('en')}>
+                <DropdownMenuItem
+                  className='cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700'
+                  onClick={() => handleChangeLanguage('en')}
+                >
                   English
                 </DropdownMenuItem>
-                <DropdownMenuItem className='cursor-pointer' onClick={() => handleChangeLanguage('vn')}>
+                <DropdownMenuItem
+                  className='cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700'
+                  onClick={() => handleChangeLanguage('vn')}
+                >
                   VietNam
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -74,31 +88,80 @@ const Header = () => {
           <Link to='/cart'>
             <ShoppingCart size={24} className='cursor-pointer hover:text-gray-500' />
           </Link>
-          {isLoggedIn ? (
-            <>
-              <Link to='/user'>
-                <UserCircle size={24} className='cursor-pointer hover:text-gray-500' />
-              </Link>
-              <SignOut size={24} className='cursor-pointer hover:text-gray-500' onClick={handleLogout} />
-            </>
-          ) : (
-            <Link to='/login'>
-              <UserCircle size={24} className='cursor-pointer hover:text-gray-500' />
-            </Link>
-          )}
-          <ThemeToggle />
+          <Bell size={24} className='cursor-pointer hover:text-gray-500' />
+          <span className='hidden xl:inline'>
+            <ThemeToggle />
+          </span>
           <Sheet>
             <SheetTrigger asChild>
               <List size={24} className='cursor-pointer xl:hidden hover:text-gray-500' />
             </SheetTrigger>
-            <SheetContent className='flex flex-col p-10 dark:bg-gray-700'>
+            <SheetContent className='flex flex-col md:px-10 px-6 py-10 justify-between gap-y-2 dark:bg-gray-700'>
               <SheetTitle className='hidden' />
               <SheetDescription className='hidden' />
-              {HEADER_NAV.map((item) => (
-                <Link to={item.path} className='font-bold hover:text-gray-500' key={item.id}>
-                  {t(`home.header.${item.name}`)}
-                </Link>
-              ))}
+              <div className='flex flex-col gap-y-2'>
+                {HEADER_NAV.map((item) => (
+                  <Link
+                    to={item.path}
+                    className='flex items-center gap-x-2 font-bold p-2 rounded-md hover:bg-gray-200 cursor-pointer'
+                    key={item.id}
+                  >
+                    {item.icon}
+                    <span>{t(`home.header.${item.name}`)}</span>
+                  </Link>
+                ))}
+                {isLoggedIn ? (
+                  <>
+                    <Link
+                      to='/user'
+                      className='flex items-center gap-x-2 font-bold p-2 rounded-md hover:bg-gray-200 cursor-pointer'
+                    >
+                      <UserCircle size={24} className='cursor-pointer hover:text-gray-500' />
+                      <span>Profile</span>
+                    </Link>
+                  </>
+                ) : (
+                  <Link to='/login'>
+                    <UserCircle size={24} className='cursor-pointer hover:text-gray-500' />
+                    <span>Login</span>
+                  </Link>
+                )}
+                {isLoggedIn && (
+                  <div className='flex items-center gap-x-2 font-bold p-2 rounded-md hover:bg-red-200 cursor-pointer'>
+                    <SignOut size={24} className='cursor-pointer hover:text-gray-500' onClick={handleLogout} />
+                    <span className='font-bold'>Logout</span>
+                  </div>
+                )}
+              </div>
+
+              <div className='flex items-center justify-between gap-x-2'>
+                <div className='text-sm text-gray-400'>{new Date().toLocaleString()}</div>
+                <div className='flex items-center gap-x-2'>
+                  <div className='flex md:gap-x-4 gap-x-2'>
+                    <span className='hidden xl:inline'>{languages[i18n.language as keyof typeof languages]}</span>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <GlobeSimple size={24} className='cursor-pointer hover:text-gray-500' />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className='w-20'>
+                        <DropdownMenuItem
+                          className='cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700'
+                          onClick={() => handleChangeLanguage('en')}
+                        >
+                          English
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          className='cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700'
+                          onClick={() => handleChangeLanguage('vn')}
+                        >
+                          VietNam
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                  <ThemeToggle />
+                </div>
+              </div>
             </SheetContent>
           </Sheet>
         </div>

@@ -15,8 +15,18 @@ const ThemeToggle = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end'>
-        <DropdownMenuItem onClick={() => setTheme('light')}>Light</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('dark')}>Dark</DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => setTheme('light')}
+          className='cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700'
+        >
+          Light
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => setTheme('dark')}
+          className='cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700'
+        >
+          Dark
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

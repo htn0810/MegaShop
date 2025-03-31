@@ -141,7 +141,7 @@ const CategoryManagement = () => {
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter className='flex flex-row gap-x-2 justify-end items-center'>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogCancel className='mt-0'>Cancel</AlertDialogCancel>
                   <AlertDialogAction onClick={() => handleDeleteCategory(row.original.id)}>Continue</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

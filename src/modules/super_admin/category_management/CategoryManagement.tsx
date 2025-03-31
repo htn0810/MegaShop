@@ -39,6 +39,7 @@ import { ICategoryResponse } from '@/apis/category/categoryInterface'
 import { CategoryApi } from '@/apis/category/category'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSearchParams } from 'react-router-dom'
+import { toast } from 'sonner'
 const CategoryManagement = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const pageIndex = searchParams.get('page')
@@ -75,12 +76,15 @@ const CategoryManagement = () => {
     handleGetCategories()
   }, [isReRender, pagination.pageSize, pagination.pageIndex])
 
-  const handleDeleteCategory = async (id: number) => {
-    const response = await CategoryApi.deleteCategory(id)
-    if (response.status === 200) {
-      setIsReRender(!isReRender)
-      setPagination({ pageIndex: 0, pageSize: 5 })
-    }
+  const handleDeleteCategory = (id: number) => {
+    toast.promise(CategoryApi.deleteCategory(id), {
+      loading: 'Deleting category...',
+      success: (_response) => {
+        setIsReRender(!isReRender)
+        setPagination({ pageIndex: 0, pageSize: 5 })
+        return 'Deleted successfully'
+      },
+    })
   }
 
   const columns: ColumnDef<ICategoryResponse>[] = [
@@ -141,7 +145,7 @@ const CategoryManagement = () => {
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter className='flex flex-row gap-x-2 justify-end items-center'>
-                  <AlertDialogCancel className='mt-0'>Cancel</AlertDialogCancel>
+                  <AlertDialogCancel className='mt-0 dark:bg-gray-800 dark:text-white'>Cancel</AlertDialogCancel>
                   <AlertDialogAction onClick={() => handleDeleteCategory(row.original.id)}>Continue</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

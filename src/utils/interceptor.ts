@@ -1,6 +1,6 @@
 import AuthAPI from '@/apis/auth/auth'
 import { RefreshTokenResponse } from '@/apis/auth/authInterfaces'
-import axios from 'axios'
+import axios, { AxiosRequestConfig } from 'axios'
 import { toast } from 'sonner'
 import { StoreApi } from 'zustand/vanilla'
 import { MegaState } from '@/store/store'
@@ -20,12 +20,34 @@ export const http = axios.create({
 
 let refreshTokenPromise: Promise<RefreshTokenResponse> | null = null
 
+// Store for tracking requests and errors
+const requestTracker = new Map()
+
+// Axios Request Interceptor
+http.interceptors.request.use(
+  (config) => {
+    // Generate a unique key for the request (e.g., method + URL + params/body)
+    const requestKey = generateRequestKey(config)
+
+    // If this is a new request, initialize its tracking
+    if (!requestTracker.has(requestKey)) {
+      requestTracker.set(requestKey, { pending: true, errorReported: false })
+    }
+
+    return config
+  },
+  (error) => Promise.reject(error),
+)
+
 // Catching error
 http.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Clean up the request tracker
+    const requestKey = generateRequestKey(response.config)
+    requestTracker.delete(requestKey)
+    return response
+  },
   async (error) => {
-    console.log(error)
-
     if (error.response?.status === 401) {
       const logoutUser = axiosStore.getState().logoutUser
       logoutUser()
@@ -48,11 +70,30 @@ http.interceptors.response.use(
         return http(originalRequests)
       })
     }
-    let errorMessage = error?.message
-    if (error.response?.data?.message) {
-      errorMessage = error.response?.data?.message
+
+    const requestKey = generateRequestKey(error.config)
+    const requestInfo = requestTracker.get(requestKey)
+
+    if (requestInfo) {
+      if (!requestInfo.errorReported) {
+        requestInfo.errorReported = true
+        let errorMessage = error?.message
+        if (error.response?.data?.message) {
+          errorMessage = error.response?.data?.message
+        }
+        toast.error(errorMessage)
+        return Promise.reject(error)
+      }
+      return Promise.reject(null)
     }
-    toast.error(errorMessage)
+    // Clean up tracker if the request is no longer relevant
+    requestTracker.delete(requestKey)
     return Promise.reject(error)
   },
 )
+
+// Helper function to generate a unique key for each request
+function generateRequestKey(config: AxiosRequestConfig) {
+  const { method, url, params, data } = config
+  return `${method}-${url}-${JSON.stringify(params)}-${JSON.stringify(data)}`
+}

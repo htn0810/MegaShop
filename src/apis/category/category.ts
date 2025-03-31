@@ -2,8 +2,8 @@ import { ICreateUpdateCategory } from '@/apis/category/categoryInterface'
 import { http } from '@/utils/interceptor'
 
 export class CategoryApi {
-  public static async getCategories() {
-    return http.get('/categories')
+  public static async getCategories(pageIndex: number, pageSize: number) {
+    return http.get(`/categories?page=${pageIndex}&limit=${pageSize}`)
   }
 
   public static createCategory(data: ICreateUpdateCategory) {

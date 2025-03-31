@@ -3,6 +3,7 @@ import { CaretDown, CaretUp, CaretUpDown, Plus } from '@phosphor-icons/react'
 import {
   ColumnDef,
   ColumnFiltersState,
+  PaginationState,
   SortingState,
   VisibilityState,
   flexRender,
@@ -37,9 +38,17 @@ import ModalCategory from '@/modules/super_admin/category_management/modal_categ
 import { ICategoryResponse } from '@/apis/category/categoryInterface'
 import { CategoryApi } from '@/apis/category/category'
 import { Skeleton } from '@/components/ui/skeleton'
-
+import { useSearchParams } from 'react-router-dom'
 const CategoryManagement = () => {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const pageIndex = searchParams.get('page')
+  const pageSize = searchParams.get('limit')
   const [categories, setCategories] = useState<ICategoryResponse[]>([])
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: pageIndex ? parseInt(pageIndex) - 1 : 0,
+    pageSize: pageSize ? parseInt(pageSize) : 5,
+  })
+  const [pageCount, setPageCount] = useState(0)
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -49,21 +58,28 @@ const CategoryManagement = () => {
 
   const handleGetCategories = async () => {
     setIsLoading(true)
-    const response = await CategoryApi.getCategories()
+    const response = await CategoryApi.getCategories(pagination.pageIndex + 1, pagination.pageSize)
     if (response.status === 200) {
-      setCategories(response.data.data)
+      setCategories(response.data.data.categories)
+      setPagination({
+        pageIndex: response.data.data.pagination.page - 1,
+        pageSize: response.data.data.pagination.limit,
+      })
+      setPageCount(response.data.data.pagination.totalPages)
     }
     setIsLoading(false)
   }
 
   useEffect(() => {
+    setSearchParams({ page: (pagination.pageIndex + 1).toString(), limit: pagination.pageSize.toString() })
     handleGetCategories()
-  }, [isReRender])
+  }, [isReRender, pagination.pageSize, pagination.pageIndex])
 
   const handleDeleteCategory = async (id: number) => {
     const response = await CategoryApi.deleteCategory(id)
     if (response.status === 200) {
       setIsReRender(!isReRender)
+      setPagination({ pageIndex: 0, pageSize: 5 })
     }
   }
 
@@ -156,12 +172,16 @@ const CategoryManagement = () => {
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    manualPagination: true,
     state: {
+      pagination,
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
     },
+    pageCount: pageCount,
+    onPaginationChange: setPagination,
   })
   return (
     <div>
@@ -226,7 +246,7 @@ const CategoryManagement = () => {
               </TableHeader>
               <TableBody>
                 {!isLoading &&
-                  table.getRowModel().rows?.length &&
+                  table.getRowModel().rows?.length > 0 &&
                   table.getRowModel().rows.map((row) => (
                     <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                       {row.getVisibleCells().map((cell) => (

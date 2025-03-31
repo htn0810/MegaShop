@@ -70,7 +70,7 @@ const ImageUploader = (props: Props) => {
               <div
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
-                className='bg-white size-24 absolute inset-0 rounded-md border-2 border-black border-dashed hover:border-solid flex items-center justify-center'
+                className='bg-white dark:bg-gray-800 size-24 absolute inset-0 rounded-md border-2 border-black dark:border-white border-dashed hover:border-solid flex items-center justify-center'
               >
                 <FilePlus size={28} />
               </div>

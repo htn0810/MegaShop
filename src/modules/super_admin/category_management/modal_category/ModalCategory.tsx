@@ -84,7 +84,7 @@ const ModalCategory = (props: AddProps | EditProps) => {
     toast.promise(CategoryApi.createCategory(data), {
       loading: 'Adding category...',
       success: (response) => {
-        setIsOpen(false)
+        handleCloseModalAndResetForm()
         onRerender()
         return response.data.message
       },
@@ -100,9 +100,8 @@ const ModalCategory = (props: AddProps | EditProps) => {
       toast.promise(CategoryApi.updateCategory(props.category.id, data), {
         loading: 'Updating category...',
         success: (response) => {
-          setIsOpen(false)
+          handleCloseModalAndResetForm()
           onRerender()
-          form.reset()
           return response.data.message
         },
         finally: () => {
@@ -110,6 +109,12 @@ const ModalCategory = (props: AddProps | EditProps) => {
         },
       })
     }
+  }
+
+  const handleCloseModalAndResetForm = () => {
+    setIsOpen(false)
+    setCategoryImage([])
+    form.reset()
   }
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

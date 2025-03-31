@@ -140,7 +140,7 @@ const CategoryManagement = () => {
                     our servers.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter className='flex flex-row gap-x-2 justify-end'>
+                <AlertDialogFooter className='flex flex-row gap-x-2 justify-end items-center'>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction onClick={() => handleDeleteCategory(row.original.id)}>Continue</AlertDialogAction>
                 </AlertDialogFooter>
@@ -227,11 +227,11 @@ const CategoryManagement = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <div className='rounded-md border'>
+          <div className='rounded-md border dark:border-gray-700 overflow-hidden'>
             <Table>
-              <TableHeader className='bg-blue-100'>
+              <TableHeader className='bg-blue-100 dark:bg-gray-900'>
                 {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
+                  <TableRow key={headerGroup.id} className=' dark:border-gray-600'>
                     {headerGroup.headers.map((header) => {
                       return (
                         <TableHead key={header.id}>
@@ -248,7 +248,11 @@ const CategoryManagement = () => {
                 {!isLoading &&
                   table.getRowModel().rows?.length > 0 &&
                   table.getRowModel().rows.map((row) => (
-                    <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && 'selected'}
+                      className='dark:border-gray-700'
+                    >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                       ))}

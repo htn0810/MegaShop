@@ -130,8 +130,11 @@ const Header = () => {
                   </Link>
                 )}
                 {isLoggedIn && (
-                  <div className='flex items-center gap-x-2 font-bold p-2 rounded-md hover:bg-red-200 cursor-pointer'>
-                    <SignOut size={24} className='cursor-pointer hover:text-gray-500' onClick={handleLogout} />
+                  <div
+                    className='flex items-center gap-x-2 font-bold p-2 rounded-md hover:bg-red-200 cursor-pointer'
+                    onClick={handleLogout}
+                  >
+                    <SignOut size={24} className='cursor-pointer hover:text-gray-500' />
                     <span className='font-bold'>Logout</span>
                   </div>
                 )}

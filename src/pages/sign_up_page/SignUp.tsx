@@ -168,7 +168,7 @@ const SignUp = () => {
           <div className='text-end text-gray-500 text-sm font-semibold'>
             <span>
               {t('sign_up.have_account')}{' '}
-              <Link to='/login' className='text-black dark:text-gray-200 hover:text-cyan-800'>
+              <Link to='/login' className='text-black hover:text-gray-800 dark:text-white dark:hover:text-gray-600'>
                 {t('sign_up.login')}
               </Link>
             </span>

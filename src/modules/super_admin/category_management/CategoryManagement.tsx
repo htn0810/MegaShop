@@ -10,17 +10,17 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  useReactTable
+  useReactTable,
 } from '@tanstack/react-table'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { DataTablePagination } from '@/components/ui/data-table-pagination'
 import {
   AlertDialog,
@@ -30,57 +30,44 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle
+  AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { AlertDialogTrigger } from '@radix-ui/react-alert-dialog'
-import ModalCategory from '@/modules/super_admin/modal_category'
-
-type Category = {
-  id: string
-  name: string
-  image: string
-}
-
-const data: Category[] = [
-  {
-    id: 'm5gr84i9',
-    name: 'ken99@yahoo.com',
-    image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  },
-  {
-    id: '3u1reuv4',
-    name: 'Abe45@gmail.com',
-    image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  },
-  {
-    id: 'derv1ws0',
-    name: 'Monserrat44@gmail.com',
-    image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  },
-  {
-    id: '5kma53ae',
-    name: 'Silas22@gmail.com',
-    image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  },
-  {
-    id: 'bhqecj4p',
-    name: 'carmella@hotmail.com',
-    image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  }
-]
+import ModalCategory from '@/modules/super_admin/category_management/modal_category'
+import { ICategoryResponse } from '@/apis/category/categoryInterface'
+import { CategoryApi } from '@/apis/category/category'
+import { Skeleton } from '@/components/ui/skeleton'
 
 const CategoryManagement = () => {
+  const [categories, setCategories] = useState<ICategoryResponse[]>([])
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [isReRender, setIsReRender] = useState(false)
   const [rowSelection, setRowSelection] = useState({})
+  const [isLoading, setIsLoading] = useState(false)
 
-  const columns: ColumnDef<Category>[] = [
+  const handleGetCategories = async () => {
+    setIsLoading(true)
+    const response = await CategoryApi.getCategories()
+    if (response.status === 200) {
+      setCategories(response.data.data)
+    }
+    setIsLoading(false)
+  }
+
+  useEffect(() => {
+    handleGetCategories()
+  }, [isReRender])
+
+  const handleDeleteCategory = async (id: number) => {
+    const response = await CategoryApi.deleteCategory(id)
+    if (response.status === 200) {
+      setIsReRender(!isReRender)
+    }
+  }
+
+  const columns: ColumnDef<ICategoryResponse>[] = [
     {
       accessorKey: 'name',
       header: ({ column }) => {
@@ -108,11 +95,11 @@ const CategoryManagement = () => {
       cell: ({ row }) => (
         <div className='flex gap-x-2 md:gap-x-4 items-center'>
           <div className='md:size-16 size-12'>
-            <img src={row.original.image} alt='ProductImg' className='w-full h-full bg-cover' />
+            <img src={row.original.imageUrl} alt='ProductImg' className='w-full h-full bg-cover' />
           </div>
           <span className='truncate text-xs md:text-sm'>{row.original.name}</span>
         </div>
-      )
+      ),
     },
     {
       id: 'actions',
@@ -133,29 +120,33 @@ const CategoryManagement = () => {
                 <AlertDialogHeader>
                   <AlertDialogTitle className='text-sm md:text-base'>Are you absolutely sure?</AlertDialogTitle>
                   <AlertDialogDescription className='text-xs md:text-sm'>
-                    This action cannot be undone. This will permanently delete your product and remove your data from
+                    This action cannot be undone. This will permanently delete your category and remove your data from
                     our servers.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter className='flex flex-row gap-x-2 justify-end'>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction>Continue</AlertDialogAction>
+                  <AlertDialogAction onClick={() => handleDeleteCategory(row.original.id)}>Continue</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-            <ModalCategory type='edit' category={{ name: row.original.name, image: row.original.image }}>
+            <ModalCategory
+              type='edit'
+              category={{ id: row.original.id, name: row.original.name, imageUrl: row.original.imageUrl }}
+              onRerender={() => setIsReRender(!isReRender)}
+            >
               <div className='text-center text-xs md:text-sm text-blue-500 cursor-pointer hover:text-blue-700'>
                 Edit
               </div>
             </ModalCategory>
           </div>
         )
-      }
-    }
+      },
+    },
   ]
 
   const table = useReactTable({
-    data,
+    data: categories,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -169,14 +160,14 @@ const CategoryManagement = () => {
       sorting,
       columnFilters,
       columnVisibility,
-      rowSelection
-    }
+      rowSelection,
+    },
   })
   return (
     <div>
       <h2 className='font-bold text-sm md:text-base'>Categories Management</h2>
       <p className='text-end'>
-        <ModalCategory type='add'>
+        <ModalCategory type='add' onRerender={() => setIsReRender(!isReRender)}>
           <Button className='py-2 px-3'>
             <Plus className='md:size-6 size-4' weight='bold' />
           </Button>
@@ -234,21 +225,39 @@ const CategoryManagement = () => {
                 ))}
               </TableHeader>
               <TableBody>
-                {table.getRowModel().rows?.length ? (
+                {!isLoading &&
+                  table.getRowModel().rows?.length &&
                   table.getRowModel().rows.map((row) => (
                     <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                       ))}
                     </TableRow>
-                  ))
-                ) : (
+                  ))}
+                {!isLoading && table.getRowModel().rows?.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={columns.length} className='h-24 text-center'>
                       No results.
                     </TableCell>
                   </TableRow>
                 )}
+                {isLoading &&
+                  Array.from({ length: 5 }).map((_, index) => (
+                    <TableRow key={index}>
+                      <TableCell colSpan={columns.length}>
+                        <div className='flex justify-between gap-x-4'>
+                          <div className='flex w-[70%] gap-x-4 items-center'>
+                            <Skeleton className='h-14 w-16   lg:h-20 lg:w-24 bg-gray-200' />
+                            <Skeleton className='h-8 w-full bg-gray-200' />
+                          </div>
+                          <div className='flex w-[30%] gap-x-2 lg:px-8 md:px-6 px-2 items-center justify-start'>
+                            <Skeleton className='h-12 w-20 bg-gray-200 rounded-md' />
+                            <Skeleton className='h-12 w-20 bg-gray-200 rounded-md' />
+                          </div>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </div>

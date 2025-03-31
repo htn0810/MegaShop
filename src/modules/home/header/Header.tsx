@@ -121,7 +121,10 @@ const Header = () => {
                     </Link>
                   </>
                 ) : (
-                  <Link to='/login'>
+                  <Link
+                    to='/login'
+                    className='flex items-center gap-x-2 font-bold p-2 rounded-md hover:bg-gray-200 cursor-pointer'
+                  >
                     <UserCircle size={24} className='cursor-pointer hover:text-gray-500' />
                     <span>Login</span>
                   </Link>

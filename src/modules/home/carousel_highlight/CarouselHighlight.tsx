@@ -1,4 +1,4 @@
-import { ICategory } from '@/assets/dummyDatas/category'
+import { ICategoryResponse } from '@/apis/category/categoryInterface'
 import { IProduct } from '@/assets/dummyDatas/dummyModels'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -13,7 +13,7 @@ type Props = {
   title: string
   type: 'product' | 'category'
   products?: IProduct[] | undefined
-  categories?: ICategory[] | undefined
+  categories?: ICategoryResponse[] | undefined
   showViewAll?: boolean
   isFlashSales?: boolean
 }
@@ -26,7 +26,7 @@ const CarouselHighlight = (props: Props) => {
     <Fragment>
       <Carousel
         opts={{
-          align: 'start'
+          align: 'start',
         }}
         className='w-full'
       >
@@ -83,7 +83,7 @@ const CarouselHighlight = (props: Props) => {
                 <div className='p-1'>
                   <Card className='flex flex-col items-center justify-between p-6 border-2 cursor-pointer hover:border-black dark:bg-white'>
                     <div className='w-[100px] h-[100px] '>
-                      <img src={category.image} alt='CategoryImg' className='w-full h-full object-cover' />
+                      <img src={category.imageUrl} alt='CategoryImg' className='w-full h-full object-cover' />
                     </div>
                     <h4 className='font-semibold dark:text-black'>{category.name}</h4>
                   </Card>

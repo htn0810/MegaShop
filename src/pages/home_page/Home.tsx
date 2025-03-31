@@ -1,17 +1,30 @@
-import { Fragment } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import CarouselBanner from '@/modules/home/carousel_banner/CarouselBanner'
 import CarouselHighlight from '@/modules/home/carousel_highlight'
 import { BestSellingProducts, FlashSaleProducts } from '@/assets/dummyDatas/products'
-import { DUMMY_CATEGORY } from '@/assets/dummyDatas/category'
 import Policies from '@/modules/home/policies'
 import NewArrival from '@/modules/home/new_arrival'
 import { useTranslation } from 'react-i18next'
+import { CategoryApi } from '@/apis/category/category'
+import { ICategoryResponse } from '@/apis/category/categoryInterface'
 
 const Home = () => {
   const { t } = useTranslation()
+  const [categories, setCategories] = useState<ICategoryResponse[]>([])
   const flashSalesProducts = FlashSaleProducts
-  const categories = DUMMY_CATEGORY
   const bestSellingProducts = BestSellingProducts
+
+  const handleGetAllCategories = async () => {
+    const response = await CategoryApi.getAllCategories()
+    if (response.status === 200) {
+      setCategories(response.data.data)
+    }
+  }
+
+  useEffect(() => {
+    handleGetAllCategories()
+  }, [])
+
   return (
     <Fragment>
       <CarouselBanner />
@@ -26,12 +39,14 @@ const Home = () => {
         />
       </div>
       <div className='mt-6'>
-        <CarouselHighlight
-          subTitle={t('home.product.categories')}
-          title={t('home.product.browse_categories')}
-          type='category'
-          categories={categories}
-        />
+        {categories && categories.length > 0 && (
+          <CarouselHighlight
+            subTitle={t('home.product.categories')}
+            title={t('home.product.browse_categories')}
+            type='category'
+            categories={categories}
+          />
+        )}
       </div>
       <div className='mt-6'>
         <CarouselHighlight

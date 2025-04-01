@@ -10,17 +10,17 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  useReactTable
+  useReactTable,
 } from '@tanstack/react-table'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { DataTablePagination } from '@/components/ui/data-table-pagination'
 import {
   AlertDialog,
@@ -30,68 +30,73 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle
+  AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { AlertDialogTrigger } from '@radix-ui/react-alert-dialog'
-
-type User = {
-  id: string
-  name: string
-  image: string
-  mail: string
-  tenant: string | null
-}
-
-const data: User[] = [
-  {
-    id: 'm5gr84i9',
-    name: 'Cao Văn Thiên',
-    mail: 'ken99@yahoo.com',
-    tenant: null,
-    image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  },
-  {
-    id: '3u1reuv4',
-    mail: 'Abe45@gmail.com',
-    name: 'Nguyễn Đại Trung',
-    tenant: 'Shop Áo Thun',
-    image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  },
-  {
-    id: 'derv1ws0',
-    name: 'Trần Thị Lan',
-    mail: 'Monserrat44@gmail.com',
-    tenant: 'Mẹ và bé',
-    image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  },
-  {
-    id: '5kma53ae',
-    name: 'Hồ Thiên Lý',
-    mail: 'Silas22@gmail.com',
-    tenant: 'Sỉ gia dụng miền Trung',
-    image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  },
-  {
-    id: 'bhqecj4p',
-    mail: 'carmella@hotmail.com',
-    name: 'Nguyễn Trung Tiến',
-    tenant: null,
-    image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  }
-]
+import { IUser } from '@/types/user.type'
+import AuthAPI from '@/apis/auth/auth'
+import { useSearchParams } from 'react-router-dom'
+import { Skeleton } from '@/components/ui/skeleton'
+import { DEFAULT_USER_AVATAR } from '@/constants/common.constant'
+import { Badge } from '@/components/ui/badge'
+import { toast } from 'sonner'
 
 const UserManagement = () => {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const pageIndex = searchParams.get('page')
+  const pageSize = searchParams.get('limit')
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
+  const [users, setUsers] = useState<IUser[]>([])
+  const [pagination, setPagination] = useState({
+    pageIndex: pageIndex ? parseInt(pageIndex) - 1 : 0,
+    pageSize: pageSize ? parseInt(pageSize) : 5,
+  })
+  const [pageCount, setPageCount] = useState(0)
+  const [isLoading, setIsLoading] = useState(false)
 
-  const columns: ColumnDef<User>[] = [
+  const handleGetUsers = async () => {
+    setIsLoading(true)
+    AuthAPI.getUsers(pagination.pageIndex + 1, pagination.pageSize)
+      .then((res) => {
+        if (res.status === 200) {
+          setUsers(res.data.data.users)
+          setPageCount(res.data.data.pagination.totalPages)
+        }
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
+  }
+
+  useEffect(() => {
+    setSearchParams({ page: (pagination.pageIndex + 1).toString(), limit: pagination.pageSize.toString() })
+    handleGetUsers()
+  }, [pagination.pageIndex, pagination.pageSize])
+
+  const handleDisableUser = async (userId: number) => {
+    toast.promise(AuthAPI.disableUser(userId), {
+      loading: 'Disabling user...',
+      success: (_response) => {
+        handleGetUsers()
+        return 'User disabled successfully'
+      },
+    })
+  }
+
+  const handleEnableUser = async (userId: number) => {
+    toast.promise(AuthAPI.enableUser(userId), {
+      loading: 'Disabling user...',
+      success: (_response) => {
+        handleGetUsers()
+        return 'User disabled successfully'
+      },
+    })
+  }
+
+  const columns: ColumnDef<IUser>[] = [
     {
       accessorKey: 'name',
       header: ({ column }) => {
@@ -119,21 +124,40 @@ const UserManagement = () => {
       cell: ({ row }) => (
         <div className='flex gap-x-2 md:gap-x-4 items-center'>
           <div className='md:size-16 size-12'>
-            <img src={row.original.image} alt='ProductImg' className='w-full h-full bg-cover' />
+            <img
+              src={row.original.avatarUrl ?? DEFAULT_USER_AVATAR}
+              alt='ProductImg'
+              className='w-full h-full bg-cover'
+            />
           </div>
           <span className='truncate text-xs md:text-sm'>{row.original.name}</span>
         </div>
-      )
+      ),
     },
     {
       accessorKey: 'mail',
       header: () => <div className='font-semibold text-black text-xs md:text-sm dark:text-white'>Email</div>,
-      cell: ({ row }) => <div className='capitalize text-xs md:text-sm'>{row.getValue('mail')}</div>
+      cell: ({ row }) => <div className='text-xs md:text-sm'>{row.original.email}</div>,
     },
     {
       accessorKey: 'tenant',
-      header: () => <div className='font-semibold text-black text-xs md:text-sm dark:text-white'>Tenant</div>,
-      cell: ({ row }) => <div className='capitalize text-xs md:text-sm'>{row.getValue('tenant') ?? '/___'}</div>
+      header: () => (
+        <div className='font-semibold text-black text-xs md:text-sm dark:text-white text-center'>Tenant</div>
+      ),
+      cell: ({ row }) => <div className='text-xs md:text-sm text-center'>{row.original?.shop?.name ?? '/___'}</div>,
+    },
+    {
+      accessorKey: 'status',
+      header: () => (
+        <div className='font-semibold text-black text-xs md:text-sm dark:text-white text-center'>Status</div>
+      ),
+      cell: ({ row }) => (
+        <div className='flex items-center justify-center'>
+          <Badge className={`${row.original.isDeleted ? 'bg-gray-500' : 'bg-green-500'}`}>
+            {row.original.isDeleted ? 'Disabled' : 'Active'}
+          </Badge>
+        </div>
+      ),
     },
     {
       id: 'actions',
@@ -142,30 +166,58 @@ const UserManagement = () => {
         <div className='font-semibold text-black text-center text-xs md:text-sm dark:text-white'>Actions</div>
       ),
       cell: ({ row }) => (
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <div className='text-center text-xs md:text-sm text-red-500 cursor-pointer hover:text-red-700'>Delete</div>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle className='text-sm md:text-base'>Are you absolutely sure?</AlertDialogTitle>
-              <AlertDialogDescription className='text-xs md:text-sm'>
-                This action cannot be undone. This will permanently delete your product and remove your data from our
-                servers.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter className='flex flex-row gap-x-2 justify-end'>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={() => console.log(row)}>Continue</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      )
-    }
+        <>
+          {row.original.isDeleted && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <div className='text-center text-xs md:text-sm text-green-500 cursor-pointer hover:text-green-700'>
+                  Activate
+                </div>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle className='text-sm md:text-base'>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription className='text-xs md:text-sm'>
+                    This action cannot be undone. This will permanently activate your user and remove your data from our
+                    servers.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter className='flex flex-row gap-x-2 justify-end items-center'>
+                  <AlertDialogCancel className='mt-0 dark:bg-gray-800 dark:text-white'>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => handleEnableUser(row.original.id)}>Continue</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+          {!row.original.isDeleted && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <div className='text-center text-xs md:text-sm text-red-500 cursor-pointer hover:text-red-700'>
+                  Disable
+                </div>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle className='text-sm md:text-base'>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription className='text-xs md:text-sm'>
+                    This action cannot be undone. This will permanently delete your user and remove your data from our
+                    servers.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter className='flex flex-row gap-x-2 justify-end items-center'>
+                  <AlertDialogCancel className='mt-0 dark:bg-gray-800 dark:text-white'>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => handleDisableUser(row.original.id)}>Continue</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+        </>
+      ),
+    },
   ]
 
   const table = useReactTable({
-    data,
+    data: users,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -175,12 +227,16 @@ const UserManagement = () => {
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    manualPagination: true,
+    pageCount: pageCount,
     state: {
+      pagination,
       sorting,
       columnFilters,
       columnVisibility,
-      rowSelection
-    }
+      rowSelection,
+    },
+    onPaginationChange: setPagination,
   })
   return (
     <div>
@@ -219,11 +275,11 @@ const UserManagement = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <div className='rounded-md border'>
+          <div className='rounded-md border dark:border-gray-700 overflow-hidden'>
             <Table>
-              <TableHeader className='bg-blue-100'>
+              <TableHeader className='bg-blue-100 dark:bg-gray-900'>
                 {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
+                  <TableRow key={headerGroup.id} className='dark:border-gray-600'>
                     {headerGroup.headers.map((header) => {
                       return (
                         <TableHead key={header.id}>
@@ -237,21 +293,44 @@ const UserManagement = () => {
                 ))}
               </TableHeader>
               <TableBody>
-                {table.getRowModel().rows?.length ? (
+                {!isLoading &&
+                  table.getRowModel().rows?.length > 0 &&
                   table.getRowModel().rows.map((row) => (
-                    <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && 'selected'}
+                      className='dark:border-gray-700'
+                    >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                       ))}
                     </TableRow>
-                  ))
-                ) : (
+                  ))}
+                {!isLoading && table.getRowModel().rows?.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={columns.length} className='h-24 text-center'>
                       No results.
                     </TableCell>
                   </TableRow>
                 )}
+                {isLoading &&
+                  Array.from({ length: 5 }).map((_, index) => (
+                    <TableRow key={index}>
+                      <TableCell colSpan={columns.length}>
+                        <div className='flex justify-between gap-x-4 md:gap-x-8 lg:gap-x-12 xl:gap-x-14'>
+                          <div className='flex w-[40%] gap-x-4 items-center'>
+                            <Skeleton className='h-14 w-16   lg:h-20 lg:w-24 bg-gray-200' />
+                            <Skeleton className='h-8 w-full bg-gray-200' />
+                          </div>
+                          <div className='flex w-[60%] lg:px-8 md:px-6 px-2 items-center justify-between'>
+                            <Skeleton className='h-12 w-20 bg-gray-200 rounded-md' />
+                            <Skeleton className='h-12 w-20 bg-gray-200 rounded-md' />
+                            <Skeleton className='h-12 w-20 bg-gray-200 rounded-md' />
+                          </div>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </div>

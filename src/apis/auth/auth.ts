@@ -2,6 +2,10 @@ import { RefreshTokenResponse } from '@/apis/auth/authInterfaces'
 import { http } from '@/utils/interceptor'
 
 export default class AuthAPI {
+  public static getUsers = async (pageIndex = 1, pageSize = 10) => {
+    return http.get(`/users?page=${pageIndex}&limit=${pageSize}`)
+  }
+
   public static login = async ({ email, password }: { email: string; password: string }) => {
     return http.post('/users/login', { email, password })
   }
@@ -43,5 +47,13 @@ export default class AuthAPI {
     newPassword: string
   }) => {
     return http.put(`/users/change-password/${userId}`, { currentPassword, newPassword })
+  }
+
+  public static disableUser = async (userId: number) => {
+    return http.put(`/users/disable/${userId}`)
+  }
+
+  public static enableUser = async (userId: number) => {
+    return http.put(`/users/enable/${userId}`)
   }
 }

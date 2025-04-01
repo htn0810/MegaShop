@@ -10,7 +10,7 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  useReactTable
+  useReactTable,
 } from '@tanstack/react-table'
 import {
   DropdownMenu,
@@ -18,11 +18,11 @@ import {
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { DataTablePagination } from '@/components/ui/data-table-pagination'
 import {
   AlertDialog,
@@ -32,64 +32,52 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle
+  AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { AlertDialogTrigger } from '@radix-ui/react-alert-dialog'
-
-type Tenant = {
-  id: string
-  name: string
-  status: 'active' | 'pending' | 'inactive'
-  image: string
-}
-
-const data: Tenant[] = [
-  {
-    id: 'm5gr84i9',
-    name: 'ken99@yahoo.com',
-    status: 'active',
-    image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  },
-  {
-    id: '3u1reuv4',
-    name: 'Abe45@gmail.com',
-    status: 'inactive',
-    image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  },
-  {
-    id: 'derv1ws0',
-    status: 'pending',
-    name: 'Monserrat44@gmail.com',
-    image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  },
-  {
-    id: '5kma53ae',
-    name: 'Silas22@gmail.com',
-    status: 'active',
-    image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  },
-  {
-    id: 'bhqecj4p',
-    name: 'carmella@hotmail.com',
-    status: 'inactive',
-    image:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  }
-]
-
+import { Shop, ShopStatus } from '@/apis/shop/shopInterfaces'
+import { DEFAULT_SHOP_AVATAR } from '@/constants/common.constant'
+import { useSearchParams } from 'react-router-dom'
+import ShopAPI from '@/apis/shop/shop'
+import { Skeleton } from '@/components/ui/skeleton'
 const TenantManagement = () => {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const pageIndex = searchParams.get('page')
+  const pageSize = searchParams.get('limit')
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
+  const [shops, setShops] = useState<Shop[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [pageCount, setPageCount] = useState(0)
+  const [pagination, setPagination] = useState({
+    pageIndex: pageIndex ? parseInt(pageIndex) - 1 : 0,
+    pageSize: pageSize ? parseInt(pageSize) : 5,
+  })
+  const [status, setStatus] = useState<ShopStatus | 'all'>('all')
 
-  const [status, setStatus] = useState<Tenant['status'] | 'all'>('all')
+  const handleGetShops = async () => {
+    setIsLoading(true)
+    ShopAPI.getShops(pagination.pageIndex + 1, pagination.pageSize)
+      .then((res) => {
+        setShops(res.data.data.shops)
+        setPageCount(res.data.data.pagination.totalPages)
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
+  }
 
-  const columns: ColumnDef<Tenant>[] = [
+  useEffect(() => {
+    setSearchParams({
+      page: (pagination.pageIndex + 1).toString(),
+      limit: pagination.pageSize.toString(),
+    })
+    handleGetShops()
+  }, [pagination.pageIndex, pagination.pageSize])
+
+  const columns: ColumnDef<Shop>[] = [
     {
       accessorKey: 'name',
       header: ({ column }) => {
@@ -117,11 +105,15 @@ const TenantManagement = () => {
       cell: ({ row }) => (
         <div className='flex gap-x-2 md:gap-x-4 items-center'>
           <div className='md:size-16 size-12'>
-            <img src={row.original.image} alt='ProductImg' className='w-full h-full bg-cover' />
+            <img
+              src={row.original.avatarUrl ?? DEFAULT_SHOP_AVATAR}
+              alt='ProductImg'
+              className='w-full h-full bg-cover'
+            />
           </div>
           <span className='truncate text-xs md:text-sm'>{row.original.name}</span>
         </div>
-      )
+      ),
     },
     {
       accessorKey: 'status',
@@ -136,25 +128,21 @@ const TenantManagement = () => {
           <DropdownMenuContent>
             <DropdownMenuRadioGroup
               value={status}
-              onValueChange={(value: string) => setStatus(value as Tenant['status'] | 'all')}
+              onValueChange={(value: string) => setStatus(value as ShopStatus | 'all')}
             >
               <DropdownMenuRadioItem value='all' className='text-xs md:text-sm'>
                 All
               </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value='active' className='text-xs md:text-sm'>
-                Active
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value='inactive' className='text-xs md:text-sm'>
-                Inactive
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value='pending' className='text-xs md:text-sm'>
-                Pending
-              </DropdownMenuRadioItem>
+              {Object.values(ShopStatus).map((status) => (
+                <DropdownMenuRadioItem key={status} value={status} className='text-xs md:text-sm'>
+                  {status}
+                </DropdownMenuRadioItem>
+              ))}
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>
       ),
-      cell: ({ row }) => <div className='capitalize text-xs md:text-sm'>{row.getValue('status')}</div>
+      cell: ({ row }) => <div className='capitalize text-xs md:text-sm'>{row.getValue('status')}</div>,
     },
     {
       id: 'actions',
@@ -165,7 +153,7 @@ const TenantManagement = () => {
       cell: ({ row }) => {
         return (
           <>
-            {row.original.status !== 'pending' && (
+            {row.original.status !== ShopStatus.PENDING && (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <div className='text-center text-xs md:text-sm text-red-500 cursor-pointer hover:text-red-700'>
@@ -187,7 +175,7 @@ const TenantManagement = () => {
                 </AlertDialogContent>
               </AlertDialog>
             )}
-            {row.original.status === 'pending' && (
+            {row.original.status === ShopStatus.PENDING && (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <div className='text-xs md:text-sm text-center text-green-600 cursor-pointer hover:text-green-800'>
@@ -210,12 +198,12 @@ const TenantManagement = () => {
             )}
           </>
         )
-      }
-    }
+      },
+    },
   ]
 
   const table = useReactTable({
-    data,
+    data: shops,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -225,12 +213,16 @@ const TenantManagement = () => {
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    manualPagination: true,
     state: {
+      pagination,
       sorting,
       columnFilters,
       columnVisibility,
-      rowSelection
-    }
+      rowSelection,
+    },
+    onPaginationChange: setPagination,
+    pageCount: pageCount,
   })
   return (
     <div>
@@ -287,21 +279,39 @@ const TenantManagement = () => {
                 ))}
               </TableHeader>
               <TableBody>
-                {table.getRowModel().rows?.length ? (
+                {!isLoading &&
+                  table.getRowModel().rows?.length > 0 &&
                   table.getRowModel().rows.map((row) => (
                     <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                       ))}
                     </TableRow>
-                  ))
-                ) : (
+                  ))}
+                {!isLoading && table.getRowModel().rows?.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={columns.length} className='h-24 text-center'>
                       No results.
                     </TableCell>
                   </TableRow>
                 )}
+                {isLoading &&
+                  Array.from({ length: 5 }).map((_, index) => (
+                    <TableRow key={index}>
+                      <TableCell colSpan={columns.length}>
+                        <div className='flex justify-between gap-x-4 md:gap-x-8 lg:gap-x-12 xl:gap-x-14'>
+                          <div className='flex w-[30%] gap-x-4 items-center'>
+                            <Skeleton className='h-10 md:h-14 w-16   lg:h-20 lg:w-24 bg-gray-200' />
+                            <Skeleton className='h-4 md:h-8 w-full bg-gray-200' />
+                          </div>
+                          <div className='flex w-[70%] lg:px-8 md:px-6 px-2 items-center justify-between'>
+                            <Skeleton className='h-10 md:h-12 w-20 bg-gray-200 rounded-md' />
+                            <Skeleton className='h-10 md:h-12 w-20 bg-gray-200 rounded-md lg:mr-16' />
+                          </div>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </div>

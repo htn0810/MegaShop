@@ -16,6 +16,8 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
@@ -40,11 +42,13 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { DEFAULT_USER_AVATAR } from '@/constants/common.constant'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
+import { UserStatus } from '@/apis/auth/authInterfaces'
 
 const UserManagement = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const pageIndex = searchParams.get('page')
   const pageSize = searchParams.get('limit')
+  const statusParam = searchParams.get('status')
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -54,16 +58,23 @@ const UserManagement = () => {
     pageIndex: pageIndex ? parseInt(pageIndex) - 1 : 0,
     pageSize: pageSize ? parseInt(pageSize) : 5,
   })
+  const [status, setStatus] = useState<UserStatus | 'all'>(statusParam ? (statusParam as UserStatus) : 'all')
   const [pageCount, setPageCount] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
 
   const handleGetUsers = async () => {
     setIsLoading(true)
-    AuthAPI.getUsers(pagination.pageIndex + 1, pagination.pageSize)
+    AuthAPI.getUsers(pagination.pageIndex + 1, pagination.pageSize, status)
       .then((res) => {
         if (res.status === 200) {
           setUsers(res.data.data.users)
           setPageCount(res.data.data.pagination.totalPages)
+          if (res.data.data.users.length === 0 && res.data.data.pagination.total > 0) {
+            setPagination({
+              pageIndex: 0,
+              pageSize: pagination.pageSize,
+            })
+          }
         }
       })
       .finally(() => {
@@ -72,9 +83,13 @@ const UserManagement = () => {
   }
 
   useEffect(() => {
-    setSearchParams({ page: (pagination.pageIndex + 1).toString(), limit: pagination.pageSize.toString() })
+    setSearchParams({
+      page: (pagination.pageIndex + 1).toString(),
+      limit: pagination.pageSize.toString(),
+      status: status,
+    })
     handleGetUsers()
-  }, [pagination.pageIndex, pagination.pageSize])
+  }, [pagination.pageIndex, pagination.pageSize, status])
 
   const handleDisableUser = async (userId: number) => {
     toast.promise(AuthAPI.disableUser(userId), {
@@ -149,7 +164,29 @@ const UserManagement = () => {
     {
       accessorKey: 'status',
       header: () => (
-        <div className='font-semibold text-black text-xs md:text-sm dark:text-white text-center'>Status</div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <div className='flex gap-x-2 items-center cursor-pointer'>
+              <span className='font-semibold text-black text-xs md:text-sm dark:text-white'>Status</span>
+              <CaretDown className='md:text-lg text-sm' />
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuRadioGroup
+              value={status}
+              onValueChange={(value: string) => setStatus(value as UserStatus | 'all')}
+            >
+              <DropdownMenuRadioItem value='all' className='text-xs md:text-sm'>
+                All
+              </DropdownMenuRadioItem>
+              {Object.values(UserStatus).map((status) => (
+                <DropdownMenuRadioItem key={status} value={status} className='text-xs md:text-sm'>
+                  {status}
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
       ),
       cell: ({ row }) => (
         <div className='flex items-center justify-center'>

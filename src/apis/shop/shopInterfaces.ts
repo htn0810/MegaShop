@@ -1,7 +1,8 @@
 export enum ShopStatus {
   ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE',
+  DISABLED = 'DISABLED',
   PENDING = 'PENDING',
+  REJECTED = 'REJECTED',
 }
 
 export interface Shop {

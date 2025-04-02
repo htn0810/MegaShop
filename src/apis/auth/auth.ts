@@ -1,9 +1,9 @@
-import { RefreshTokenResponse } from '@/apis/auth/authInterfaces'
+import { RefreshTokenResponse, UserStatus } from '@/apis/auth/authInterfaces'
 import { http } from '@/utils/interceptor'
 
 export default class AuthAPI {
-  public static getUsers = async (pageIndex = 1, pageSize = 10) => {
-    return http.get(`/users?page=${pageIndex}&limit=${pageSize}`)
+  public static getUsers = async (pageIndex = 1, pageSize = 10, status: UserStatus | 'all' = 'all') => {
+    return http.get(`/users?page=${pageIndex}&limit=${pageSize}&status=${status}`)
   }
 
   public static login = async ({ email, password }: { email: string; password: string }) => {

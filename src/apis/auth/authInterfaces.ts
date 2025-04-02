@@ -2,6 +2,10 @@
 //   accessToken: string
 //   expiresIn: number
 // }
+export enum UserStatus {
+  ACTIVE = 'ACTIVE',
+  DISABLED = 'DISABLED',
+}
 
 export interface RegisterResquest {
   email: string

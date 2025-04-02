@@ -40,10 +40,13 @@ import { DEFAULT_SHOP_AVATAR } from '@/constants/common.constant'
 import { useSearchParams } from 'react-router-dom'
 import ShopAPI from '@/apis/shop/shop'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Badge } from '@/components/ui/badge'
+import { toast } from 'sonner'
 const TenantManagement = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const pageIndex = searchParams.get('page')
   const pageSize = searchParams.get('limit')
+  const statusParam = searchParams.get('status')
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -55,27 +58,74 @@ const TenantManagement = () => {
     pageIndex: pageIndex ? parseInt(pageIndex) - 1 : 0,
     pageSize: pageSize ? parseInt(pageSize) : 5,
   })
-  const [status, setStatus] = useState<ShopStatus | 'all'>('all')
+  const [status, setStatus] = useState<ShopStatus | 'all'>(statusParam ? (statusParam as ShopStatus) : 'all')
 
   const handleGetShops = async () => {
     setIsLoading(true)
-    ShopAPI.getShops(pagination.pageIndex + 1, pagination.pageSize)
+    ShopAPI.getShops(pagination.pageIndex + 1, pagination.pageSize, status)
       .then((res) => {
         setShops(res.data.data.shops)
         setPageCount(res.data.data.pagination.totalPages)
+        if (res.data.data.shops.length === 0 && res.data.data.pagination.total > 0) {
+          setPagination({
+            pageIndex: 0,
+            pageSize: pagination.pageSize,
+          })
+        }
       })
       .finally(() => {
         setIsLoading(false)
       })
   }
 
+  const handleApproveShop = async (shopId: number) => {
+    toast.promise(ShopAPI.approveShop(shopId), {
+      loading: 'Approving shop...',
+      success: (_response) => {
+        handleGetShops()
+        return 'Shop approved successfully'
+      },
+    })
+  }
+
+  const handleRejectShop = async (shopId: number) => {
+    toast.promise(ShopAPI.rejectShop(shopId), {
+      loading: 'Rejecting shop...',
+      success: (_response) => {
+        handleGetShops()
+        return 'Shop rejected successfully'
+      },
+    })
+  }
+
+  const handleDisableShop = async (shopId: number) => {
+    toast.promise(ShopAPI.disableShop(shopId), {
+      loading: 'Disabling shop...',
+      success: (_response) => {
+        handleGetShops()
+        return 'Shop disabled successfully'
+      },
+    })
+  }
+
+  const handleEnableShop = async (shopId: number) => {
+    toast.promise(ShopAPI.enableShop(shopId), {
+      loading: 'Enabling shop...',
+      success: (_response) => {
+        handleGetShops()
+        return 'Shop enabled successfully'
+      },
+    })
+  }
+
   useEffect(() => {
     setSearchParams({
       page: (pagination.pageIndex + 1).toString(),
       limit: pagination.pageSize.toString(),
+      status: status,
     })
     handleGetShops()
-  }, [pagination.pageIndex, pagination.pageSize])
+  }, [pagination.pageIndex, pagination.pageSize, status])
 
   const columns: ColumnDef<Shop>[] = [
     {
@@ -142,7 +192,26 @@ const TenantManagement = () => {
           </DropdownMenuContent>
         </DropdownMenu>
       ),
-      cell: ({ row }) => <div className='capitalize text-xs md:text-sm'>{row.getValue('status')}</div>,
+      cell: ({ row }) => {
+        let color
+        switch (row.original.status) {
+          case ShopStatus.ACTIVE:
+            color = 'bg-green-500'
+            break
+          case ShopStatus.PENDING:
+            color = 'bg-yellow-500'
+            break
+          case ShopStatus.REJECTED:
+            color = 'bg-red-500'
+            break
+          case ShopStatus.DISABLED:
+            color = 'bg-gray-500'
+            break
+          default:
+            color = 'bg-gray-500'
+        }
+        return <Badge className={`${color}`}>{row.getValue('status')}</Badge>
+      },
     },
     {
       id: 'actions',
@@ -153,7 +222,7 @@ const TenantManagement = () => {
       cell: ({ row }) => {
         return (
           <>
-            {row.original.status !== ShopStatus.PENDING && (
+            {row.original.status === ShopStatus.ACTIVE && (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <div className='text-center text-xs md:text-sm text-red-500 cursor-pointer hover:text-red-700'>
@@ -168,18 +237,66 @@ const TenantManagement = () => {
                       our servers.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
-                  <AlertDialogFooter className='flex flex-row gap-x-2 justify-end'>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction>Continue</AlertDialogAction>
+                  <AlertDialogFooter className='flex flex-row gap-x-2 justify-end items-center'>
+                    <AlertDialogCancel className='mt-0 dark:bg-gray-700 hover:opacity-80'>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => handleDisableShop(Number(row.original.id))}>
+                      Continue
+                    </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
             )}
             {row.original.status === ShopStatus.PENDING && (
+              <div className='flex flex-row gap-x-2 items-center justify-center'>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <div className='text-xs md:text-sm text-center text-green-600 cursor-pointer hover:text-green-800'>
+                      Approve
+                    </div>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle className='text-sm md:text-base'>Are you absolutely sure?</AlertDialogTitle>
+                      <AlertDialogDescription className='text-xs md:text-sm'>
+                        This tenant will active right now and tenant's owner can sell their items.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter className='flex flex-row gap-x-2 justify-end items-center'>
+                      <AlertDialogCancel className='mt-0 dark:bg-gray-700 hover:opacity-80'>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => handleApproveShop(Number(row.original.id))}>
+                        Continue
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <div className='text-xs md:text-sm text-center text-red-500 cursor-pointer hover:text-red-700'>
+                      Reject
+                    </div>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle className='text-sm md:text-base'>Are you absolutely sure?</AlertDialogTitle>
+                      <AlertDialogDescription className='text-xs md:text-sm'>
+                        This tenant will be rejected and tenant's owner can't sell their items.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter className='flex flex-row gap-x-2 justify-end items-center'>
+                      <AlertDialogCancel className='mt-0 dark:bg-gray-700 hover:opacity-80'>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => handleRejectShop(Number(row.original.id))}>
+                        Continue
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+            )}
+            {row.original.status === ShopStatus.DISABLED && (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <div className='text-xs md:text-sm text-center text-green-600 cursor-pointer hover:text-green-800'>
-                    Approve
+                    Activate
                   </div>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
@@ -190,8 +307,10 @@ const TenantManagement = () => {
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter className='flex flex-row gap-x-2 justify-end'>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction>Continue</AlertDialogAction>
+                    <AlertDialogCancel className='mt-0 dark:bg-gray-700 hover:opacity-80'>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => handleEnableShop(Number(row.original.id))}>
+                      Continue
+                    </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
@@ -261,11 +380,11 @@ const TenantManagement = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <div className='rounded-md border'>
+          <div className='rounded-md border dark:border-gray-700 overflow-hidden'>
             <Table>
-              <TableHeader className='bg-blue-100'>
+              <TableHeader className='bg-blue-100 dark:bg-gray-900'>
                 {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
+                  <TableRow key={headerGroup.id} className='dark:border-gray-600'>
                     {headerGroup.headers.map((header) => {
                       return (
                         <TableHead key={header.id}>

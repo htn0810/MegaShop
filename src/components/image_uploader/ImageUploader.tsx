@@ -32,14 +32,16 @@ const ImageUploader = (props: Props) => {
       toast.error(`Maximum files allowed is ${maxFiles}`)
       return
     }
-    const file = event.target.files?.[0]
-    if (file) {
-      setFiles((prev) => [...(prev ?? []), file])
+    const fileList = event.target.files
+    if (fileList) {
+      setFiles((prev) => [...(prev ?? []), ...Array.from(fileList)])
     }
   }
 
   const handleRemoveImage = (index: number) => {
-    setFiles((prev) => prev?.filter((_, idx) => idx !== index))
+    setFiles((prev) => {
+      return prev?.filter((_, idx) => idx !== index)
+    })
   }
 
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
@@ -56,8 +58,8 @@ const ImageUploader = (props: Props) => {
   }
   return (
     <div className='w-full h-full'>
-      <label className='text-black dark:text-white text-sm md:text-base font-medium'>Image</label>
-      <div className='flex gap-x-2 justify-start'>
+      <label className='text-black dark:text-white text-sm md:text-base font-medium'>Image(s)</label>
+      <div className='flex gap-x-2 justify-start mt-2'>
         {files.length < maxFiles && (
           <div className='relative h-full'>
             <label className='text-black dark:text-white text-sm md:text-base cursor-pointer'>

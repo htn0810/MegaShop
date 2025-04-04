@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
-import { CaretDown, CaretUp, CaretUpDown, DotsThree, Plus } from '@phosphor-icons/react'
+import { CaretDown, CaretUp, CaretUpDown, Eye, EyeSlash, NotePencil, Plus, Trash } from '@phosphor-icons/react'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -16,18 +16,13 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  // DropdownMenuRadioGroup,
-  // DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { DataTablePagination } from '@/components/ui/data-table-pagination'
-import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import ModalAddEditProduct from '@/modules/admin/modal_add_edit_product'
+import ModalAddEditProduct from '@/modules/admin/product/modal_add_edit_product'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,103 +32,90 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-
-const data: Product[] = [
-  {
-    id: 1,
-    stock: 20,
-    shopId: 1,
-    categoryId: 2,
-    price: 100,
-    slug: 'ken99@yahoo.com',
-    description: '',
-    name: 'ken99@yahoo.com',
-
-    imageUrls:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  },
-  {
-    id: 2,
-    stock: 20,
-    shopId: 1,
-    categoryId: 2,
-    price: 100,
-    slug: 'abe45@gmail.com',
-    description: '',
-    name: 'Abe45@gmail.com',
-    imageUrls:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  },
-  {
-    id: 3,
-    stock: 20,
-    price: 100,
-    shopId: 1,
-    categoryId: 2,
-    description: '',
-    slug: 'monserrat44@gmail.com',
-    name: 'Monserrat44@gmail.com',
-    imageUrls:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  },
-  {
-    id: 4,
-    stock: 20,
-    shopId: 1,
-    categoryId: 2,
-    price: 100,
-    slug: 'silas22@gmail.com',
-    description: '',
-    name: 'Silas22@gmail.com',
-    imageUrls:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  },
-  {
-    id: 5,
-
-    stock: 20,
-    shopId: 1,
-    categoryId: 2,
-    price: 100,
-    slug: 'carmella@hotmail.com',
-    description: '',
-    name: 'carmella@hotmail.com',
-
-    imageUrls:
-      'https://images.unsplash.com/photo-1485962307416-993e145b0d0d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  },
-]
-
-type Product = {
-  id?: number
-  name: string
-  description: string
-  imageUrls: string
-  price: number
-  stock: number
-  rating?: number
-  slug: string
-  shopId: number
-  categoryId: number
-}
+import { useSearchParams } from 'react-router-dom'
+import { IProduct } from '@/apis/product/productInterface'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import ShopAPI from '@/apis/shop/shop'
+import { toast } from 'sonner'
+import { ProductApi } from '@/apis/product/product'
 
 type ConfirmDialog = {
-  data: Product | null
+  data: IProduct | null
   isShow: boolean
 }
 
 const Product = () => {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const pageIndex = searchParams.get('page')
+  const pageSize = searchParams.get('limit')
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
-
-  // const [status, setStatus] = useState<Product['status'] | 'all'>('all')
   const [confirmDisableDialog, setConfirmDisableDialog] = useState<ConfirmDialog>({ data: null, isShow: false })
   const [confirmDeleteDialog, setConfirmDeleteDialog] = useState<ConfirmDialog>({ data: null, isShow: false })
+  const [isRerender, setIsRerender] = useState(false)
+  const [products, setProducts] = useState<IProduct[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [pageCount, setPageCount] = useState(0)
+  const [pagination, setPagination] = useState({
+    pageIndex: pageIndex ? parseInt(pageIndex) - 1 : 0,
+    pageSize: pageSize ? parseInt(pageSize) : 5,
+  })
 
-  const columns: ColumnDef<Product>[] = [
+  const handleGetProducts = async () => {
+    try {
+      setIsLoading(true)
+      const response = await ShopAPI.getAllProductsByShopId_Admin(2, pagination.pageIndex + 1, pagination.pageSize)
+      setProducts(response.data.data.products)
+      setPageCount(response.data.data.pagination.totalPages)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleEnableProduct = async (productId: number) => {
+    toast.promise(ProductApi.enableProduct(productId), {
+      loading: 'Enabling product...',
+      success: (_response) => {
+        handleGetProducts()
+        return 'Product enabled successfully!'
+      },
+    })
+  }
+
+  const handleDisableProduct = async (productId: number) => {
+    toast.promise(ProductApi.disableProduct(productId), {
+      loading: 'Disabling product...',
+      success: (_response) => {
+        handleGetProducts()
+        return 'Product disabled successfully!'
+      },
+    })
+  }
+
+  const handleDeleteProduct = async (productId: number) => {
+    toast.promise(ProductApi.deleteProduct(productId), {
+      loading: 'Deleting product...',
+      success: (_response) => {
+        handleGetProducts()
+        return 'Product deleted successfully!'
+      },
+    })
+  }
+
+  useEffect(() => {
+    setSearchParams({
+      page: (pagination.pageIndex + 1).toString(),
+      limit: pagination.pageSize.toString(),
+    })
+    handleGetProducts()
+  }, [pagination.pageIndex, pagination.pageSize, isRerender])
+
+  const columns: ColumnDef<IProduct>[] = [
     {
       accessorKey: 'name',
       header: ({ column }) => {
@@ -161,44 +143,11 @@ const Product = () => {
       cell: ({ row }) => (
         <div className='flex gap-x-2 md:gap-x-4 items-center'>
           <div className='md:size-16 size-12'>
-            <img src={row.original.imageUrls} alt='ProductImg' className='w-full h-full bg-cover' />
+            <img src={row.original.imageUrls.split(',')[0]} alt='ProductImg' className='w-full h-full bg-cover' />
           </div>
           <span className='truncate text-xs md:text-sm'>{row.original.name}</span>
         </div>
       ),
-    },
-    {
-      accessorKey: 'status',
-      header: () => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <div className='flex gap-x-2 items-center cursor-pointer'>
-              <span className='font-semibold text-black text-xs md:text-sm dark:text-white'>Status</span>
-              <CaretDown className='md:text-lg text-sm' />
-            </div>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            {/* <DropdownMenuRadioGroup
-              value={status}
-              onValueChange={(value: string) => setStatus(value as Product['status'] | 'all')}
-            >
-              <DropdownMenuRadioItem value='all' className='text-xs md:text-sm'>
-                All
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value='in stock' className='text-xs md:text-sm'>
-                In Stock
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value='out of stock' className='text-xs md:text-sm'>
-                Out of Stock
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value='disabled' className='text-xs md:text-sm'>
-                Disabled
-              </DropdownMenuRadioItem>
-            </DropdownMenuRadioGroup> */}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ),
-      cell: ({ row }) => <div className='capitalize text-xs md:text-sm'>{row.getValue('status')}</div>,
     },
     {
       accessorKey: 'quantity',
@@ -226,42 +175,69 @@ const Product = () => {
     },
     {
       id: 'actions',
-      enableHiding: false,
+      header: () => (
+        <div className='font-semibold text-center text-black text-xs md:text-sm dark:text-white'>Actions</div>
+      ),
       cell: ({ row }) => {
         return (
-          <div className='bg-white'>
-            <Dialog>
-              <DropdownMenu modal={false}>
-                <DropdownMenuTrigger asChild className='text-end float-right'>
-                  <DotsThree size={20} weight='bold' className='cursor-pointer' />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align='end'>
-                  <DropdownMenuLabel className='text-xs md:text-sm'>Actions</DropdownMenuLabel>
-                  <DialogTrigger asChild>
-                    <DropdownMenuItem>
-                      <span className='text-xs md:text-sm'>Edit</span>
-                    </DropdownMenuItem>
-                  </DialogTrigger>
-                  <DropdownMenuItem
-                    className='text-xs md:text-sm'
-                    onClick={() => setConfirmDisableDialog({ data: row.original, isShow: true })}
-                  >
-                    Disabled
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className='text-xs md:text-sm'
-                    onClick={() => setConfirmDeleteDialog({ data: row.original, isShow: true })}
-                  >
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <DialogContent className='min-w-5xl max-w-5xl'>
-                <DialogTitle className='hidden' />
-                <DialogDescription className='hidden' />
-                <ModalAddEditProduct type='edit' product={row.original} />
-              </DialogContent>
-            </Dialog>
+          <div className='flex gap-x-1 items-center justify-center'>
+            <ModalAddEditProduct type='edit' product={row.original} onRerender={() => setIsRerender(!isRerender)}>
+              <NotePencil size={20} className='cursor-pointer hover:opacity-80' />
+            </ModalAddEditProduct>
+            {!row.original.isActive && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Eye size={20} className='cursor-pointer hover:opacity-80' />
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className='text-sm md:text-base'>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription className='text-xs md:text-sm'>
+                      This action cannot be undone. This will enable your product and customer will see it.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter className='flex flex-row gap-x-2 justify-end items-center'>
+                    <AlertDialogCancel className='mt-0 dark:bg-gray-800 dark:text-white'>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => handleEnableProduct(row.original.id)}>Continue</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
+            {row.original.isActive && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <EyeSlash size={20} className='cursor-pointer hover:opacity-80' />
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className='text-sm md:text-base'>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription className='text-xs md:text-sm'>
+                      This action cannot be undone. This will disable your product and customer will not see it.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter className='flex flex-row gap-x-2 justify-end items-center'>
+                    <AlertDialogCancel className='mt-0 dark:bg-gray-800 dark:text-white'>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => handleDisableProduct(row.original.id)}>
+                      Continue
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Trash
+                    size={20}
+                    className='cursor-pointer hover:opacity-80'
+                    onClick={() => handleDeleteProduct(row.original.id)}
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Delete Product</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         )
       },
@@ -269,7 +245,7 @@ const Product = () => {
   ]
 
   const table = useReactTable({
-    data,
+    data: products,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -279,28 +255,25 @@ const Product = () => {
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    manualPagination: true,
     state: {
+      pagination,
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
     },
+    onPaginationChange: setPagination,
+    pageCount: pageCount,
   })
   return (
     <div>
       <p className='text-end'>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button className='py-2 px-3'>
-              <Plus className='md:size-6 size-4' weight='bold' />
-            </Button>
-          </DialogTrigger>
-          <DialogContent className='min-w-5xl max-w-5xl'>
-            <DialogTitle className='hidden' />
-            <DialogDescription className='hidden' />
-            <ModalAddEditProduct type='add' />
-          </DialogContent>
-        </Dialog>
+        <ModalAddEditProduct type='add' onRerender={() => setIsRerender(!isRerender)}>
+          <Button className='py-2 px-3'>
+            <Plus className='md:size-6 size-4' weight='bold' />
+          </Button>
+        </ModalAddEditProduct>
       </p>
 
       <div>
@@ -337,11 +310,11 @@ const Product = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <div className='rounded-md border'>
+          <div className='rounded-md border overflow-hidden dark:border-gray-700'>
             <Table>
-              <TableHeader className='bg-blue-100'>
+              <TableHeader className='bg-blue-100 dark:bg-gray-900'>
                 {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
+                  <TableRow key={headerGroup.id} className='dark:border-gray-600'>
                     {headerGroup.headers.map((header) => {
                       return (
                         <TableHead key={header.id}>
@@ -355,21 +328,44 @@ const Product = () => {
                 ))}
               </TableHeader>
               <TableBody>
-                {table.getRowModel().rows?.length ? (
+                {!isLoading &&
+                  table.getRowModel().rows?.length > 0 &&
                   table.getRowModel().rows.map((row) => (
-                    <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && 'selected'}
+                      className={`dark:border-gray-700 ${row.original.isActive ? '' : 'bg-[rgba(0,0,0,0.05)] dark:bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(0,0,0,0.05)] dark:hover:bg-[rgba(255,255,255,0.05)] opacity-70 dark:opacity-50'}`}
+                    >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                       ))}
                     </TableRow>
-                  ))
-                ) : (
+                  ))}
+                {!isLoading && table.getRowModel().rows?.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={columns.length} className='h-24 text-center'>
                       No results.
                     </TableCell>
                   </TableRow>
                 )}
+                {isLoading &&
+                  Array.from({ length: 5 }).map((_, index) => (
+                    <TableRow key={index}>
+                      <TableCell colSpan={columns.length}>
+                        <div className='flex justify-between gap-x-4 md:gap-x-8 lg:gap-x-12 xl:gap-x-14'>
+                          <div className='flex w-[30%] gap-x-4 items-center'>
+                            <Skeleton className='h-10 md:h-14 w-16   lg:h-20 lg:w-24 bg-gray-200' />
+                            <Skeleton className='h-4 md:h-8 w-full bg-gray-200' />
+                          </div>
+                          <div className='grid grid-cols-3 w-[70%] gap-x-1 items-center place-items-center'>
+                            <Skeleton className='h-6 md:h-12 md:w-20 w-12 bg-gray-200 rounded-md' />
+                            <Skeleton className='h-6 md:h-12 md:w-20 w-12 bg-gray-200 rounded-md' />
+                            <Skeleton className='h-6 md:h-12 md:w-20 w-12 bg-gray-200 rounded-md' />
+                          </div>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </div>

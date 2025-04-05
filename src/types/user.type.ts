@@ -7,7 +7,7 @@ export interface IUserInfor {
 }
 
 export interface IUser extends IUserInfor {
-  role: IRole[]
+  roles: IRole[]
   shop: IShop
 }
 

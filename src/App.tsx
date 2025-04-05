@@ -3,6 +3,8 @@ import { Fragment } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import './i18n'
 import MegaLazyLoad from '@/components/lazy_load/MegaLazyLoad'
+import ProtectedRoute from '@/configs/ProtectedRoute'
+import { ROLE } from '@/constants/common.constant'
 
 const App = () => {
   const Home = MegaLazyLoad(import('@/pages/home_page/Home'))
@@ -29,10 +31,16 @@ const App = () => {
           <Route path={'/account/forgot-password'} element={ForgotPassword} />
           <Route path={'/products'} element={Products} />
           <Route path={'/product_detail'} element={ProductDetail} />
-          <Route path={'/cart'} element={Cart} />
-          <Route path={'/user/*'} element={User} />
-          <Route path={'/admin/*'} element={Admin} />
-          <Route path={'/super-admin/*'} element={SuperAdmin} />
+          <Route element={<ProtectedRoute requiredRole={ROLE.USER} redirectPath={'/login'} />}>
+            <Route path={'/cart'} element={Cart} />
+            <Route path={'/user/*'} element={User} />
+          </Route>
+          <Route element={<ProtectedRoute requiredRole={ROLE.SHOPOWNER} />}>
+            <Route path={'/admin/*'} element={Admin} />
+          </Route>
+          <Route element={<ProtectedRoute requiredRole={ROLE.ADMIN} />}>
+            <Route path={'/super-admin/*'} element={SuperAdmin} />
+          </Route>
           <Route path={'*'} element={NotFound} />
         </Routes>
       </PrimaryLayout>

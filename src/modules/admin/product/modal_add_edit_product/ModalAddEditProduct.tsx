@@ -93,7 +93,7 @@ const ModalAddEditProduct = (props: AddProps | EditProps) => {
 
   const handleCreateProduct = async (data: FormData) => {
     setIsLoading(true)
-    toast.promise(ProductApi.addProduct({ ...data, shopId: 7 }, imageFiles), {
+    toast.promise(ProductApi.addProduct({ ...data, shopId: 2 }, imageFiles), {
       loading: 'Adding product...',
       success: (_response) => {
         resetAndCloseDialog()

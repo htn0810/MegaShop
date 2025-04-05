@@ -12,22 +12,26 @@ import { useMegaStore } from '@/store/store'
 import AuthAPI from '@/apis/auth/auth'
 import { toast } from 'sonner'
 import { HeaderNav } from '@/constants/header.constant'
+import usePermission from '@/custom_hooks/usePermission'
+import { ROLE } from '@/constants/common.constant'
 
 const HEADER_NAV: HeaderNav[] = [
-  { id: 1, icon: <House size={24} />, name: 'home_nav', path: '/' },
-  { id: 2, icon: <ShoppingBag size={24} />, name: 'products_nav', path: '/products' },
-  { id: 3, icon: <UserGear size={24} />, name: 'admin_nav', path: '/admin' },
-  { id: 4, icon: <UserGear size={24} />, name: 'super_admin_nav', path: '/super-admin' },
+  { id: 1, icon: <House size={24} />, name: 'home_nav', path: '/', role: ROLE.USER },
+  { id: 2, icon: <ShoppingBag size={24} />, name: 'products_nav', path: '/products', role: ROLE.USER },
+  { id: 3, icon: <UserGear size={24} />, name: 'admin_nav', path: '/admin', role: ROLE.SHOPOWNER },
+  { id: 4, icon: <UserGear size={24} />, name: 'super_admin_nav', path: '/super-admin', role: ROLE.ADMIN },
 ]
 
 const Header = () => {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
+  const user = useMegaStore((state) => state.user)
+  const { hasPermission } = usePermission(user?.roles || [])
   const handleChangeLanguage = (lng: keyof typeof languages) => {
     i18n.changeLanguage(lng)
   }
 
-  const isLoggedIn = useMegaStore((state) => state.user)
+  const isLoggedIn = user
   const logoutUser = useMegaStore((state) => state.logoutUser)
 
   const handleLogout = async () => {
@@ -50,11 +54,14 @@ const Header = () => {
           <img src={MetaLogo} loading='lazy' />
         </div>
         <ul className='hidden font-bold xl:flex gap-x-10'>
-          {HEADER_NAV.map((item) => (
-            <li className='cursor-pointer hover:text-gray-500' key={item.id}>
-              <Link to={item.path}>{t(`home.header.${item.name}`)}</Link>
-            </li>
-          ))}
+          {HEADER_NAV.map(
+            (item) =>
+              hasPermission(item.role) && (
+                <li className='cursor-pointer hover:text-gray-500' key={item.id}>
+                  <Link to={item.path}>{t(`home.header.${item.name}`)}</Link>
+                </li>
+              ),
+          )}
         </ul>
         <Input
           type='text'
@@ -100,16 +107,19 @@ const Header = () => {
               <SheetTitle className='hidden' />
               <SheetDescription className='hidden' />
               <div className='flex flex-col gap-y-2'>
-                {HEADER_NAV.map((item) => (
-                  <Link
-                    to={item.path}
-                    className='flex items-center gap-x-2 font-bold p-2 rounded-md hover:bg-gray-200 cursor-pointer'
-                    key={item.id}
-                  >
-                    {item.icon}
-                    <span>{t(`home.header.${item.name}`)}</span>
-                  </Link>
-                ))}
+                {HEADER_NAV.map(
+                  (item) =>
+                    hasPermission(item.role) && (
+                      <Link
+                        to={item.path}
+                        className='flex items-center gap-x-2 font-bold p-2 rounded-md hover:bg-gray-200 cursor-pointer'
+                        key={item.id}
+                      >
+                        {item.icon}
+                        <span>{t(`home.header.${item.name}`)}</span>
+                      </Link>
+                    ),
+                )}
                 {isLoggedIn ? (
                   <>
                     <Link

@@ -5,7 +5,7 @@ import {
   SelectItem,
   SelectLabel,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { ArrowBendUpLeft, Calendar, Coin, Coins, Scroll } from '@phosphor-icons/react'
@@ -30,7 +30,7 @@ const Dashboard = () => {
           'rgba(255, 206, 86, 0.2)',
           'rgba(75, 192, 192, 0.2)',
           'rgba(153, 102, 255, 0.2)',
-          'rgba(255, 159, 64, 0.2)'
+          'rgba(255, 159, 64, 0.2)',
         ],
         borderColor: [
           'rgba(255, 99, 132, 1)',
@@ -38,19 +38,19 @@ const Dashboard = () => {
           'rgba(255, 206, 86, 1)',
           'rgba(75, 192, 192, 1)',
           'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)'
+          'rgba(255, 159, 64, 1)',
         ],
-        borderWidth: 1
-      }
-    ]
+        borderWidth: 1,
+      },
+    ],
   }
 
   const options = {
     scales: {
       y: {
-        beginAtZero: true
-      }
-    }
+        beginAtZero: true,
+      },
+    },
   }
 
   return (
@@ -146,7 +146,7 @@ const Dashboard = () => {
                 <TableRow key={product.id}>
                   <TableCell className='font-medium'>
                     <div className='flex gap-x-2 items-center'>
-                      <img src={product.image} alt='ProductImg' className='size-12 md:size-16 flex-shrink-0' />
+                      <img src={product.imageUrls} alt='ProductImg' className='size-12 md:size-16 flex-shrink-0' />
                       <span className='block truncate text-xs md:text-sm'>{product.name}</span>
                     </div>
                   </TableCell>

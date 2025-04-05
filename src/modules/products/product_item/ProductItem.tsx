@@ -1,4 +1,4 @@
-import { IProduct } from '@/assets/dummyDatas/dummyModels'
+import { IProduct } from '@/apis/product/productInterface'
 import { Button } from '@/components/ui/button'
 import { Card, CardDescription, CardTitle } from '@/components/ui/card'
 import Rating from '@/components/ui/rating'
@@ -19,7 +19,11 @@ const ProductItem = (props: Props) => {
       {showType === 'grid' ? (
         <>
           <div className='relative w-full group'>
-            <img src={product.image} alt='productImg' className={`w-full aspect-portrait object-cover`} />
+            <img
+              src={product?.imageUrls?.split(',')[0]}
+              alt='productImg'
+              className={`w-full aspect-portrait object-cover`}
+            />
             <Button className='absolute bottom-0 left-0 right-0 w-full py-4 transition-all duration-500 ease-in-out rounded-none opacity-0 group-hover:opacity-100'>
               {t('product_detail.add_to_cart')}
             </Button>
@@ -46,7 +50,7 @@ const ProductItem = (props: Props) => {
         <div className='grid grid-cols-10 gap-x-4'>
           <div className='w-full col-span-3'>
             <img
-              src={product.image}
+              src={product?.imageUrls?.split(',')[0]}
               alt='productImg'
               className='w-full h-[140px] sm:h-[200px] md:h-[230px] xl:h-[260px] 2xl:h-[300px] object-cover rounded-xl'
             />

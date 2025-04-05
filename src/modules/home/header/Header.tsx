@@ -112,7 +112,7 @@ const Header = () => {
                     hasPermission(item.role) && (
                       <Link
                         to={item.path}
-                        className='flex items-center gap-x-2 font-bold p-2 rounded-md hover:bg-gray-200 cursor-pointer'
+                        className='flex items-center gap-x-2 font-bold p-2 rounded-md hover:bg-gray-200 dark:hover:text-black cursor-pointer'
                         key={item.id}
                       >
                         {item.icon}
@@ -124,7 +124,7 @@ const Header = () => {
                   <>
                     <Link
                       to='/user'
-                      className='flex items-center gap-x-2 font-bold p-2 rounded-md hover:bg-gray-200 cursor-pointer'
+                      className='flex items-center gap-x-2 font-bold p-2 rounded-md hover:bg-gray-200 dark:hover:text-black cursor-pointer'
                     >
                       <UserCircle size={24} className='cursor-pointer hover:text-gray-500' />
                       <span>Profile</span>
@@ -133,7 +133,7 @@ const Header = () => {
                 ) : (
                   <Link
                     to='/login'
-                    className='flex items-center gap-x-2 font-bold p-2 rounded-md hover:bg-gray-200 cursor-pointer'
+                    className='flex items-center gap-x-2 font-bold p-2 rounded-md hover:bg-gray-200 dark:hover:text-black cursor-pointer'
                   >
                     <UserCircle size={24} className='cursor-pointer hover:text-gray-500' />
                     <span>Login</span>
@@ -141,7 +141,7 @@ const Header = () => {
                 )}
                 {isLoggedIn && (
                   <div
-                    className='flex items-center gap-x-2 font-bold p-2 rounded-md hover:bg-red-200 cursor-pointer'
+                    className='flex items-center gap-x-2 font-bold p-2 rounded-md hover:bg-red-200 dark:hover:text-black cursor-pointer'
                     onClick={handleLogout}
                   >
                     <SignOut size={24} className='cursor-pointer hover:text-gray-500' />

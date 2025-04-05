@@ -2,8 +2,28 @@ import { IAddUpdateProduct } from '@/apis/product/productInterface'
 import { http } from '@/utils/interceptor'
 
 export class ProductApi {
-  public static async getProducts(params: { page: number; limit: number }) {
-    return http.get(`/products?page=${params.page}&limit=${params.limit}`)
+  public static async getProducts(
+    page: number,
+    limit: number,
+    categoryIds?: number[],
+    rating?: number,
+    minPrice?: number,
+    maxPrice?: number,
+  ) {
+    let query = `page=${page}&limit=${limit}`
+    if (categoryIds && categoryIds.length > 0) {
+      query += `&categoryIds=${categoryIds.join(',')}`
+    }
+    if (rating) {
+      query += `&rating=${rating}`
+    }
+    if (minPrice) {
+      query += `&minPrice=${minPrice}`
+    }
+    if (maxPrice) {
+      query += `&maxPrice=${maxPrice}`
+    }
+    return http.get(`/products?${query}`)
   }
 
   public static async addProduct(data: IAddUpdateProduct, images: File[]) {

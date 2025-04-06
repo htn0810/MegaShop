@@ -1,19 +1,32 @@
-import { DUMMY_CATEGORY } from '@/assets/dummyDatas/category'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
 import styles from '@/assets/styles/common.module.scss'
-import { ChangeEvent, KeyboardEvent, useState } from 'react'
+import { ChangeEvent, KeyboardEvent, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import Rating from '@/components/ui/rating'
+import { CategoryApi } from '@/apis/category/category'
+import { ICategoryResponse } from '@/apis/category/categoryInterface'
+import { Skeleton } from '@/components/ui/skeleton'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { FiltersProduct } from '@/types/common.type'
 
 type PriceRange = {
   minPrice: number
   maxPrice: number
 }
 
-const Sidebar = () => {
+type Props = {
+  filters: FiltersProduct
+  setFilters: React.Dispatch<React.SetStateAction<FiltersProduct>>
+}
+
+const Sidebar = (props: Props) => {
+  const { filters, setFilters } = props
   const { t } = useTranslation()
   const [priceRange, setPriceRange] = useState<PriceRange>({ minPrice: 1000, maxPrice: 5000000 })
+  const [categories, setCategories] = useState<ICategoryResponse[]>([])
+  const [isLoading, setIsLoading] = useState(false)
   const handleValueChange = (valueRange: number[]) => {
     setPriceRange({ minPrice: valueRange[0], maxPrice: valueRange[1] })
   }
@@ -45,21 +58,60 @@ const Sidebar = () => {
       event.preventDefault()
     }
   }
+
+  useEffect(() => {
+    handleGetAllCategories()
+  }, [])
+
+  const handleGetAllCategories = async () => {
+    try {
+      setIsLoading(true)
+      const res = await CategoryApi.getAllCategories()
+      setCategories(res.data.data)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleSelectRating = (ratingId: number) => {
+    if (filters.rating === ratingId) {
+      setFilters((prev) => ({ ...prev, rating: 0 }))
+    } else {
+      setFilters((prev) => ({ ...prev, rating: ratingId }))
+    }
+  }
+
+  const handleSelectCategory = (val: boolean, id: number) => {
+    if (val) {
+      setFilters((prev) => ({ ...prev, categoryIds: [...prev.categoryIds, id] }))
+    } else {
+      setFilters((prev) => ({ ...prev, categoryIds: prev.categoryIds.filter((cateId) => cateId !== id) }))
+    }
+  }
+
   return (
     <section className='w-full bg-gray-100 py-4 px-2 md:px-4 rounded-md dark:bg-gray-700'>
       <div className='border-b-gray-300 border-b'>
         <h4 className='font-bold text-lg mb-4'>{t('products.product_sidebar.category')}</h4>
-        {DUMMY_CATEGORY.map((cate) => (
-          <div className='flex items-center space-x-2 md:space-x-4 md:mb-4 mb-2' key={cate.id}>
-            <Checkbox id={cate.name} className='w-4 h-4 md:w-5 md:h-5 hover:bg-gray-400' />
-            <label
-              htmlFor={cate.name}
-              className='text-sm md:text-md font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer hover:text-gray-400'
-            >
-              {cate.name}
-            </label>
-          </div>
-        ))}
+        {isLoading && Array.from({ length: 6 }).map((_, index) => <CategorySkeleton key={`skeleton-${index}`} />)}
+        {!isLoading &&
+          categories &&
+          categories.map((cate) => (
+            <div className='flex items-center space-x-2 md:space-x-4 md:mb-4 mb-2' key={cate.id}>
+              <Checkbox
+                id={cate.name}
+                className='w-4 h-4 md:w-5 md:h-5 hover:bg-gray-400'
+                checked={filters.categoryIds.includes(cate.id)}
+                onCheckedChange={(val) => handleSelectCategory(val as boolean, cate.id)}
+              />
+              <label
+                htmlFor={cate.name}
+                className='text-sm md:text-md font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer hover:text-gray-400'
+              >
+                {cate.name}
+              </label>
+            </div>
+          ))}
       </div>
       <div className='mt-4 pb-4 border-b-gray-300 border-b'>
         <h4 className='font-bold text-lg mb-4'>{t('products.product_sidebar.prices')}</h4>
@@ -103,20 +155,43 @@ const Sidebar = () => {
         </div>
       </div>
       <div className='mt-4'>
-        <h4 className='font-bold text-lg mb-4'>{t('products.product_sidebar.popular_brand')}</h4>
-        {DUMMY_CATEGORY.map((cate) => (
-          <div className='flex items-center space-x-2 md:space-x-4 md:mb-4 mb-2' key={cate.id}>
-            <Checkbox id={cate.name} className='w-4 h-4 md:w-5 md:h-5 hover:bg-gray-400' />
-            <label
-              htmlFor={cate.name}
-              className='text-sm md:text-md font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer hover:text-gray-400'
-            >
-              {cate.name}
-            </label>
-          </div>
-        ))}
+        <h4 className='font-bold text-lg mb-4'>RATING</h4>
+        <RadioGroup value={filters.rating === 0 ? '' : filters.rating.toString()} className='flex flex-col space-y-2'>
+          {Array.from({ length: 5 }, (_, index) => (
+            <div className='flex items-center space-x-2 md:space-x-4' key={index}>
+              <RadioGroupItem
+                id={`rating-${index}`}
+                value={(index + 1).toString()}
+                className='w-4 h-4 md:w-5 md:h-5 hover:bg-gray-400'
+                onClick={(e) => {
+                  // Prevent default RadioGroup behavior
+                  e.preventDefault()
+                  // Call our custom handler instead
+                  handleSelectRating(index + 1)
+                }}
+              />
+              <label
+                htmlFor={`rating-${index}`}
+                className='text-sm md:text-md font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer hover:text-gray-400'
+                onClick={() => handleSelectRating(index + 1)}
+              >
+                <Rating val={index + 1} />
+              </label>
+            </div>
+          ))}
+        </RadioGroup>
       </div>
     </section>
+  )
+}
+
+// Category skeleton component
+const CategorySkeleton = () => {
+  return (
+    <div className='flex items-center space-x-2 md:space-x-4 md:mb-4 mb-2'>
+      <Skeleton className='w-4 h-4 md:w-5 md:h-5 rounded-sm bg-gray-300' />
+      <Skeleton className='h-4 w-28 md:h-5 md:w-36 bg-gray-300' />
+    </div>
   )
 }
 

@@ -17,14 +17,11 @@ export interface CustomPaginationProps {
 }
 
 export function CustomPagination({ pageSize = 12, totalPages = 1, page = 1, onPageChange }: CustomPaginationProps) {
-  console.log('🚀 ~ CustomPagination ~ totalPages:', totalPages)
-
   const renderPageNumbers = () => {
     const items: ReactNode[] = []
     const maxVisiblePages = 5
 
     if (totalPages <= maxVisiblePages) {
-      console.log('🚀 ~ renderPageNumbers ~ totalPages:', totalPages)
       for (let i = 1; i <= totalPages; i++) {
         items.push(
           <PaginationItem key={i}>

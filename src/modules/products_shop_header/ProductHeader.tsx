@@ -7,36 +7,52 @@ import {
   SelectItem,
   SelectLabel,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from '@/components/ui/select'
 import { Sheet, SheetClose, SheetContent, SheetFooter, SheetTrigger } from '@/components/ui/sheet'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import Sidebar from '@/modules/sidebar'
-import { Layout } from '@/types/common.type'
+import { FiltersProduct, Layout } from '@/types/common.type'
 import { Funnel, List, SquaresFour } from '@phosphor-icons/react'
-import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 type Props = {
   layout: Layout
   changeLayout: (val: Layout | ((prev: Layout) => Layout)) => void
+  sort: 'asc' | 'desc' | null
+  setSort: React.Dispatch<React.SetStateAction<'asc' | 'desc' | null>>
+  filters: FiltersProduct
+  setFilters: React.Dispatch<React.SetStateAction<FiltersProduct>>
 }
 
 const ProductHeader = (props: Props) => {
-  const { layout, changeLayout } = props
+  const { layout, changeLayout, sort, setSort, filters, setFilters } = props
   const { t } = useTranslation()
-  const [sortPrice, setSortPrice] = useState<string>('none')
 
   const handleChangeLayout = (e: Layout | '') => {
+    localStorage.setItem('layout', e)
     changeLayout((prev) => (e !== '' ? e : prev))
+  }
+
+  const getDefaultToggleGroupValues = () => {
+    if (filters.newest && filters.bestSelling) {
+      return ['newest', 'best_selling']
+    }
+    if (filters.newest) {
+      return ['newest']
+    }
+    if (filters.bestSelling) {
+      return ['best_selling']
+    }
+    return []
   }
 
   return (
     <div className='md:bg-gray-100 w-full rounded-md flex justify-between md:px-4 md:py-2 gap-x-1 md:dark:bg-gray-700'>
       <div className='flex md:gap-x-6 gap-x-1'>
-        <Select value={sortPrice === 'none' ? undefined : sortPrice} onValueChange={setSortPrice}>
+        <Select value={sort ?? undefined} onValueChange={(val) => setSort(val as 'asc' | 'desc' | null)}>
           <SelectTrigger
-            className={`w-20 md:w-28 focus:ring-0 focus:ring-offset-0 border-gray-400 bg-gray-200 font-semibold pl-2 md:pl-3 dark:bg-gray-800 dark:border-black dark:text-white ${sortPrice !== 'none' ? 'bg-gray-900 dark:bg-gray-500 text-white dark:text-black' : undefined}`}
+            className={`w-20 md:w-28 focus:ring-0 focus:ring-offset-0 border-gray-400 bg-gray-200 font-semibold pl-2 md:pl-3 dark:bg-gray-800 dark:border-black dark:text-white ${sort ? 'bg-gray-900 dark:bg-gray-500 text-white dark:text-black' : undefined}`}
           >
             <SelectValue placeholder={t('products.product_header.price')} />
           </SelectTrigger>
@@ -46,21 +62,23 @@ const ProductHeader = (props: Props) => {
               <SelectItem value='asc' className='font-semibold'>
                 {t('products.product_header.asc')}
               </SelectItem>
-              <SelectItem value='des' className='font-semibold'>
+              <SelectItem value='desc' className='font-semibold'>
                 {t('products.product_header.des')}
               </SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
-        <ToggleGroup type='multiple' className='md:gap-x-6 gap-x-1'>
+        <ToggleGroup type='multiple' className='md:gap-x-6 gap-x-1' defaultValue={getDefaultToggleGroupValues()}>
           <ToggleGroupItem
-            value='a'
+            value='newest'
+            onClick={() => setFilters({ ...filters, newest: !filters.newest })}
             className='bg-gray-200 border border-gray-400 data-[state=on]:bg-gray-900 data-[state=on]:text-white px-2 md:px-3 dark:bg-gray-800 dark:border-black dark:text-white dark:data-[state=on]:bg-gray-500 dark:data-[state=on]:text-black'
           >
             {t('products.product_header.newest')}
           </ToggleGroupItem>
           <ToggleGroupItem
-            value='b'
+            value='best_selling'
+            onClick={() => setFilters({ ...filters, bestSelling: !filters.bestSelling })}
             className='bg-gray-200 border border-gray-400 data-[state=on]:bg-gray-900 data-[state=on]:text-white px-2 md:px-3 dark:bg-gray-800 dark:border-black dark:text-white dark:data-[state=on]:bg-gray-500 dark:data-[state=on]:text-black'
           >
             {t('products.product_header.best_seller')}
@@ -79,7 +97,7 @@ const ProductHeader = (props: Props) => {
           </SheetTrigger>
           <SheetContent className='bg-gray-100 dark:bg-gray-700'>
             <ScrollArea className='h-[90%] w-full rounded-md'>
-              <Sidebar></Sidebar>
+              <Sidebar filters={filters} setFilters={setFilters} />
             </ScrollArea>
             <SheetFooter>
               <div className='flex gap-x-2 justify-center'>

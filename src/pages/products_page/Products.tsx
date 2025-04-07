@@ -10,6 +10,8 @@ import { useSearchParams } from 'react-router-dom'
 import ProductItemSkeleton from '@/modules/products/product_item/ProductItemSkeleton'
 import { Button } from '@/components/ui/button'
 import { Bag } from '@phosphor-icons/react'
+import { toast } from 'sonner'
+import useDebounce from '@/custom_hooks/useDebounce'
 
 const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -42,6 +44,8 @@ const Products = () => {
     newest: newest ? newest === 'true' : false,
   })
 
+  const debouncedFilters = useDebounce(filters, 500)
+
   const [sortPrice, setSortPrice] = useState<'asc' | 'desc' | null>(sort)
 
   const handleGetProducts = async () => {
@@ -69,9 +73,12 @@ const Products = () => {
   }
 
   useEffect(() => {
-    console.log(filters.categoryIds)
-    handleChangeSearchParams()
-    handleGetProducts()
+    if (filters.minPrice > filters.maxPrice) {
+      toast.error('Min price must be less than max price')
+    } else {
+      handleChangeSearchParams()
+      handleGetProducts()
+    }
   }, [
     pagination.page,
     pagination.pageSize,
@@ -79,8 +86,8 @@ const Products = () => {
     filters.bestSelling,
     filters.newest,
     filters.categoryIds.length,
-    filters.minPrice,
-    filters.maxPrice,
+    debouncedFilters.minPrice,
+    debouncedFilters.maxPrice,
     filters.rating,
   ])
 
@@ -109,7 +116,6 @@ const Products = () => {
       params.newest = filters.newest.toString()
     }
     if (filters.categoryIds.length > 0) {
-      console.log('🚀 ~ handleChangeSearchParams ~ filters.categoryIds:', filters.categoryIds)
       params.categoryIds = filters.categoryIds.join(',')
     }
     if (filters.minPrice > 0) {
@@ -122,6 +128,23 @@ const Products = () => {
       params.rating = filters.rating.toString()
     }
     setSearchParams(params)
+  }
+
+  const handleClearFilters = () => {
+    setFilters({
+      categoryIds: [],
+      minPrice: 0,
+      maxPrice: 0,
+      rating: 0,
+      bestSelling: false,
+      newest: false,
+    })
+    setPagination({
+      page: 1,
+      pageSize: Number(pageSize),
+      totalPages: 0,
+    })
+    setSortPrice(null)
   }
 
   return (
@@ -149,36 +172,19 @@ const Products = () => {
               <div className='w-24 h-24 md:w-32 md:h-32 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mb-6 animate-bounce shadow-lg'>
                 <Bag size={64} className='text-gray-400 dark:text-gray-300' />
               </div>
-              <h3 className='text-xl md:text-2xl font-bold text-center mb-2 bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-orange-500'>
+              <h3 className='text-xl md:text-2xl font-bold text-center mb-2 text-black dark:text-white'>
                 No Products Found
               </h3>
               <p className='text-gray-500 dark:text-gray-400 text-center mb-6 max-w-md'>
                 We couldn't find any products matching your criteria. Try adjusting your filters or search terms.
               </p>
-              <div className='flex gap-4'>
-                <Button
-                  variant='outline'
-                  className='px-6 border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  onClick={() => {
-                    window.history.back()
-                  }}
-                >
-                  Go Back
-                </Button>
-                <Button
-                  variant='default'
-                  className='px-6 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 shadow-md'
-                  onClick={() => {
-                    setPagination({
-                      page: 1,
-                      pageSize: Number(pageSize),
-                      totalPages: 0,
-                    })
-                  }}
-                >
-                  Clear Filters
-                </Button>
-              </div>
+              <Button
+                variant='default'
+                className='px-6 bg-black dark:bg-white text-white dark:text-black shadow-md'
+                onClick={handleClearFilters}
+              >
+                Clear Filters
+              </Button>
             </div>
           )}
           {isLoading &&

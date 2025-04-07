@@ -10,6 +10,8 @@ import { ICategoryResponse } from '@/apis/category/categoryInterface'
 import { Skeleton } from '@/components/ui/skeleton'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { FiltersProduct } from '@/types/common.type'
+import { MAX_PRICE_SLIDER, MIN_PRICE_SLIDER, STEP_PRICE_SLIDER } from '@/constants/common.constant'
+import { toast } from 'sonner'
 
 type PriceRange = {
   minPrice: number
@@ -21,25 +23,35 @@ type Props = {
   setFilters: React.Dispatch<React.SetStateAction<FiltersProduct>>
 }
 
+const DEFAULT_MIN_PRICE = 0
+const DEFAULT_MAX_PRICE = MAX_PRICE_SLIDER
+
 const Sidebar = (props: Props) => {
   const { filters, setFilters } = props
+  console.log('🚀 ~ Sidebar ~ filters:', filters)
   const { t } = useTranslation()
-  const [priceRange, setPriceRange] = useState<PriceRange>({ minPrice: 1000, maxPrice: 5000000 })
+  const [priceRange, setPriceRange] = useState<PriceRange>({
+    minPrice: filters.minPrice || DEFAULT_MIN_PRICE,
+    maxPrice: filters.maxPrice || DEFAULT_MAX_PRICE,
+  })
   const [categories, setCategories] = useState<ICategoryResponse[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const handleValueChange = (valueRange: number[]) => {
     setPriceRange({ minPrice: valueRange[0], maxPrice: valueRange[1] })
+    setFilters((prev) => ({ ...prev, minPrice: valueRange[0], maxPrice: valueRange[1] }))
   }
 
   const handleRangeInputChange = (e: ChangeEvent<HTMLInputElement>, type: 'max' | 'min') => {
     const currentValue = Number(e.target.value.split(',').join(''))
     if (type === 'max') {
-      if (currentValue > priceRange.minPrice && currentValue <= 20000000) {
+      if (currentValue <= MAX_PRICE_SLIDER) {
         setPriceRange((prev) => ({ ...prev, maxPrice: Number(e.target.value.split(',').join('')) }))
+        setFilters((prev) => ({ ...prev, maxPrice: Number(e.target.value.split(',').join('')) }))
       }
     } else {
-      if (currentValue < priceRange.maxPrice && currentValue >= 0) {
+      if (currentValue >= MIN_PRICE_SLIDER) {
         setPriceRange((prev) => ({ ...prev, minPrice: Number(e.target.value.split(',').join('')) }))
+        setFilters((prev) => ({ ...prev, minPrice: Number(e.target.value.split(',').join('')) }))
       }
     }
   }
@@ -62,6 +74,12 @@ const Sidebar = (props: Props) => {
   useEffect(() => {
     handleGetAllCategories()
   }, [])
+
+  useEffect(() => {
+    if (filters.minPrice === filters.maxPrice && filters.minPrice === 0) {
+      setPriceRange({ minPrice: DEFAULT_MIN_PRICE, maxPrice: DEFAULT_MAX_PRICE })
+    }
+  }, [filters.minPrice, filters.maxPrice])
 
   const handleGetAllCategories = async () => {
     try {
@@ -86,6 +104,17 @@ const Sidebar = (props: Props) => {
       setFilters((prev) => ({ ...prev, categoryIds: [...prev.categoryIds, id] }))
     } else {
       setFilters((prev) => ({ ...prev, categoryIds: prev.categoryIds.filter((cateId) => cateId !== id) }))
+    }
+  }
+
+  const handleBlurInput = (_e: ChangeEvent<HTMLInputElement>, type: 'max' | 'min') => {
+    if (priceRange.minPrice > priceRange.maxPrice) {
+      toast.error('Min price must be less than max price')
+    }
+    if (type === 'max') {
+      setPriceRange((prev) => ({ ...prev, maxPrice: MAX_PRICE_SLIDER }))
+    } else {
+      setPriceRange((prev) => ({ ...prev, minPrice: MIN_PRICE_SLIDER }))
     }
   }
 
@@ -118,9 +147,9 @@ const Sidebar = (props: Props) => {
         <Slider
           value={[priceRange.minPrice, priceRange.maxPrice]}
           defaultValue={[priceRange.minPrice, priceRange.maxPrice]}
-          minStepsBetweenThumbs={1000000}
-          max={20000000}
-          min={0}
+          minStepsBetweenThumbs={STEP_PRICE_SLIDER}
+          max={MAX_PRICE_SLIDER}
+          min={MIN_PRICE_SLIDER}
           step={1}
           onValueChange={handleValueChange}
           className='w-full'
@@ -133,6 +162,7 @@ const Sidebar = (props: Props) => {
               type='text'
               value={priceRange.minPrice.toLocaleString() || 0}
               onChange={(e) => handleRangeInputChange(e, 'min')}
+              onBlur={(e) => handleBlurInput(e, 'min')}
               onKeyDown={handlePreventCharacter}
             />
             <span className='absolute -top-1 right-2 translate-y-1/2 font-semibold text-gray-400'>
@@ -146,6 +176,7 @@ const Sidebar = (props: Props) => {
               type='text'
               onChange={(e) => handleRangeInputChange(e, 'max')}
               onKeyDown={handlePreventCharacter}
+              onBlur={(e) => handleBlurInput(e, 'max')}
               value={priceRange.maxPrice.toLocaleString() || 50000000}
             />
             <span className='absolute -top-1 right-2 translate-y-1/2 font-semibold text-gray-400'>
@@ -164,9 +195,7 @@ const Sidebar = (props: Props) => {
                 value={(index + 1).toString()}
                 className='w-4 h-4 md:w-5 md:h-5 hover:bg-gray-400'
                 onClick={(e) => {
-                  // Prevent default RadioGroup behavior
                   e.preventDefault()
-                  // Call our custom handler instead
                   handleSelectRating(index + 1)
                 }}
               />

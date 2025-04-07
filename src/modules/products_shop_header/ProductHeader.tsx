@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Sheet, SheetClose, SheetContent, SheetFooter, SheetTrigger } from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetFooter, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import Sidebar from '@/modules/sidebar'
 import { FiltersProduct, Layout } from '@/types/common.type'
@@ -68,7 +68,7 @@ const ProductHeader = (props: Props) => {
             </SelectGroup>
           </SelectContent>
         </Select>
-        <ToggleGroup type='multiple' className='md:gap-x-6 gap-x-1' defaultValue={getDefaultToggleGroupValues()}>
+        <ToggleGroup type='multiple' className='md:gap-x-6 gap-x-1' value={getDefaultToggleGroupValues()}>
           <ToggleGroupItem
             value='newest'
             onClick={() => setFilters({ ...filters, newest: !filters.newest })}
@@ -95,20 +95,12 @@ const ProductHeader = (props: Props) => {
               <Funnel size={24} weight='bold' />
             </Button>
           </SheetTrigger>
+          <SheetTitle className='hidden' />
           <SheetContent className='bg-gray-100 dark:bg-gray-700'>
             <ScrollArea className='h-[90%] w-full rounded-md'>
               <Sidebar filters={filters} setFilters={setFilters} />
             </ScrollArea>
-            <SheetFooter>
-              <div className='flex gap-x-2 justify-center'>
-                <SheetClose asChild>
-                  <Button type='submit'>{t('products.product_header.reset_btn')}</Button>
-                </SheetClose>
-                <SheetClose asChild>
-                  <Button type='submit'>{t('products.product_header.apply_btn')}</Button>
-                </SheetClose>
-              </div>
-            </SheetFooter>
+            <SheetFooter className='hidden' />
           </SheetContent>
         </Sheet>
         <ToggleGroup type='single' value={layout} onValueChange={handleChangeLayout}>

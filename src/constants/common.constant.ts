@@ -11,3 +11,7 @@ export enum ROLE {
 }
 
 export type Role = 'admin' | 'user' | 'shopOwner'
+
+export const MAX_PRICE_SLIDER = 50000000
+export const MIN_PRICE_SLIDER = 0
+export const STEP_PRICE_SLIDER = 100000

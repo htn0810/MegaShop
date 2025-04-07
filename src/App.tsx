@@ -30,7 +30,7 @@ const App = () => {
           <Route path={'/account/verify'} element={VerifyAccount} />
           <Route path={'/account/forgot-password'} element={ForgotPassword} />
           <Route path={'/products'} element={Products} />
-          <Route path={'/product_detail'} element={ProductDetail} />
+          <Route path={'/product_detail/:id'} element={ProductDetail} />
           <Route element={<ProtectedRoute requiredRole={ROLE.USER} redirectPath={'/login'} />}>
             <Route path={'/cart'} element={Cart} />
             <Route path={'/user/*'} element={User} />

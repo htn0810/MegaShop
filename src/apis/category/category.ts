@@ -10,6 +10,10 @@ export class CategoryApi {
     return http.get(`/categories?page=${pageIndex}&limit=${pageSize}`)
   }
 
+  public static async getProductsByCategory(categoryId: number) {
+    return http.get(`/categories/${categoryId}/products`)
+  }
+
   public static createCategory(data: ICreateUpdateCategory) {
     const formData = new FormData()
     formData.append('name', data.name)

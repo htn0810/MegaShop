@@ -38,6 +38,10 @@ export class ProductApi {
     return http.get(`/products?${query}`)
   }
 
+  public static async getProductById(id: number) {
+    return http.get(`/products/${id}`)
+  }
+
   public static async addProduct(data: IAddUpdateProduct, images: File[]) {
     const formData = new FormData()
     formData.append('productData', JSON.stringify(data))

@@ -71,7 +71,7 @@ const CarouselHighlight = (props: Props) => {
             products &&
             products.map((product) => (
               <CarouselItem key={product.id} className='basis-1/2 sm:basis-1/3 lg:basis-1/4 2xl:basis-1/5'>
-                <div className='p-1' onClick={() => navigate('/product_detail')}>
+                <div className='p-1' onClick={() => navigate(`/product_detail/${product.id}`)}>
                   <ProductItem product={product}></ProductItem>
                 </div>
               </CarouselItem>

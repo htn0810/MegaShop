@@ -1,3 +1,6 @@
+import { ICategoryResponse } from '@/apis/category/categoryInterface'
+import { IShop } from '@/types/user.type'
+
 export interface IProduct {
   id: number
   name: string
@@ -9,7 +12,9 @@ export interface IProduct {
   isActive: boolean
   slug: string
   shopId: number
+  shop?: IShop
   categoryId: number
+  category?: ICategoryResponse
   createdAt: string
   updatedAt: string
 }

@@ -6,6 +6,10 @@ export default class ShopAPI {
     return http.get(`/shops?page=${page}&limit=${limit}&status=${status}`)
   }
 
+  public static getShopById = async (shopId: number) => {
+    return http.get(`/shops/${shopId}`)
+  }
+
   public static approveShop = async (shopId: number) => {
     return http.put(`/shops/approve/${shopId}`)
   }

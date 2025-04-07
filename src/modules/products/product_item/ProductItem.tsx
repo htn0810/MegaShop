@@ -5,6 +5,7 @@ import Rating from '@/components/ui/rating'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { ShoppingCart } from '@phosphor-icons/react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 
 type Props = {
   product: IProduct
@@ -13,9 +14,19 @@ type Props = {
 
 const ProductItem = (props: Props) => {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const { product, showType = 'grid' } = props
+
+  const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
+    console.log('click add to cart')
+  }
+
+  const handleNavigateToProductDetail = () => {
+    navigate(`/product_detail/${product.id}`)
+  }
   return (
-    <Card className='overflow-hidden border-none shadow-none cursor-pointer'>
+    <Card className='overflow-hidden border-none shadow-none cursor-pointer' onClick={handleNavigateToProductDetail}>
       {showType === 'grid' ? (
         <>
           <div className='relative w-full group'>
@@ -24,7 +35,10 @@ const ProductItem = (props: Props) => {
               alt='productImg'
               className={`w-full aspect-portrait object-cover`}
             />
-            <Button className='absolute bottom-0 left-0 right-0 w-full py-4 transition-all duration-500 ease-in-out rounded-none opacity-0 group-hover:opacity-100'>
+            <Button
+              className='absolute bottom-0 left-0 right-0 w-full py-4 transition-all duration-500 ease-in-out rounded-none opacity-0 group-hover:opacity-100'
+              onClick={handleAddToCart}
+            >
               {t('product_detail.add_to_cart')}
             </Button>
           </div>
@@ -98,6 +112,7 @@ const ProductItem = (props: Props) => {
             <Button
               variant='outline'
               className='sm:mt-4 2xl:mt-6 flex gap-x-2 px-2 sm:px-4 py-1 h-8 md:h-10 items-center bg-black text-white hover:bg-gray-700 hover:text-white dark:bg-gray-300 dark:text-black dark:hover:text-black dark:hover:bg-gray-500'
+              onClick={handleAddToCart}
             >
               <ShoppingCart size={14} weight='bold' />
               <span className='text-xs sm:text-base'>{t('product_detail.add_to_cart')}</span>

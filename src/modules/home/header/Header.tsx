@@ -1,6 +1,16 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import MetaLogo from '@/assets/images/mega-logo.png'
-import { Bell, House, List, ShoppingBag, ShoppingCart, SignOut, UserCircle, UserGear } from '@phosphor-icons/react'
+import {
+  Bell,
+  Book,
+  House,
+  List,
+  ShoppingBag,
+  ShoppingCart,
+  SignOut,
+  UserCircle,
+  UserGear,
+} from '@phosphor-icons/react'
 import { GlobeSimple } from '@phosphor-icons/react/dist/ssr'
 import { Input } from '@/components/ui/input'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
@@ -18,6 +28,7 @@ import { ROLE } from '@/constants/common.constant'
 const HEADER_NAV: HeaderNav[] = [
   { id: 1, icon: <House size={24} />, name: 'home_nav', path: '/', role: ROLE.USER },
   { id: 2, icon: <ShoppingBag size={24} />, name: 'products_nav', path: '/products', role: ROLE.USER },
+  { id: 3, icon: <Book size={24} />, name: 'about_nav', path: '/about', role: ROLE.USER },
   { id: 3, icon: <UserGear size={24} />, name: 'admin_nav', path: '/admin', role: ROLE.SHOPOWNER },
   { id: 4, icon: <UserGear size={24} />, name: 'super_admin_nav', path: '/super-admin', role: ROLE.ADMIN },
 ]
@@ -25,6 +36,7 @@ const HEADER_NAV: HeaderNav[] = [
 const Header = () => {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
+  const location = useLocation()
   const user = useMegaStore((state) => state.user)
   const { hasPermission } = usePermission(user?.roles || [])
   const handleChangeLanguage = (lng: keyof typeof languages) => {
@@ -58,7 +70,16 @@ const Header = () => {
             (item) =>
               hasPermission(item.role) && (
                 <li className='cursor-pointer hover:text-gray-500' key={item.id}>
-                  <Link to={item.path}>{t(`home.header.${item.name}`)}</Link>
+                  <Link
+                    to={item.path}
+                    className={`relative pb-1 ${
+                      location.pathname === item.path
+                        ? 'after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-primary after:rounded-full'
+                        : ''
+                    }`}
+                  >
+                    {t(`home.header.${item.name}`)}
+                  </Link>
                 </li>
               ),
           )}
@@ -112,7 +133,9 @@ const Header = () => {
                     hasPermission(item.role) && (
                       <Link
                         to={item.path}
-                        className='flex items-center gap-x-2 font-bold p-2 rounded-md hover:bg-gray-200 dark:hover:text-black cursor-pointer'
+                        className={`flex items-center gap-x-2 font-bold p-2 rounded-md hover:bg-gray-200 dark:hover:text-black cursor-pointer ${
+                          location.pathname === item.path ? 'bg-gray-100 dark:bg-gray-600' : ''
+                        }`}
                         key={item.id}
                       >
                         {item.icon}

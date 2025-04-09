@@ -28,7 +28,6 @@ const DEFAULT_MAX_PRICE = MAX_PRICE_SLIDER
 
 const Sidebar = (props: Props) => {
   const { filters, setFilters } = props
-  console.log('🚀 ~ Sidebar ~ filters:', filters)
   const { t } = useTranslation()
   const [priceRange, setPriceRange] = useState<PriceRange>({
     minPrice: filters.minPrice || DEFAULT_MIN_PRICE,

@@ -14,6 +14,7 @@ const App = () => {
   const Products = MegaLazyLoad(import('@/pages/products_page/Products'))
   const ProductDetail = MegaLazyLoad(import('@/pages/product_detail_page/ProductDetail'))
   const Cart = MegaLazyLoad(import('@/pages/cart_page/Cart'))
+  const Order = MegaLazyLoad(import('@/pages/order_page/Order'))
   const User = MegaLazyLoad(import('@/pages/user_page/User'))
   const Shop = MegaLazyLoad(import('@/pages/shop_page/Shop'))
   const AboutUs = MegaLazyLoad(import('@/pages/about_page/AboutUs'))
@@ -38,6 +39,7 @@ const App = () => {
           <Route path={'/shop/:id/categories'} element={Shop} />
           <Route element={<ProtectedRoute requiredRole={ROLE.USER} redirectPath={'/login'} />}>
             <Route path={'/cart'} element={Cart} />
+            <Route path={'/order'} element={Order} />
             <Route path={'/user/*'} element={User} />
           </Route>
           <Route element={<ProtectedRoute requiredRole={ROLE.SHOPOWNER} />}>

@@ -19,3 +19,5 @@ export type Pagination = {
   pageSize: number
   totalPages: number
 }
+
+export type InputCounterType = 'product_detail' | 'cart'

@@ -1,0 +1,26 @@
+{
+  "title": "Thanh toán",
+  "address": "Địa chỉ giao hàng",
+  "review": "Xem lại đơn hàng",
+  "payment": "Phương thức thanh toán",
+  "select_shipping_address": "Chọn địa chỉ giao hàng",
+  "no_addresses": "Bạn chưa có địa chỉ nào. Vui lòng thêm địa chỉ để tiếp tục.",
+  "no_address_selected": "Bạn chưa chọn địa chỉ giao hàng. Vui lòng chọn địa chỉ để tiếp tục.",
+  "add_address": "Thêm địa chỉ",
+  "default": "Mặc định",
+  "review_your_order": "Xem lại đơn hàng của bạn",
+  "shipping_address": "Địa chỉ giao hàng",
+  "change": "Thay đổi",
+  "no_items": "Giỏ hàng của bạn đang trống. Vui lòng thêm sản phẩm vào giỏ hàng trước khi thanh toán.",
+  "back_to_cart": "Quay lại giỏ hàng",
+  "select_payment_method": "Chọn phương thức thanh toán",
+  "order_summary": "Tóm tắt đơn hàng",
+  "back": "Quay lại",
+  "continue": "Tiếp tục",
+  "place_order": "Đặt hàng",
+  "payment_methods": {
+    "credit_card": "Thanh toán bằng thẻ",
+    "bank_transfer": "Thanh toán bằng chuyển khoản",
+    "cod": "Thanh toán khi nhận hàng"
+  }
+}

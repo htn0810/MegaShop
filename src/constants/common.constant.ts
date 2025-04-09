@@ -24,3 +24,8 @@ export const DEFAULT_PAGINATION: Pagination = {
   pageSize: 12,
   totalPages: 0,
 }
+
+export const enum InputCounter {
+  PRODUCT_DETAIL = 'product_detail',
+  CART = 'cart',
+}

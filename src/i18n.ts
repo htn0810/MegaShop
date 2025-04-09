@@ -12,10 +12,12 @@ import products_en from '@/locales/en/products_en.json'
 import products_vn from '@/locales/vn/products_vn.json'
 import cart_en from '@/locales/en/cart_en.json'
 import cart_vn from '@/locales/vn/cart_vn.json'
+import checkout_en from '@/locales/en/checkout_en.json'
+import checkout_vn from '@/locales/vn/checkout_vn.json'
 
 export const languages = {
   en: 'English',
-  vn: 'VietNam'
+  vn: 'VietNam',
 }
 
 export const resources = {
@@ -26,8 +28,9 @@ export const resources = {
       sign_up: sign_up_en,
       product_detail: product_detail_en,
       products: products_en,
-      cart: cart_en
-    }
+      cart: cart_en,
+      checkout: checkout_en,
+    },
   },
   vn: {
     translation: {
@@ -36,9 +39,10 @@ export const resources = {
       sign_up: sign_up_vn,
       product_detail: product_detail_vn,
       products: products_vn,
-      cart: cart_vn
-    }
-  }
+      cart: cart_vn,
+      checkout: checkout_vn,
+    },
+  },
 }
 
 i18n.use(initReactI18next).init({
@@ -46,8 +50,8 @@ i18n.use(initReactI18next).init({
   lng: 'en',
   fallbackLng: 'en',
   interpolation: {
-    escapeValue: false
-  }
+    escapeValue: false,
+  },
 })
 
 export default i18n

@@ -14,6 +14,7 @@ import ProductDetailSkeleton from './ProductDetailSkeleton'
 import { CategoryApi } from '@/apis/category/category'
 import CarouselHighlightSkeleton from '@/modules/home/carousel_highlight/CarouselHighlightSkeleton'
 import { IShop } from '@/apis/shop/shopInterfaces'
+import { InputCounter } from '@/constants/common.constant'
 
 const ProductDetail = () => {
   const { id } = useParams()
@@ -92,7 +93,7 @@ const ProductDetail = () => {
             <span>{t('product_detail.free_ship')}</span>
           </div>
           <div className='mt-2 py-4 flex gap-x-4 md:gap-x-14 items-center'>
-            <ProductCounter />
+            <ProductCounter productId={product?.id || -1} type={InputCounter.PRODUCT_DETAIL} />
             <Button
               variant='outline'
               className='flex gap-x-2 items-center bg-black text-white hover:bg-gray-700 hover:text-white dark:bg-gray-300 dark:text-black dark:hover:text-black dark:hover:bg-gray-500'

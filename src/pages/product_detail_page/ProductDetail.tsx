@@ -11,9 +11,9 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Navigate, useParams } from 'react-router-dom'
 import ProductDetailSkeleton from './ProductDetailSkeleton'
-import { IShop } from '@/types/user.type'
 import { CategoryApi } from '@/apis/category/category'
 import CarouselHighlightSkeleton from '@/modules/home/carousel_highlight/CarouselHighlightSkeleton'
+import { IShop } from '@/apis/shop/shopInterfaces'
 
 const ProductDetail = () => {
   const { id } = useParams()

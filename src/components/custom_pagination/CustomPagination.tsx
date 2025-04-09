@@ -100,7 +100,7 @@ export function CustomPagination({ pageSize = 12, totalPages = 1, page = 1, onPa
   return (
     <div className='flex flex-col md:flex-row items-center gap-3 w-full'>
       <Pagination>
-        <PaginationContent className='max-sm:gap-0'>
+        <PaginationContent className='gap-x-1'>
           <PaginationItem>
             <PaginationPrevious
               onClick={() => onPageChange({ page: Math.max(page - 1, 1), pageSize, totalPages })}

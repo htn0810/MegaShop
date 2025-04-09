@@ -42,6 +42,15 @@ export class ProductApi {
     return http.get(`/products/${id}`)
   }
 
+  public static async getProductsByCategoryIdAndShopId(
+    shopId: number,
+    categoryId: number,
+    page: number,
+    pageSize: number,
+  ) {
+    return http.get(`/products/shops/${shopId}/categories/${categoryId}?page=${page}&pageSize=${pageSize}`)
+  }
+
   public static async addProduct(data: IAddUpdateProduct, images: File[]) {
     const formData = new FormData()
     formData.append('productData', JSON.stringify(data))

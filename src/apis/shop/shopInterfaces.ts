@@ -5,8 +5,8 @@ export enum ShopStatus {
   REJECTED = 'REJECTED',
 }
 
-export interface Shop {
-  id: string
+export interface IShop {
+  id: number
   name: string
   avatarUrl?: string
   coverUrl?: string

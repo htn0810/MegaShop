@@ -10,6 +10,26 @@ export default class ShopAPI {
     return http.get(`/shops/${shopId}`)
   }
 
+  public static getProductsByShopId = async (shopId: number, page = 1, limit = 10) => {
+    return http.get(`/shops/${shopId}/products?page=${page}&limit=${limit}`)
+  }
+
+  public static updateShopCoverImage = async (shopId: number, coverImage: File) => {
+    const formData = new FormData()
+    formData.append('coverImage', coverImage)
+    return http.put(`/shops/${shopId}/cover-image`, formData)
+  }
+
+  public static updateShopProfileImage = async (shopId: number, profileImage: File) => {
+    const formData = new FormData()
+    formData.append('profileImage', profileImage)
+    return http.put(`/shops/${shopId}/profile-image`, formData)
+  }
+
+  public static updateShopInfo = async (shopId: number, name: string, description: string, status: ShopStatus) => {
+    return http.put(`/shops/${shopId}/update`, { name, description, status })
+  }
+
   public static approveShop = async (shopId: number) => {
     return http.put(`/shops/approve/${shopId}`)
   }

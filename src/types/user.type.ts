@@ -1,3 +1,5 @@
+import { IShop } from '@/apis/shop/shopInterfaces'
+
 export interface IUserInfor {
   id: number
   name: string
@@ -14,13 +16,4 @@ export interface IUser extends IUserInfor {
 export interface IRole {
   id: number
   name: string
-}
-
-export interface IShop {
-  id: number
-  name: string
-  avatarUrl?: string
-  coverUrl?: string
-  description: string
-  userId: number
 }

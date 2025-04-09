@@ -13,3 +13,9 @@ export type FiltersProduct = {
   bestSelling: boolean
   newest: boolean
 }
+
+export type Pagination = {
+  page: number
+  pageSize: number
+  totalPages: number
+}

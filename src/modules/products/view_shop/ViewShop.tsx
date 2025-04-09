@@ -1,8 +1,9 @@
+import { IShop } from '@/apis/shop/shopInterfaces'
 import { Button } from '@/components/ui/button'
 import { DEFAULT_SHOP_AVATAR } from '@/constants/common.constant'
-import { IShop } from '@/types/user.type'
 import { Storefront } from '@phosphor-icons/react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 
 type Props = {
   shop: IShop
@@ -10,6 +11,7 @@ type Props = {
 
 const ViewShop = ({ shop }: Props) => {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   return (
     <div className='flex md:gap-x-8 gap-x-2'>
       <div className='flex items-center md:gap-x-6 gap-x-2 md:pr-24 pr-2 border-r border-r-gray-200'>
@@ -18,7 +20,7 @@ const ViewShop = ({ shop }: Props) => {
         </div>
         <div className='flex flex-col gap-y-4'>
           <h4 className='font-bold md:text-lg text-md'>{shop.name}</h4>
-          <Button className='flex gap-x-1'>
+          <Button className='flex gap-x-1' onClick={() => navigate(`/shop/${shop.id}`)}>
             <Storefront size={18} />
             <span className='text-sm'>{t('product_detail.view_shop')}</span>
           </Button>

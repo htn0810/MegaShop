@@ -115,7 +115,7 @@ const Order = () => {
               disabled
             >
               <CreditCard className='h-4 w-4 mr-2' />
-              {t('checkout.payment')}
+              Payment Method
             </TabsTrigger>
           </TabsList>
         </Tabs>

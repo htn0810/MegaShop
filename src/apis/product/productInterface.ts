@@ -1,5 +1,5 @@
 import { ICategoryResponse } from '@/apis/category/categoryInterface'
-import { IShop } from '@/types/user.type'
+import { IShop } from '@/apis/shop/shopInterfaces'
 
 export interface IProduct {
   id: number

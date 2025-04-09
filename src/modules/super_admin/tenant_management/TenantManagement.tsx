@@ -35,7 +35,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { AlertDialogTrigger } from '@radix-ui/react-alert-dialog'
-import { Shop, ShopStatus } from '@/apis/shop/shopInterfaces'
+import { IShop, ShopStatus } from '@/apis/shop/shopInterfaces'
 import { DEFAULT_SHOP_AVATAR } from '@/constants/common.constant'
 import { useSearchParams } from 'react-router-dom'
 import ShopAPI from '@/apis/shop/shop'
@@ -51,7 +51,7 @@ const TenantManagement = () => {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
-  const [shops, setShops] = useState<Shop[]>([])
+  const [shops, setShops] = useState<IShop[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [pageCount, setPageCount] = useState(0)
   const [pagination, setPagination] = useState({
@@ -127,7 +127,7 @@ const TenantManagement = () => {
     handleGetShops()
   }, [pagination.pageIndex, pagination.pageSize, status])
 
-  const columns: ColumnDef<Shop>[] = [
+  const columns: ColumnDef<IShop>[] = [
     {
       accessorKey: 'name',
       header: ({ column }) => {

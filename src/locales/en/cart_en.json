@@ -10,5 +10,8 @@
   "cart_total": "Cart total",
   "shipping": "Shipping",
   "total": "Total",
-  "checkout": "Checkout"
+  "checkout": "Checkout",
+  "empty_cart_title": "Your cart is empty",
+  "empty_cart_description": "Looks like you haven't added any products to your cart yet.",
+  "continue_shopping": "Continue Shopping"
 }

@@ -10,5 +10,8 @@
   "cart_total": "Tổng giỏ hàng",
   "shipping": "Phí vận chuyển",
   "total": "Thành tiền",
-  "checkout": "Thanh toán"
+  "checkout": "Thanh toán",
+  "empty_cart_title": "Giỏ hàng của bạn đang trống",
+  "empty_cart_description": "Có vẻ như bạn chưa thêm sản phẩm nào vào giỏ hàng.",
+  "continue_shopping": "Tiếp tục mua sắm"
 }

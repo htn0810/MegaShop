@@ -11,5 +11,11 @@
   "size": "Size:",
   "add_to_cart": "Add to cart",
   "view_shop": "View Shop",
-  "related_products": "Related Products"
+  "related_products": "Related Products",
+  "follow_shop": "Follow Shop",
+  "unfollow_shop": "Unfollow Shop",
+  "chat_with_shop": "Chat with Shop",
+  "start_conversation": "Start a conversation with the shop owner...",
+  "type_message": "Type your message...",
+  "send": "Send"
 }

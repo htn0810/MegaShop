@@ -13,7 +13,6 @@ import { CategoryApi } from '@/apis/category/category'
 import CarouselHighlightSkeleton from '@/modules/home/carousel_highlight/CarouselHighlightSkeleton'
 import { IShop } from '@/apis/shop/shopInterfaces'
 import { InputCounter } from '@/constants/common.constant'
-
 const ProductDetail = () => {
   const { id } = useParams()
   const { t } = useTranslation()

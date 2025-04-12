@@ -11,5 +11,11 @@
   "size": "Kích cỡ:",
   "add_to_cart": "Thêm vào giỏ hàng",
   "view_shop": "Xem Shop",
-  "related_products": "Sản phẩm liên quan"
+  "related_products": "Sản phẩm liên quan",
+  "follow_shop": "Theo dõi Shop",
+  "unfollow_shop": "Bỏ theo dõi Shop",
+  "chat_with_shop": "Nhắn tin với Shop",
+  "start_conversation": "Bắt đầu trò chuyện với chủ shop...",
+  "type_message": "Nhập tin nhắn...",
+  "send": "Gửi"
 }

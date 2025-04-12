@@ -1,5 +1,6 @@
 import Footer from '@/modules/home/footer'
 import Header from '@/modules/home/header'
+import ChatBox from '@/components/chat/ChatBox'
 
 type Props = {
   children: React.ReactNode
@@ -15,6 +16,8 @@ const PrimaryLayout = (props: Props) => {
         </div>
       </div>
       <Footer />
+      {/* Global Chat Box Component */}
+      <ChatBox />
     </div>
   )
 }

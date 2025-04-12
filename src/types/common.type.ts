@@ -1,5 +1,3 @@
-import { ICartProduct } from '@/apis/cart/cartInterface'
-
 export type Layout = 'grid' | 'list'
 
 export type Option = {

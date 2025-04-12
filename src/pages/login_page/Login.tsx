@@ -13,8 +13,6 @@ import { toast } from 'sonner'
 import { CartAPI } from '@/apis/cart/cart'
 import { useUserStore } from '@/store/userStore'
 import { useCartStore } from '@/store/cartStore'
-import { ICartProduct } from '@/apis/cart/cartInterface'
-import { ProductsGroup } from '@/types/cart.type'
 import { groupProductsByShop } from '@/utils/groupProductsByShop'
 
 type FormData = {

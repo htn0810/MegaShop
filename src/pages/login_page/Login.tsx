@@ -10,7 +10,12 @@ import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router-dom'
 import AuthAPI from '@/apis/auth/auth'
 import { toast } from 'sonner'
-import { useMegaStore } from '@/store/store'
+import { CartAPI } from '@/apis/cart/cart'
+import { useUserStore } from '@/store/userStore'
+import { useCartStore } from '@/store/cartStore'
+import { ICartProduct } from '@/apis/cart/cartInterface'
+import { ProductsGroup } from '@/types/cart.type'
+import { groupProductsByShop } from '@/utils/groupProductsByShop'
 
 type FormData = {
   email: string
@@ -20,7 +25,8 @@ type FormData = {
 const Login = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const setUser = useMegaStore((state) => state.setUser)
+  const { setUser } = useUserStore()
+  const { setCart } = useCartStore()
   const [isHiddenPassword, setIsHiddenPassword] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
   const formSchema = z.object({
@@ -53,6 +59,7 @@ const Login = () => {
         setIsLoading(false)
         const { user } = response.data.data
         setUser(user)
+        handleGetCart()
         const message = response.data.message
         navigate('/')
         return message
@@ -62,6 +69,24 @@ const Login = () => {
       },
     })
   }
+
+  const handleGetCart = async () => {
+    try {
+      const response = await CartAPI.getCart()
+      const productsGroup = groupProductsByShop(response.data.data.cartProducts)
+      setCart({
+        cartProductsGroupByShop: productsGroup,
+        totalQuantity: response.data.data.totalQuantity,
+        totalPrice: response.data.data.totalPrice,
+        id: response.data.data.id,
+        userId: response.data.data.userId,
+        cartProducts: response.data.data.cartProducts,
+      })
+    } catch (error) {
+      toast.error('Error getting user cart')
+    }
+  }
+
   return (
     <div className='flex items-center justify-center'>
       <Form {...form}>

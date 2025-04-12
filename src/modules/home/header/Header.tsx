@@ -24,27 +24,29 @@ import { toast } from 'sonner'
 import { HeaderNav } from '@/constants/header.constant'
 import usePermission from '@/custom_hooks/usePermission'
 import { ROLE } from '@/constants/common.constant'
+import { useUserStore } from '@/store/userStore'
+import { Badge } from '@/components/ui/badge'
 
 const HEADER_NAV: HeaderNav[] = [
   { id: 1, icon: <House size={24} />, name: 'home_nav', path: '/', role: ROLE.USER },
   { id: 2, icon: <ShoppingBag size={24} />, name: 'products_nav', path: '/products', role: ROLE.USER },
   { id: 3, icon: <Book size={24} />, name: 'about_nav', path: '/about', role: ROLE.USER },
-  { id: 3, icon: <UserGear size={24} />, name: 'admin_nav', path: '/admin', role: ROLE.SHOPOWNER },
-  { id: 4, icon: <UserGear size={24} />, name: 'super_admin_nav', path: '/super-admin', role: ROLE.ADMIN },
+  { id: 4, icon: <UserGear size={24} />, name: 'admin_nav', path: '/admin', role: ROLE.SHOPOWNER },
+  { id: 5, icon: <UserGear size={24} />, name: 'super_admin_nav', path: '/super-admin', role: ROLE.ADMIN },
 ]
 
 const Header = () => {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
-  const user = useMegaStore((state) => state.user)
+  const { user, cart } = useMegaStore()
   const { hasPermission } = usePermission(user?.roles || [])
   const handleChangeLanguage = (lng: keyof typeof languages) => {
     i18n.changeLanguage(lng)
   }
 
   const isLoggedIn = user
-  const logoutUser = useMegaStore((state) => state.logoutUser)
+  const { logoutUser } = useUserStore()
 
   const handleLogout = async () => {
     await AuthAPI.logout()
@@ -114,7 +116,14 @@ const Header = () => {
             </DropdownMenu>
           </div>
           <Link to='/cart'>
-            <ShoppingCart size={24} className='cursor-pointer hover:text-gray-500' />
+            <div className='relative'>
+              <ShoppingCart size={24} className='cursor-pointer hover:text-gray-500' />
+              {cart && cart?.totalQuantity > 0 && (
+                <Badge className='absolute -top-1/3 -right-1/3 size-5 rounded-full p-0 text-xs text-center items-center justify-center'>
+                  {cart.totalQuantity}
+                </Badge>
+              )}
+            </div>
           </Link>
           <Bell size={24} className='cursor-pointer hover:text-gray-500' />
           <span className='hidden xl:inline'>

@@ -30,7 +30,6 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={(value) => {
-              console.log(value)
               table.setPageSize(Number(value))
             }}
           >

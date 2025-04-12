@@ -1,8 +1,8 @@
 {
   "title": "Checkout",
-  "address": "Shipping Address",
-  "review": "Review Order",
-  "payment": "Payment Method",
+  "address_tab": "Shipping",
+  "review_tab": "Review",
+  "payment_tab": "Payment",
   "select_shipping_address": "Select Shipping Address",
   "no_addresses": "You don't have any saved addresses. Please add an address to continue.",
   "no_address_selected": "You haven't selected a shipping address. Please select an address to continue.",

@@ -6,7 +6,7 @@ export class CartAPI {
   }
 
   public static async addToCart(productId: number, quantity: number) {
-    return await http.post(`/carts`, {
+    return http.post(`/carts`, {
       productId,
       quantity,
     })
@@ -28,6 +28,10 @@ export class CartAPI {
     return await http.post(`/carts/remove-product`, {
       productId,
     })
+  }
+
+  public static async removeAllProductsOfShopFromCart(shopId: number) {
+    return await http.post(`/carts/remove-products/${shopId}`)
   }
 
   public static async clearCart(cartId: number) {

@@ -1,11 +1,15 @@
+import { CartAPI } from '@/apis/cart/cart'
+import { ICartProduct } from '@/apis/cart/cartInterface'
 import { IProduct } from '@/apis/product/productInterface'
 import { Button } from '@/components/ui/button'
 import { Card, CardDescription, CardTitle } from '@/components/ui/card'
 import Rating from '@/components/ui/rating'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { useCartStore } from '@/store/cartStore'
 import { ShoppingCart } from '@phosphor-icons/react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 
 type Props = {
   product: IProduct
@@ -15,11 +19,21 @@ type Props = {
 const ProductItem = (props: Props) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const { addToCart } = useCartStore()
   const { product, showType = 'grid' } = props
 
   const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
-    console.log('click add to cart')
+    toast.promise(CartAPI.addToCart(product.id, 1), {
+      loading: 'Adding to cart...',
+      success: (response) => {
+        const addedProduct = response.data.data.cartProducts.find(
+          (cartProduct: ICartProduct) => cartProduct.productId === product.id,
+        )
+        addToCart(addedProduct, addedProduct.shopId, 1)
+        return 'Added to cart'
+      },
+    })
   }
 
   const handleNavigateToProductDetail = () => {

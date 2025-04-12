@@ -1,8 +1,8 @@
 {
   "title": "Thanh toán",
-  "address": "Địa chỉ giao hàng",
-  "review": "Xem lại đơn hàng",
-  "payment": "Phương thức thanh toán",
+  "address_tab": "Địa chỉ",
+  "review_tab": "Tổng quan",
+  "payment_tab": "Thanh toán",
   "select_shipping_address": "Chọn địa chỉ giao hàng",
   "no_addresses": "Bạn chưa có địa chỉ nào. Vui lòng thêm địa chỉ để tiếp tục.",
   "no_address_selected": "Bạn chưa chọn địa chỉ giao hàng. Vui lòng chọn địa chỉ để tiếp tục.",

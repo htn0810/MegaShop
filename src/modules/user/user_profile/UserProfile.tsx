@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react'
 import { convertImageUrlToFile } from '@/utils/convertImageUrlToFile'
 import { toast } from 'sonner'
 import AuthAPI from '@/apis/auth/auth'
-import { useMegaStore } from '@/store/store'
+import { useUserStore } from '@/store/userStore'
 
 type Props = {
   user: IUser
@@ -20,7 +20,7 @@ type Props = {
 
 const UserProfile = (props: Props) => {
   const { user } = props
-  const setUser = useMegaStore((state) => state.setUser)
+  const { setUser } = useUserStore()
   useEffect(() => {
     handleLoadCurrentAvatar()
   }, [user.avatarUrl])
@@ -37,7 +37,7 @@ const UserProfile = (props: Props) => {
   const [userAvatar, setUserAvatar] = useState<File[]>([])
   // Validation schemas
   const profileFormSchema = z.object({
-    name: z.string().min(2, { message: 'Name must be at least 2 characters' })
+    name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
   })
 
   const passwordFormSchema = z
@@ -51,19 +51,19 @@ const UserProfile = (props: Props) => {
         .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
         .regex(/\d/, 'Password must contain at least one number')
         .regex(/[@$!%*?&]/, 'Password must contain at least one special character (@$!%*?&)'),
-      confirmPassword: z.string()
+      confirmPassword: z.string(),
     })
     .refine((data) => data.newPassword === data.confirmPassword, {
       message: "Passwords don't match",
-      path: ['confirmPassword']
+      path: ['confirmPassword'],
     })
 
   // Profile form
   const profileForm = useForm<z.infer<typeof profileFormSchema>>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      name: user.name
-    }
+      name: user.name,
+    },
   })
 
   // Password form
@@ -72,8 +72,8 @@ const UserProfile = (props: Props) => {
     defaultValues: {
       currentPassword: '',
       newPassword: '',
-      confirmPassword: ''
-    }
+      confirmPassword: '',
+    },
   })
 
   // Handle profile update
@@ -89,7 +89,7 @@ const UserProfile = (props: Props) => {
         setUser(updatedUser)
         const message = response.data.message
         return message
-      }
+      },
     })
   }
 
@@ -103,8 +103,8 @@ const UserProfile = (props: Props) => {
           const message = response.data.message
           passwordForm.reset()
           return message
-        }
-      }
+        },
+      },
     )
   }
 

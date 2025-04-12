@@ -49,7 +49,7 @@ http.interceptors.response.use(
   },
   async (error) => {
     if (error.response?.status === 401) {
-      const logoutUser = axiosStore.getState().logoutUser
+      const logoutUser = axiosStore.getState().clearAllData
       logoutUser()
     }
 

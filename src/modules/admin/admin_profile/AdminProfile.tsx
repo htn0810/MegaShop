@@ -14,6 +14,7 @@ import ShopAPI from '@/apis/shop/shop'
 import { DEFAULT_SHOP_AVATAR, DEFAULT_SHOP_COVER } from '@/constants/common.constant'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ShopStatus } from '@/apis/shop/shopInterfaces'
+import { useUserStore } from '@/store/userStore'
 
 type FormData = {
   name: string
@@ -23,7 +24,7 @@ type FormData = {
 const AdminProfile = () => {
   const { t } = useTranslation()
   const shop = useMegaStore((state) => state.user?.shop)!
-  const updateShop = useMegaStore((state) => state.updateShop)
+  const { updateShop } = useUserStore()
   const [profileImage, setProfileImage] = useState<string>(shop.avatarUrl || DEFAULT_SHOP_AVATAR)
   const [coverImage, setCoverImage] = useState<string>(shop.coverUrl || DEFAULT_SHOP_COVER)
   const [isCoverLoading, setIsCoverLoading] = useState(false)

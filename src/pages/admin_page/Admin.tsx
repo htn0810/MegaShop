@@ -5,6 +5,7 @@ import Dashboard from '@/modules/admin/dashboard'
 import Orders from '@/modules/admin/orders'
 import Revenue from '@/modules/admin/revenue'
 import Discount from '@/modules/admin/discount'
+import Chat from '@/modules/admin/chat'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 const Admin = () => {
@@ -15,7 +16,7 @@ const Admin = () => {
   return (
     <div className='py-6'>
       <Tabs value={path} className='w-full'>
-        <TabsList className='grid w-full grid-cols-3 md:grid-cols-6 h-auto'>
+        <TabsList className='grid w-full grid-cols-3 md:grid-cols-7 h-auto'>
           <TabsTrigger
             className=' text-xs sm:text-sm'
             value='dashboard'
@@ -37,19 +38,26 @@ const Admin = () => {
           >
             Orders
           </TabsTrigger>
-          <TabsTrigger
+          {/* <TabsTrigger
             className='text-xs sm:text-sm'
             value='revenue'
             onClick={() => navigate('/admin/revenue', { replace: true })}
           >
             Revenue
-          </TabsTrigger>
+          </TabsTrigger> */}
           <TabsTrigger
             className='text-xs sm:text-sm'
             value='discount'
             onClick={() => navigate('/admin/discount', { replace: true })}
           >
             Discount
+          </TabsTrigger>
+          <TabsTrigger
+            className='text-xs sm:text-sm'
+            value='chat'
+            onClick={() => navigate('/admin/chat', { replace: true })}
+          >
+            Chat
           </TabsTrigger>
           <TabsTrigger
             className='text-xs sm:text-sm'
@@ -88,6 +96,12 @@ const Admin = () => {
           className='md:border md:border-gray-300 md:dark:border-none md:px-4 py-2 rounded-md mt-4 bg-none  md:bg-gray-50 md:dark:bg-gray-800'
         >
           <Discount />
+        </TabsContent>
+        <TabsContent
+          value='chat'
+          className='md:border md:border-gray-300 md:dark:border-none md:px-4 py-2 rounded-md mt-4 bg-none  md:bg-gray-50 md:dark:bg-gray-800'
+        >
+          <Chat />
         </TabsContent>
         <TabsContent value='profile'>
           <AdminProfile />

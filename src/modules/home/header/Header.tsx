@@ -26,6 +26,7 @@ import usePermission from '@/custom_hooks/usePermission'
 import { ROLE } from '@/constants/common.constant'
 import { useUserStore } from '@/store/userStore'
 import { Badge } from '@/components/ui/badge'
+import { socket } from '@/configs/socket'
 
 const HEADER_NAV: HeaderNav[] = [
   { id: 1, icon: <House size={24} />, name: 'home_nav', path: '/', role: ROLE.USER },
@@ -50,6 +51,11 @@ const Header = () => {
 
   const handleLogout = async () => {
     await AuthAPI.logout()
+    // Update status
+    socket.emit('setStatus', {
+      userId: user?.id,
+      status: 'OFFLINE',
+    })
     toast.success('Logout successfully!', {
       description: 'Please login again to shop with us!',
     })

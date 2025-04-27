@@ -74,11 +74,26 @@ module.exports = {
             transform: 'translateY(0)',
           },
         },
+        'typing-dot': {
+          '0%': {
+            transform: 'translateY(0px)',
+            opacity: '0.2',
+          },
+          '50%': {
+            transform: 'translateY(-5px)',
+            opacity: '0.8',
+          },
+          '100%': {
+            transform: 'translateY(0px)',
+            opacity: '0.2',
+          },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'fade-in-up': 'fade-in-up 0.5s ease-out forwards',
+        'typing-dot': 'typing-dot 1.2s ease-in-out infinite',
       },
     },
   },

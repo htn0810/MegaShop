@@ -1,6 +1,6 @@
 import Footer from '@/modules/home/footer'
 import Header from '@/modules/home/header'
-import ChatBox from '@/components/chat/ChatBox'
+import ChatBox from '@/components/chat/ChatBox/ChatBox'
 
 type Props = {
   children: React.ReactNode

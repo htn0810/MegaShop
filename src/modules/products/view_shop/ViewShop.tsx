@@ -15,7 +15,7 @@ const ViewShop = ({ shop }: Props) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [isFollowing, setIsFollowing] = useState(false)
-  const { openChat } = useChatStore()
+  const { openChat, addChatUserId, setSelectedChatUserId } = useChatStore()
 
   const handleFollowToggle = () => {
     setIsFollowing(!isFollowing)
@@ -23,7 +23,9 @@ const ViewShop = ({ shop }: Props) => {
   }
 
   const handleStartChat = () => {
-    openChat(shop)
+    openChat()
+    addChatUserId(shop.userId)
+    setSelectedChatUserId(shop.userId)
   }
 
   return (

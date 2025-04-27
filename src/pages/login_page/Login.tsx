@@ -14,6 +14,7 @@ import { CartAPI } from '@/apis/cart/cart'
 import { useUserStore } from '@/store/userStore'
 import { useCartStore } from '@/store/cartStore'
 import { groupProductsByShop } from '@/utils/groupProductsByShop'
+import { socket } from '@/configs/socket'
 
 type FormData = {
   email: string
@@ -59,6 +60,11 @@ const Login = () => {
         setUser(user)
         handleGetCart()
         const message = response.data.message
+        // Update status
+        socket.emit('setStatus', {
+          userId: user.id,
+          status: 'ONLINE',
+        })
         navigate('/')
         return message
       },

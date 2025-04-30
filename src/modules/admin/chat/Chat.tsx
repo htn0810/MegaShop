@@ -9,8 +9,8 @@ import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { toast } from 'sonner'
 import { Conversation, Message, Participant, SelectedConversation } from '@/types/conversation.type'
-import ChatSection from '@/components/chat/ChatSection/ChatSection'
 import { produce } from 'immer'
+import ChatSection from '@/components/chat/ChatSection'
 
 const Chat = () => {
   const { user: currentUser } = useUserStore()

@@ -69,7 +69,7 @@ const Login = () => {
             status: 'ONLINE',
           })
         })
-        socket.on('connect_error', (err) => {
+        socket.on('connect_error', (_err) => {
           toast.error('Failed to connect to chat server!')
         })
         navigate('/')

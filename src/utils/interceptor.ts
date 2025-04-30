@@ -1,6 +1,6 @@
 import AuthAPI from '@/apis/auth/auth'
 import { RefreshTokenResponse } from '@/apis/auth/authInterfaces'
-import axios, { AxiosRequestConfig } from 'axios'
+import axios from 'axios'
 import { toast } from 'sonner'
 import { StoreApi } from 'zustand/vanilla'
 import { MegaState } from '@/store/store'

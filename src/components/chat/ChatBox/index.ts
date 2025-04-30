@@ -1,4 +1,2 @@
-import ChatBox from './ChatSection/ChatBox'
-
-export { ChatBox }
+import ChatBox from '@/components/chat/ChatBox/ChatBox'
 export default ChatBox

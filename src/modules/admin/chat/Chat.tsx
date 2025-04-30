@@ -23,12 +23,12 @@ const Chat = () => {
   // Filter users based on search term
   const filteredUsers = searchTerm.trim()
     ? users?.filter((u) => u.user.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    : [...users, ...users, ...users, ...users, ...users, ...users, ...users, ...users, ...users, ...users]
+    : users
 
   // Fetch conversations
   const handleGetConversations = async () => {
     try {
-      const response = await ConversationApi.getConversation()
+      const response = await ConversationApi.getConversationByUserId(currentUser!.id)
       const conversationsData = response.data.data.map((convo: Conversation) => {
         // Count unread messages for each conversation
         const unreadCount = convo.messages.filter((msg) => !msg.read && msg.senderId !== currentUser?.id).length

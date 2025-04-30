@@ -1,25 +1,24 @@
 // src/components/Chat.tsx
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useUserStore } from '@/store/userStore'
 import { ConversationApi } from '@/apis/conversation/conversation'
-import { socket } from '@/configs/socket'
-import axios from 'axios'
+import { cleanUpSocket, socket } from '@/configs/socket'
 import { useChatStore } from '@/store/chatStore'
 import { X, Minus, PaperPlaneRight, ImageSquare, ChatDots } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 import TypingIndicator from '@/components/typing_indicator/TypingIndicator'
-import { Conversation, Message } from '@/types/conversation.type'
+import { Conversation, Message, Participant } from '@/types/conversation.type'
 
 const ChatBox = () => {
   const { user } = useUserStore()
-  const { isChatOpen, chatUserIds, selectedChatUserId, isMinimized, minimizeChat, maximizeChat, closeChat } =
-    useChatStore()
+  const { isChatOpen, selectedChatUserId, isMinimized, minimizeChat, maximizeChat, closeChat } = useChatStore()
 
   const [messages, setMessages] = useState<Message[]>([])
+  const [otherParticipant, setOtherParticipant] = useState<Participant['user'] | null>(null)
   const [input, setInput] = useState('')
   const [status, setStatus] = useState<'ONLINE' | 'OFFLINE'>('OFFLINE')
   const [isTyping, setIsTyping] = useState(false)
@@ -28,42 +27,84 @@ const ChatBox = () => {
   const [unreadCount, setUnreadCount] = useState(0)
   const scrollRef = useRef<HTMLDivElement>(null)
 
+  // Typing logic
+  const typingTimeout = useRef<NodeJS.Timeout | null>(null)
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!conversation) return
+
+    setInput(e.target.value)
+
+    socket.emit('typing', { conversationId: conversation.id, senderId: user?.id })
+
+    if (typingTimeout.current) clearTimeout(typingTimeout.current)
+    typingTimeout.current = setTimeout(() => {
+      if (conversation) {
+        socket.emit('stopTyping', { conversationId: conversation.id, senderId: user?.id })
+      }
+    }, 2000)
+  }
+
+  // Send message
+  const handleSend = () => {
+    if (!input.trim() || !conversation) return
+    try {
+      socket.emit('sendMessage', {
+        conversationId: conversation.id,
+        senderId: user?.id,
+        content: input,
+        type: 'TEXT',
+      })
+
+      socket.emit('stopTyping', { conversationId: conversation.id, senderId: user?.id })
+      setInput('')
+    } catch (error) {
+      toast.error('Failed to send message')
+    }
+  }
+
   // Handle conversation initialization when activeShop changes
   useEffect(() => {
     if (!user?.id || !selectedChatUserId) return
-
     const initializeConversation = async () => {
       setLoading(true)
       try {
         // Get all conversations
-        const response = await ConversationApi.getConversation()
+        const response = await ConversationApi.getConversationByUserId(user.id)
         const conversations = response.data.data
 
         // Find existing conversation with this shop
         const existingConversation = conversations.find((conv: Conversation) => {
-          return conv.participants.some((p) => p.user.id === selectedChatUserId)
+          const participantIds = conv.participants.map((p) => p.user.id)
+          return participantIds.includes(selectedChatUserId) && participantIds.includes(user.id)
         })
+
+        let otherParticipant = null
 
         if (existingConversation) {
           // Use existing conversation
+          otherParticipant = existingConversation.participants.find((p: Participant) => p.user.id !== user.id)
+
           setConversation(existingConversation)
           setMessages(existingConversation.messages)
         } else {
           // Create new conversation
           const createResponse = await ConversationApi.createConversation(selectedChatUserId)
           const newConversation = createResponse.data.data
+          otherParticipant = newConversation.participants.find((p: Participant) => p.user.id !== user.id)
           setConversation(newConversation)
-          setMessages(newConversation.messages || [])
+          setMessages(newConversation.messages)
         }
+        setStatus(otherParticipant?.user.chatStatus)
+        setOtherParticipant(otherParticipant.user)
       } catch (error) {
-        console.error('Failed to initialize conversation:', error)
+        toast.error('Failed to initialize conversation!')
       } finally {
         setLoading(false)
       }
     }
 
     initializeConversation()
-    // Reset unread count when opening a conversation
     setUnreadCount(0)
   }, [selectedChatUserId, user?.id])
 
@@ -74,22 +115,23 @@ const ChatBox = () => {
     socket.connect()
     socket.emit('joinConversation', { conversationId: conversation.id })
 
-    // Update status
-    socket.emit('setStatus', {
-      userId: user.id,
-      status: 'ONLINE',
-    })
-
     // Receive new messages
     socket.on('newMessage', (message: Message) => {
-      setMessages((prev) => [...prev, message])
-      if (message.senderId !== user.id) {
-        // Increment unread count if chat is minimized
-        if (isMinimized) {
-          setUnreadCount((prev) => prev + 1)
-        } else {
+      if (isMinimized) {
+        setUnreadCount((prev) => prev + 1)
+      } else {
+        if (message.senderId !== user?.id) {
           socket.emit('readMessage', { messageId: message.id, conversationId: conversation.id })
         }
+      }
+      setMessages((prev) => [...prev, message])
+    })
+
+    scrollRef.current?.scrollIntoView({ behavior: 'smooth' })
+
+    socket.on('statusUpdate', ({ userId, status }) => {
+      if (userId === selectedChatUserId) {
+        setStatus(status)
       }
     })
 
@@ -111,24 +153,13 @@ const ChatBox = () => {
       setMessages((prev) => prev.map((msg) => (msg.id === messageId ? { ...msg, read } : msg)))
     })
 
-    // Status update
-    socket.on('statusUpdate', ({ userId, status }) => {
-      const otherUser = getOtherUser()
-      if (otherUser && userId === otherUser.id) {
-        setStatus(status)
-      }
-    })
-
     // error when send message
     socket.on('error', (error) => {
       toast.error(error.message)
     })
 
     return () => {
-      socket.emit('setStatus', {
-        userId: user.id,
-        status: 'OFFLINE',
-      })
+      cleanUpSocket()
       socket.disconnect()
     }
   }, [conversation, user?.id, isMinimized])
@@ -145,83 +176,15 @@ const ChatBox = () => {
 
       setUnreadCount(0)
     }
-  }, [isMinimized, unreadCount, conversation])
+  }, [isMinimized])
 
-  // Auto scroll
+  // Auto-scroll to latest message
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  // Typing logic
-  const typingTimeout = useRef<NodeJS.Timeout | null>(null)
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(e.target.value)
-    if (!conversation) return
-
-    socket.emit('typing', { conversationId: conversation.id, senderId: user?.id })
-
-    if (typingTimeout.current) clearTimeout(typingTimeout.current)
-    typingTimeout.current = setTimeout(() => {
-      if (conversation) {
-        socket.emit('stopTyping', { conversationId: conversation.id, senderId: user?.id })
-      }
-    }, 2000)
-  }
-
-  // Send message
-  const handleSend = () => {
-    if (!input.trim() || !conversation) return
-    socket.emit('sendMessage', {
-      conversationId: conversation.id,
-      senderId: user?.id,
-      content: input,
-      type: 'TEXT',
-    })
-
-    socket.emit('stopTyping', { conversationId: conversation.id, senderId: user?.id })
-    setInput('')
-  }
-
-  // Upload image
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file || !conversation) return
-
-    const formData = new FormData()
-    formData.append('image', file)
-
-    try {
-      const { data } = await axios.post('/api/conversations/upload-image', formData)
-      socket.emit('sendMessage', {
-        conversationId: conversation.id,
-        senderId: user?.id,
-        content: data.url,
-        type: 'IMAGE',
-      })
-    } catch (error) {
-      console.log('Upload failed:', error)
-    }
-  }
-
-  // Helper functions
-  const getOtherUser = () => {
-    if (!conversation) return null
-    return conversation.participants.find((p) => p.user.id !== user?.id)?.user
-  }
-
-  const getLastActive = (lastActive: string) => {
-    const now = new Date()
-    const last = new Date(lastActive)
-    const diff = Math.floor((now.getTime() - last.getTime()) / 1000 / 60)
-    return diff < 1 ? 'Online now' : `Active ${diff} minutes ago`
-  }
-
   // If chat is not open, don't render anything
-  if (!isChatOpen || !selectedChatUserId) return null
-
-  const otherUser = getOtherUser()
-  console.log('🚀 ~ ChatBox ~ otherUser:', otherUser)
+  if (!isChatOpen || !selectedChatUserId || !otherParticipant) return null
 
   // Render minimized chat
   if (isMinimized) {
@@ -246,19 +209,20 @@ const ChatBox = () => {
     <div className='fixed bottom-4 right-4 z-50 flex flex-col h-[500px] w-[350px] border rounded-lg shadow-lg bg-background'>
       <div className='p-4 bg-primary text-primary-foreground rounded-t-lg flex justify-between items-center'>
         <div className='flex items-center gap-2'>
-          <Avatar>
-            <AvatarImage src={otherUser?.avatarUrl} />
-            <AvatarFallback>{otherUser?.name[0]}</AvatarFallback>
-          </Avatar>
+          <div className='relative'>
+            <Avatar>
+              <AvatarImage src={otherParticipant.shop?.avatarUrl || otherParticipant?.avatarUrl} />
+              <AvatarFallback>{otherParticipant?.name[0]}</AvatarFallback>
+            </Avatar>
+            <div
+              className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-background ${
+                status === 'ONLINE' ? 'bg-green-500' : 'bg-gray-400'
+              }`}
+            />
+          </div>
           <div>
-            <h3 className='font-medium'>{otherUser?.shop?.name}</h3>
-            <p className='text-xs text-primary-foreground/80'>
-              {status === 'ONLINE'
-                ? 'Online now'
-                : otherUser
-                  ? getLastActive(otherUser.lastActive || new Date().toISOString())
-                  : 'Offline'}
-            </p>
+            <h3 className='font-medium'>{otherParticipant?.shop?.name || otherParticipant.name}</h3>
+            <p className='text-xs text-primary-foreground/80'>{status === 'ONLINE' ? 'Online' : 'Offline'}</p>
           </div>
         </div>
         <div className='flex gap-2'>
@@ -277,9 +241,9 @@ const ChatBox = () => {
         </div>
       ) : (
         <ScrollArea className='flex-1 p-4'>
-          {messages.length === 0 ? (
+          {messages?.length === 0 ? (
             <div className='flex flex-col items-center justify-center h-full text-muted-foreground'>
-              <p>Start chatting with {otherUser?.shop?.name}</p>
+              <p>Start chatting with {otherParticipant?.shop?.name}</p>
             </div>
           ) : (
             messages.map((msg) => (
@@ -296,14 +260,16 @@ const ChatBox = () => {
                   )}
                   <div className='flex justify-between text-xs mt-1 opacity-70'>
                     <span>{new Date(msg.createdAt).toLocaleTimeString()}</span>
-                    {msg.senderId === user?.id && <span>{msg.read ? 'Read' : 'Sent'}</span>}
+                    {msg.senderId === user?.id && <span className='ml-1'>{msg.read ? 'Read' : 'Sent'}</span>}
                   </div>
                 </div>
               </div>
             ))
           )}
           <div className='flex justify-start items-center mb-2 mt-2'>
-            {isTyping && <TypingIndicator avatarUrl={otherUser?.avatarUrl || ''} name={otherUser?.name || ''} />}
+            {isTyping && (
+              <TypingIndicator avatarUrl={otherParticipant?.avatarUrl || ''} name={otherParticipant?.name || ''} />
+            )}
           </div>
           <div ref={scrollRef} />
         </ScrollArea>
@@ -322,7 +288,7 @@ const ChatBox = () => {
         </Button>
         <Button size='icon' variant='outline' asChild>
           <label>
-            <input type='file' accept='image/*' className='hidden' onChange={handleImageUpload} />
+            {/* <input type='file' accept='image/*' className='hidden' onChange={handleImageUpload} /> */}
             <ImageSquare size={18} />
           </label>
         </Button>

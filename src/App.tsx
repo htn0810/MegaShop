@@ -1,10 +1,13 @@
 import PrimaryLayout from '@/layouts/primary_layout'
-import { Fragment } from 'react'
+import { Fragment, useEffect } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import './i18n'
 import MegaLazyLoad from '@/components/lazy_load/MegaLazyLoad'
 import ProtectedRoute from '@/configs/ProtectedRoute'
 import { ROLE } from '@/constants/common.constant'
+import { useChatStore } from '@/store/chatStore'
+import { useUserStore } from '@/store/userStore'
+import { cleanUpSocket } from '@/configs/socket'
 
 const App = () => {
   const Home = MegaLazyLoad(import('@/pages/home_page/Home'))
@@ -22,6 +25,23 @@ const App = () => {
   const SuperAdmin = MegaLazyLoad(import('@/pages/super_admin_page/SuperAdmin'))
   const NotFound = MegaLazyLoad(import('@/pages/not_found_page/NotFound'))
   const ForgotPassword = MegaLazyLoad(import('@/pages/forgot_password_page/ForgotPassword'))
+
+  const { user } = useUserStore()
+  const { closeChat } = useChatStore()
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      closeChat()
+      cleanUpSocket()
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+    }
+  }, [user])
 
   return (
     <Fragment>

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { socket } from '@/configs/socket'
+import { cleanUpSocket, socket } from '@/configs/socket'
 import { useUserStore } from '@/store/userStore'
 import { Conversation, Message, Participant, SelectedConversation } from '@/types/conversation.type'
 import { produce } from 'immer'
@@ -20,6 +20,8 @@ type Props = {
 const ChatSection = (props: Props) => {
   const { user: currentUser } = useUserStore()
   const { selectedConversation, conversations, setConversations } = props
+  const currentConversation = conversations.find((c) => c.id === selectedConversation?.conversationId)
+  const [messages, setMessages] = useState<Message[]>(currentConversation?.messages || [])
   const [otherParticipant, setOtherParticipant] = useState<Participant['user']>(
     selectedConversation.otherParticipant.user,
   )
@@ -33,7 +35,6 @@ const ChatSection = (props: Props) => {
     if (!message.trim() || !selectedUserId) return
 
     if (selectedConversation?.otherParticipant.userId !== selectedUserId) {
-      console.error('No conversation found with this user')
       toast.error('Could not send message: Conversation not found')
       return
     }
@@ -77,6 +78,15 @@ const ChatSection = (props: Props) => {
     }, 2000)
   }
 
+  useEffect(() => {
+    const currentConversation = conversations.find((c) => c.id === selectedConversation?.conversationId)
+    setMessages(currentConversation?.messages || [])
+    setOtherParticipant(selectedConversation.otherParticipant.user)
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [selectedConversation.conversationId])
+
   // Connect socket and listen for events
   useEffect(() => {
     if (!currentUser?.id || !selectedConversation) return
@@ -94,11 +104,23 @@ const ChatSection = (props: Props) => {
           const conversation = draft.find((c) => c.id === message.conversationId)
           if (conversation) {
             if (conversation.id === selectedConversation.conversationId) {
-              conversation.messages.push({ ...message, read: true })
+              conversation.messages.push(message)
+              setMessages(
+                produce(messages, (draft) => {
+                  draft.push(message)
+                }),
+              )
+              if (message.senderId !== currentUser?.id) {
+                socket.emit('readMessage', {
+                  messageId: message.id,
+                  conversationId: selectedConversation.conversationId,
+                })
+              }
             } else {
               conversation.messages.push({ ...message, read: false })
               conversation.unreadCount = conversation.unreadCount ? conversation.unreadCount + 1 : 1
             }
+            conversation.messages.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
           }
         }),
       )
@@ -112,7 +134,14 @@ const ChatSection = (props: Props) => {
 
     // Read message
     socket.on('messageRead', ({ messageId, read }) => {
-      console.log('messageRead', messageId, read)
+      setMessages(
+        produce(messages, (draft) => {
+          const messageIdx = draft.findIndex((msg) => msg.id === messageId)
+          if (messageIdx !== -1) {
+            draft[messageIdx].read = read
+          }
+        }),
+      )
       setConversations(
         produce(conversations, (draft) => {
           const conversation = draft.find((c) => c.id === selectedConversation?.conversationId)
@@ -132,7 +161,6 @@ const ChatSection = (props: Props) => {
 
     // Typing indicator
     socket.on('typing', ({ senderId }) => {
-      console.log('typing', senderId)
       if (senderId !== currentUser?.id && selectedConversation?.otherParticipant.userId === senderId) {
         setIsTyping(true)
       }
@@ -152,6 +180,7 @@ const ChatSection = (props: Props) => {
     // Clean up on unmount
     return () => {
       socket.disconnect()
+      cleanUpSocket()
     }
   }, [currentUser?.id, conversations, selectedConversation])
 
@@ -181,36 +210,34 @@ const ChatSection = (props: Props) => {
       <CardContent className='flex-1 p-0 overflow-hidden flex flex-col '>
         <ScrollArea className='p-4 h-[500px]'>
           <div className='space-y-4'>
-            {conversations
-              .find((c) => c.id === selectedConversation?.conversationId)
-              ?.messages.map((msg) => (
+            {messages?.map((msg) => (
+              <div
+                key={msg.id}
+                className={`flex text-xs md:text-sm ${msg.senderId === currentUser?.id ? 'justify-end' : 'justify-start'}`}
+              >
                 <div
-                  key={msg.id}
-                  className={`flex text-xs md:text-sm ${msg.senderId === currentUser?.id ? 'justify-end' : 'justify-start'}`}
+                  className={`max-w-[80%] px-4 py-2 rounded-lg ${
+                    msg.senderId === currentUser?.id ? 'bg-primary text-primary-foreground' : 'bg-secondary'
+                  }`}
                 >
+                  {msg.type === 'TEXT' ? (
+                    <p>{msg.content}</p>
+                  ) : (
+                    <img src={msg.content} alt='Chat image' className='max-w-[200px] rounded' />
+                  )}
                   <div
-                    className={`max-w-[80%] px-4 py-2 rounded-lg ${
-                      msg.senderId === currentUser?.id ? 'bg-primary text-primary-foreground' : 'bg-secondary'
+                    className={`flex justify-between text-xs mt-1 ${
+                      msg.senderId === currentUser?.id ? 'text-primary-foreground/80' : 'text-muted-foreground'
                     }`}
                   >
-                    {msg.type === 'TEXT' ? (
-                      <p>{msg.content}</p>
-                    ) : (
-                      <img src={msg.content} alt='Chat image' className='max-w-[200px] rounded' />
+                    <span className='text-xs'>{new Date(msg.createdAt).toLocaleTimeString()}</span>
+                    {msg.senderId === currentUser?.id && (
+                      <span className='text-xs ml-1'>{msg.read ? 'Read' : 'Sent'}</span>
                     )}
-                    <div
-                      className={`flex justify-between text-xs mt-1 ${
-                        msg.senderId === currentUser?.id ? 'text-primary-foreground/80' : 'text-muted-foreground'
-                      }`}
-                    >
-                      <span className='text-xs'>{new Date(msg.createdAt).toLocaleTimeString()}</span>
-                      {msg.senderId === currentUser?.id && (
-                        <span className='text-xs ml-1'>{msg.read ? 'Read' : 'Sent'}</span>
-                      )}
-                    </div>
                   </div>
                 </div>
-              ))}
+              </div>
+            ))}
             <div className='flex justify-start items-center mb-2 mt-2'>
               {isTyping && <TypingIndicator avatarUrl={otherParticipant.avatarUrl} name={otherParticipant.name} />}
             </div>

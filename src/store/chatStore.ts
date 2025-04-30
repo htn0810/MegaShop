@@ -36,6 +36,7 @@ export const useChatStore = create<ChatState>()(
           set(() => ({
             isChatOpen: false,
             isMinimized: false,
+            selectedChatUserId: null,
           })),
 
         minimizeChat: () => set(() => ({ isMinimized: true })),

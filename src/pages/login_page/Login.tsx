@@ -60,10 +60,17 @@ const Login = () => {
         setUser(user)
         handleGetCart()
         const message = response.data.message
-        // Update status
-        socket.emit('setStatus', {
-          userId: user.id,
-          status: 'ONLINE',
+        // Connect socket and set status
+        socket.connect()
+        // Wait for socket to connect before emitting
+        socket.on('connect', () => {
+          socket.emit('setStatus', {
+            userId: user.id,
+            status: 'ONLINE',
+          })
+        })
+        socket.on('connect_error', (err) => {
+          toast.error('Failed to connect to chat server!')
         })
         navigate('/')
         return message

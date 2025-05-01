@@ -20,25 +20,6 @@ export const http = axios.create({
 
 let refreshTokenPromise: Promise<RefreshTokenResponse> | null = null
 
-// // Store for tracking requests and errors
-// const requestTracker = new Map()
-
-// // Axios Request Interceptor
-// http.interceptors.request.use(
-//   (config) => {
-//     // Generate a unique key for the request (e.g., method + URL + params/body)
-//     const requestKey = generateRequestKey(config)
-
-//     // If this is a new request, initialize its tracking
-//     if (!requestTracker.has(requestKey)) {
-//       requestTracker.set(requestKey, { pending: true, errorReported: false })
-//     }
-
-//     return config
-//   },
-//   (error) => Promise.reject(error),
-// )
-
 // Catching error
 http.interceptors.response.use(
   (response) => response,
@@ -75,9 +56,3 @@ http.interceptors.response.use(
     return Promise.reject(error)
   },
 )
-
-// // Helper function to generate a unique key for each request
-// function generateRequestKey(config: AxiosRequestConfig) {
-//   const { method, url, params, data } = config
-//   return `${method}-${url}-${JSON.stringify(params)}-${JSON.stringify(data)}`
-// }

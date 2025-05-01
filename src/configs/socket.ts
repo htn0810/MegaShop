@@ -1,7 +1,10 @@
 // src/lib/socket.ts
 import { io } from 'socket.io-client'
 
-const socket = io('http://localhost:8080', {
+const BE_DOMAIN =
+  import.meta.env.VITE_MODE === 'production' ? import.meta.env.VITE_BE_DOMAIN_PROD : import.meta.env.VITE_BE_DOMAIN_DEV
+
+const socket = io(BE_DOMAIN, {
   autoConnect: false,
   reconnection: false,
 })

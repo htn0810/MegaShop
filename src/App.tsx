@@ -7,7 +7,7 @@ import ProtectedRoute from '@/configs/ProtectedRoute'
 import { ROLE } from '@/constants/common.constant'
 import { useChatStore } from '@/store/chatStore'
 import { useUserStore } from '@/store/userStore'
-import { cleanUpSocket } from '@/configs/socket'
+import { getSocket } from '@/configs/socket'
 
 const App = () => {
   const Home = MegaLazyLoad(import('@/pages/home_page/Home'))
@@ -29,16 +29,25 @@ const App = () => {
   const { user } = useUserStore()
   const { closeChat } = useChatStore()
 
+  const socket = getSocket()
+
   useEffect(() => {
+    // Gửi heartbeat mỗi 30s để báo "Tao còn sống"
+    const heartbeatInterval = setInterval(() => {
+      if (user?.id) {
+        socket.emit('heartbeat', { userId: user.id })
+      }
+    }, 30000)
+
     const handleBeforeUnload = () => {
       closeChat()
-      cleanUpSocket()
     }
 
     window.addEventListener('beforeunload', handleBeforeUnload)
 
     // Cleanup
     return () => {
+      clearInterval(heartbeatInterval)
       window.removeEventListener('beforeunload', handleBeforeUnload)
     }
   }, [user])

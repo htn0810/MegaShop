@@ -5,7 +5,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useUserStore } from '@/store/userStore'
 import { ConversationApi } from '@/apis/conversation/conversation'
-import { cleanUpSocket, socket } from '@/configs/socket'
+import { cleanUpListeners, getSocket } from '@/configs/socket'
 import { useChatStore } from '@/store/chatStore'
 import { X, Minus, PaperPlaneRight, ImageSquare, ChatDots } from '@phosphor-icons/react'
 import { toast } from 'sonner'
@@ -25,7 +25,7 @@ const ChatBox = () => {
   const [loading, setLoading] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
   const scrollRef = useRef<HTMLDivElement>(null)
-
+  const socket = getSocket()
   // Typing logic
   const typingTimeout = useRef<NodeJS.Timeout | null>(null)
 
@@ -111,7 +111,7 @@ const ChatBox = () => {
   useEffect(() => {
     if (!user?.id || !conversation) return
 
-    socket.connect()
+    // socket.connect()
     socket.emit('joinConversation', { conversationId: conversation.id })
 
     // Receive new messages
@@ -120,7 +120,7 @@ const ChatBox = () => {
         setUnreadCount((prev) => prev + 1)
       } else {
         if (message.senderId !== user?.id) {
-          socket.emit('readMessage', { messageId: message.id, conversationId: conversation.id })
+          socket.emit('readMessage', { senderId: message.senderId, conversationId: conversation.id })
         }
       }
       setMessages((prev) => [...prev, message])
@@ -148,8 +148,10 @@ const ChatBox = () => {
     })
 
     // Read message
-    socket.on('messageRead', ({ messageId, read }) => {
-      setMessages((prev) => prev.map((msg) => (msg.id === messageId ? { ...msg, read } : msg)))
+    socket.on('messageRead', ({ senderId, conversationId }) => {
+      if (conversationId === conversation?.id) {
+        setMessages((prev) => prev.map((msg) => (msg.senderId === senderId ? { ...msg, read: true } : msg)))
+      }
     })
 
     // error when send message
@@ -158,20 +160,15 @@ const ChatBox = () => {
     })
 
     return () => {
-      cleanUpSocket()
-      socket.disconnect()
+      cleanUpListeners(['newMessage', 'statusUpdate', 'typing', 'stopTyping', 'messageRead'])
     }
   }, [conversation, user?.id, isMinimized])
 
   // Reset unread count when chat is maximized
   useEffect(() => {
-    if (!isMinimized && unreadCount > 0 && conversation) {
+    if (!isMinimized && unreadCount > 0 && conversation && otherParticipant?.id) {
       // Mark all messages as read
-      messages
-        .filter((msg) => !msg.read && msg.senderId !== user?.id)
-        .forEach((msg) => {
-          socket.emit('readMessage', { messageId: msg.id, conversationId: conversation.id })
-        })
+      socket.emit('readMessage', { senderId: otherParticipant.id, conversationId: conversation.id })
 
       setUnreadCount(0)
     }
@@ -205,8 +202,8 @@ const ChatBox = () => {
   }
 
   return (
-    <div className='fixed bottom-4 right-4 z-50 flex flex-col h-[500px] w-[350px] border rounded-lg shadow-lg bg-background'>
-      <div className='p-4 bg-primary text-primary-foreground rounded-t-lg flex justify-between items-center'>
+    <div className='fixed bottom-4 right-4 z-50 flex flex-col h-[400px] md:h-[450px] lg:h-[500px] w-[250px] md:w-[300px] lg:w-[350px] border rounded-lg shadow-lg bg-background'>
+      <div className='p-2 md:p-4 bg-primary text-primary-foreground rounded-t-lg flex justify-between items-center'>
         <div className='flex items-center gap-2'>
           <div className='relative'>
             <Avatar>
@@ -220,11 +217,13 @@ const ChatBox = () => {
             />
           </div>
           <div>
-            <h3 className='font-medium'>{otherParticipant?.shop?.name || otherParticipant.name}</h3>
+            <h3 className='font-medium text-sm md:text-base'>
+              {otherParticipant?.shop?.name || otherParticipant.name}
+            </h3>
             <p className='text-xs text-primary-foreground/80'>{status === 'ONLINE' ? 'Online' : 'Offline'}</p>
           </div>
         </div>
-        <div className='flex gap-2'>
+        <div className='flex'>
           <Button variant='ghost' size='icon' className='h-8 w-8 text-primary-foreground' onClick={minimizeChat}>
             <Minus size={16} weight='bold' />
           </Button>
@@ -239,21 +238,21 @@ const ChatBox = () => {
           <p>Loading conversation...</p>
         </div>
       ) : (
-        <ScrollArea className='flex-1 p-4'>
+        <ScrollArea className='flex-1 p-2 md:p-4'>
           {messages?.length === 0 ? (
-            <div className='flex flex-col items-center justify-center h-full text-muted-foreground'>
+            <div className='flex flex-col items-center justify-center h-full text-muted-foreground text-xs  md:text-sm '>
               <p>Start chatting with {otherParticipant?.shop?.name}</p>
             </div>
           ) : (
-            messages.map((msg) => (
+            messages?.map((msg) => (
               <div key={msg.id} className={`mb-4 flex ${msg.senderId === user?.id ? 'justify-end' : 'justify-start'}`}>
                 <div
-                  className={`max-w-[70%] rounded-lg p-2 ${
+                  className={`max-w-[70%] rounded-lg p-2 leading-none ${
                     msg.senderId === user?.id ? 'bg-primary text-primary-foreground' : 'bg-muted'
                   }`}
                 >
                   {msg.type === 'TEXT' ? (
-                    <p>{msg.content}</p>
+                    <p className='text-xs md:text-sm text-wrap break-words'>{msg.content}</p>
                   ) : (
                     <img src={msg.content} alt='Chat image' className='max-w-[200px] rounded' />
                   )}
@@ -274,13 +273,13 @@ const ChatBox = () => {
         </ScrollArea>
       )}
 
-      <div className='p-4 border-t flex gap-2 bg-background'>
+      <div className='p-2 md:p-4 border-t flex gap-2 bg-background'>
         <Input
           value={input}
           onChange={handleInputChange}
           placeholder='Type a message...'
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-          className='flex-1'
+          className='flex-1 text-xs md:text-sm'
         />
         <Button size='icon' onClick={handleSend}>
           <PaperPlaneRight size={18} weight='fill' />

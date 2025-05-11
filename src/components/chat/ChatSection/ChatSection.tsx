@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { cleanUpSocket, socket } from '@/configs/socket'
+import { cleanUpListeners, getSocket } from '@/configs/socket'
 import { useUserStore } from '@/store/userStore'
 import { Conversation, Message, Participant, SelectedConversation } from '@/types/conversation.type'
 import { produce } from 'immer'
@@ -29,6 +29,7 @@ const ChatSection = (props: Props) => {
   const [message, setMessage] = useState('')
   const [isTyping, setIsTyping] = useState<boolean>(false)
   const typingTimeout = useRef<NodeJS.Timeout | null>(null)
+  const socket = getSocket()
 
   // Handle sending a new message
   const handleSendMessage = (selectedUserId: number) => {
@@ -91,9 +92,6 @@ const ChatSection = (props: Props) => {
   useEffect(() => {
     if (!currentUser?.id || !selectedConversation) return
 
-    // Connect to socket
-    socket.connect()
-
     // Join conversation
     socket.emit('joinConversation', { conversationId: selectedConversation.conversationId })
 
@@ -112,7 +110,7 @@ const ChatSection = (props: Props) => {
               )
               if (message.senderId !== currentUser?.id) {
                 socket.emit('readMessage', {
-                  messageId: message.id,
+                  senderId: message.senderId,
                   conversationId: selectedConversation.conversationId,
                 })
               }
@@ -133,23 +131,27 @@ const ChatSection = (props: Props) => {
     })
 
     // Read message
-    socket.on('messageRead', ({ messageId, read }) => {
-      setMessages(
-        produce(messages, (draft) => {
-          const messageIdx = draft.findIndex((msg) => msg.id === messageId)
-          if (messageIdx !== -1) {
-            draft[messageIdx].read = read
-          }
-        }),
-      )
+    socket.on('messageRead', ({ senderId, conversationId }) => {
+      if (conversationId === selectedConversation?.conversationId) {
+        setMessages(
+          produce(messages, (draft) => {
+            draft.map((msg) => {
+              if (msg.senderId === senderId) {
+                msg.read = true
+              }
+            })
+          }),
+        )
+      }
       setConversations(
         produce(conversations, (draft) => {
           const conversation = draft.find((c) => c.id === selectedConversation?.conversationId)
           if (conversation) {
-            const messageIdx = conversation.messages.findIndex((msg) => msg.id === messageId)
-            if (messageIdx !== -1) {
-              conversation.messages[messageIdx].read = read
-            }
+            conversation.messages.map((msg) => {
+              if (msg.senderId === senderId) {
+                msg.read = true
+              }
+            })
           }
         }),
       )
@@ -179,10 +181,9 @@ const ChatSection = (props: Props) => {
 
     // Clean up on unmount
     return () => {
-      socket.disconnect()
-      cleanUpSocket()
+      cleanUpListeners(['newMessage', 'statusUpdate', 'messageRead', 'typing', 'stopTyping', 'error'])
     }
-  }, [currentUser?.id, conversations, selectedConversation])
+  }, [currentUser?.id, selectedConversation?.conversationId, conversations])
 
   return (
     <Card className='flex-1 hidden md:flex flex-col '>

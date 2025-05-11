@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { useChatStore } from '@/store/chatStore'
+import { useUserStore } from '@/store/userStore'
 
 type Props = {
   shop: IShop
@@ -16,6 +17,7 @@ const ViewShop = ({ shop }: Props) => {
   const navigate = useNavigate()
   const [isFollowing, setIsFollowing] = useState(false)
   const { openChat, addChatUserId, setSelectedChatUserId } = useChatStore()
+  const { user: currentUser } = useUserStore()
 
   const handleFollowToggle = () => {
     setIsFollowing(!isFollowing)
@@ -29,32 +31,39 @@ const ViewShop = ({ shop }: Props) => {
   }
 
   return (
-    <div className='flex flex-col md:flex-row md:gap-x-8 gap-x-2 gap-y-4'>
-      <div className='flex items-center md:gap-x-6 gap-x-2 md:pr-24 pr-2 border-r border-r-gray-200'>
-        <div className='md:w-28 md:h-28 w-16 h-16 rounded-full overflow-hidden'>
+    <div className='flex flex-col lg:flex-row md:gap-x-8 gap-x-2 gap-y-4'>
+      <div className='flex items-center md:gap-x-6 gap-x-2 lg:pr-24 pr-2 lg:border-r lg:border-r-gray-200'>
+        <div
+          className='md:w-28 md:h-28 w-16 h-16 rounded-full overflow-hidden cursor-pointer hover:opacity-90'
+          onClick={() => navigate(`/shop/${shop.id}`)}
+        >
           <img src={shop?.avatarUrl || DEFAULT_SHOP_AVATAR} alt='' className='w-full h-full bg-cover' />
         </div>
-        <div className='flex flex-col gap-y-4'>
+        <div className='flex flex-col md:gap-y-4 gap-y-2'>
           <h4 className='font-bold md:text-lg text-md'>{shop.name}</h4>
-          <div className='flex flex-col sm:flex-row gap-2'>
-            <Button className='flex gap-x-1' onClick={() => navigate(`/shop/${shop.id}`)}>
+          <div className='flex flex-row gap-2'>
+            <Button className='hidden gap-x-1  md:flex' onClick={() => navigate(`/shop/${shop.id}`)}>
               <Storefront size={18} />
               <span className='text-xs md:text-sm'>{t('product_detail.view_shop')}</span>
             </Button>
-            <Button
-              variant={isFollowing ? 'destructive' : 'outline'}
-              className='flex gap-x-1'
-              onClick={handleFollowToggle}
-            >
-              <Heart size={18} weight={isFollowing ? 'fill' : 'regular'} />
-              <span className='text-xs md:text-sm'>
-                {isFollowing ? t('product_detail.unfollow_shop') : t('product_detail.follow_shop')}
-              </span>
-            </Button>
-            <Button variant='outline' className='flex gap-x-1' onClick={handleStartChat}>
-              <ChatTeardropDots size={18} />
-              <span className='text-xs md:text-sm'>{t('product_detail.chat_with_shop')}</span>
-            </Button>
+            {shop.userId !== currentUser?.id && (
+              <Button
+                variant={isFollowing ? 'destructive' : 'outline'}
+                className='flex gap-x-1'
+                onClick={handleFollowToggle}
+              >
+                <Heart size={18} weight={isFollowing ? 'fill' : 'regular'} />
+                <span className='text-xs md:text-sm hidden md:inline-block'>
+                  {isFollowing ? t('product_detail.unfollow_shop') : t('product_detail.follow_shop')}
+                </span>
+              </Button>
+            )}
+            {shop.userId !== currentUser?.id && (
+              <Button variant='outline' className='flex gap-x-1' onClick={handleStartChat}>
+                <ChatTeardropDots size={18} />
+                <span className='text-xs md:text-sm hidden md:inline-block'>{t('product_detail.chat_with_shop')}</span>
+              </Button>
+            )}
           </div>
         </div>
       </div>

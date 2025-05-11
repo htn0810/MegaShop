@@ -14,7 +14,7 @@ import { CartAPI } from '@/apis/cart/cart'
 import { useUserStore } from '@/store/userStore'
 import { useCartStore } from '@/store/cartStore'
 import { groupProductsByShop } from '@/utils/groupProductsByShop'
-import { socket } from '@/configs/socket'
+import { getSocket } from '@/configs/socket'
 
 type FormData = {
   email: string
@@ -28,6 +28,7 @@ const Login = () => {
   const { setCart } = useCartStore()
   const [isHiddenPassword, setIsHiddenPassword] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
+  const socket = getSocket()
   const formSchema = z.object({
     email: z
       .string()
@@ -60,17 +61,9 @@ const Login = () => {
         setUser(user)
         handleGetCart()
         const message = response.data.message
-        // Connect socket and set status
-        socket.connect()
-        // Wait for socket to connect before emitting
-        socket.on('connect', () => {
-          socket.emit('setStatus', {
-            userId: user.id,
-            status: 'ONLINE',
-          })
-        })
-        socket.on('connect_error', (_err) => {
-          toast.error('Failed to connect to chat server!')
+        socket.emit('setStatus', {
+          userId: user.id,
+          status: 'ONLINE',
         })
         navigate('/')
         return message

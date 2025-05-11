@@ -4,11 +4,11 @@ import { Input } from '@/components/ui/input'
 import { Search } from 'lucide-react'
 import { ConversationApi } from '@/apis/conversation/conversation'
 import { useUserStore } from '@/store/userStore'
-import { socket } from '@/configs/socket'
+import { cleanUpListeners, getSocket } from '@/configs/socket'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { toast } from 'sonner'
-import { Conversation, Message, Participant, SelectedConversation } from '@/types/conversation.type'
+import { Conversation, Message, SelectedConversation } from '@/types/conversation.type'
 import { produce } from 'immer'
 import ChatSection from '@/components/chat/ChatSection'
 
@@ -18,13 +18,8 @@ const Chat = () => {
 
   const [searchTerm, setSearchTerm] = useState('')
   const [conversations, setConversations] = useState<Conversation[]>([])
-  const [users, setUsers] = useState<Participant[]>([])
 
-  // Filter users based on search term
-  const filteredUsers = searchTerm.trim()
-    ? users?.filter((u) => u.user.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    : users
-
+  const socket = getSocket()
   // Fetch conversations
   const handleGetConversations = async () => {
     try {
@@ -35,17 +30,19 @@ const Chat = () => {
         return { ...convo, unreadCount }
       })
 
-      // Extract participants excluding current user
-      const participants = conversationsData
-        .map((conversation: Conversation) =>
-          conversation.participants.filter((participant: Participant) => participant.user.id !== currentUser?.id),
-        )
-        .flat()
-
       setConversations(conversationsData)
-      setUsers(participants)
     } catch (error) {
       toast.error('Failed to load conversations')
+    }
+  }
+
+  const handleGetConversationById = async (id: number) => {
+    try {
+      const response = await ConversationApi.getConversationById(id)
+      const conversationData = response.data.data
+      return conversationData
+    } catch (error) {
+      toast.error('Failed to load conversation')
     }
   }
 
@@ -66,11 +63,7 @@ const Chat = () => {
 
     // Mark all unread messages as read when selecting the conversation
     if (conversation.unreadCount && conversation.unreadCount > 0) {
-      console.log('conversation.unreadCount', conversation.unreadCount)
-      const unreadMessages = conversation.messages.filter((msg) => !msg.read && msg.senderId !== currentUser?.id)
-      unreadMessages.forEach((msg) => {
-        socket.emit('readMessage', { messageId: msg.id, conversationId: conversation.id })
-      })
+      socket.emit('readMessage', { senderId: participant.user.id, conversationId: conversation.id })
 
       setConversations(
         produce(conversations, (draft) => {
@@ -91,6 +84,43 @@ const Chat = () => {
     handleGetConversations()
   }, [])
 
+  useEffect(() => {
+    // Join conversation
+    socket.emit('registerUser', { userId: currentUser?.id })
+
+    // Listen for newMessageNotification (when a new message is sent, but not in chat room)
+    socket.on('newMessageNotification', async ({ conversationId, message }) => {
+      if (conversationId !== selectedConversation?.conversationId) {
+        const conversation = conversations.find((c) => c.id === conversationId)
+        if (conversation) {
+          setConversations(
+            produce(conversations, (draft) => {
+              const updatedConversation: Conversation | undefined = draft.find((c) => c.id === conversationId)
+              if (updatedConversation) {
+                updatedConversation.unreadCount = (updatedConversation.unreadCount || 0) + 1
+                updatedConversation.messages.push(message)
+              }
+            }),
+          )
+        } else {
+          // add new conversation
+          const newConversation = await handleGetConversationById(conversationId)
+          setConversations(
+            produce(conversations, (draft) => {
+              newConversation.unreadCount = newConversation?.messages?.lenght || 1
+              draft.push(newConversation)
+            }),
+          )
+        }
+      }
+    })
+
+    // Clean up on unmount
+    return () => {
+      cleanUpListeners(['newMessageNotification'])
+    }
+  }, [currentUser?.id, selectedConversation?.conversationId, conversations.length])
+
   return (
     <div className='flex flex-col'>
       <div className='flex flex-col md:flex-row h-full gap-4 md:max-h-[600px]'>
@@ -110,27 +140,27 @@ const Chat = () => {
           </CardHeader>
           <CardContent className='flex-1 p-0 overflow-y-auto'>
             <div className='flex flex-col gap-2 px-4 pb-2 w-full'>
-              {filteredUsers?.length === 0 ? (
+              {conversations?.length === 0 ? (
                 <p className='text-center py-4 text-muted-foreground text-xs'>No conversations found</p>
               ) : (
-                filteredUsers?.map((user) => {
-                  const conversation = conversations.find((c) => c.participants.some((p) => p.user.id === user.user.id))
-                  const unreadCount = conversation?.unreadCount || 0
-
+                conversations?.map((conver) => {
+                  const otherParicipant = conver.participants.find((p) => p.user.id !== currentUser?.id)
+                  if (!otherParicipant) return null
+                  const unreadCount = conver.unreadCount || 0
                   return (
                     <div
-                      key={user.user.id}
+                      key={otherParicipant?.user.id}
                       className={`flex items-center gap-3 p-2 rounded-md cursor-pointer transition-colors ${
-                        selectedConversation?.otherParticipant.userId === user.user.id
+                        selectedConversation?.otherParticipant.userId === otherParicipant?.user.id
                           ? 'bg-primary/10'
                           : 'hover:bg-secondary/50'
                       }`}
-                      onClick={() => handleSelectConversation(user.user.id)}
+                      onClick={() => handleSelectConversation(otherParicipant?.user.id)}
                     >
                       <div className='relative'>
                         <Avatar className='h-10 w-10'>
-                          <AvatarImage src={user.user.avatarUrl} alt={user.user.name} />
-                          <AvatarFallback>{user.user.name.charAt(0)}</AvatarFallback>
+                          <AvatarImage src={otherParicipant?.user.avatarUrl} alt={otherParicipant?.user.name} />
+                          <AvatarFallback>{otherParicipant?.user.name.charAt(0)}</AvatarFallback>
                         </Avatar>
 
                         {unreadCount > 0 && (
@@ -142,7 +172,7 @@ const Chat = () => {
                           </Badge>
                         )}
                       </div>
-                      <h3 className='font-medium truncate text-xs md:text-sm'>{user.user.name + 'jjjjjjjjadasdaj'}</h3>
+                      <h3 className='font-medium truncate text-xs md:text-sm'>{otherParicipant?.user.name}</h3>
                     </div>
                   )
                 })

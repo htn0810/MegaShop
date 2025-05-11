@@ -5,6 +5,10 @@ export class ConversationApi {
     return http.get(`/conversations`)
   }
 
+  public static async getConversationById(id: number) {
+    return http.get(`/conversations/${id}`)
+  }
+
   public static async getConversationByUserId(userId: number) {
     return http.get(`/conversations/user/${userId}`)
   }

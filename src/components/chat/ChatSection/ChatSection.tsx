@@ -13,13 +13,14 @@ import { toast } from 'sonner'
 
 type Props = {
   selectedConversation: SelectedConversation
+  isSelectChatOpen: boolean
   conversations: Conversation[]
   setConversations: React.Dispatch<React.SetStateAction<Conversation[]>>
 }
 
 const ChatSection = (props: Props) => {
   const { user: currentUser } = useUserStore()
-  const { selectedConversation, conversations, setConversations } = props
+  const { selectedConversation, isSelectChatOpen, conversations, setConversations } = props
   const currentConversation = conversations.find((c) => c.id === selectedConversation?.conversationId)
   const [messages, setMessages] = useState<Message[]>(currentConversation?.messages || [])
   const [otherParticipant, setOtherParticipant] = useState<Participant['user']>(
@@ -184,7 +185,7 @@ const ChatSection = (props: Props) => {
   }, [currentUser?.id, selectedConversation?.conversationId, conversations])
 
   return (
-    <Card className='flex-1 hidden md:flex flex-col '>
+    <Card className={`flex-1 md:flex flex-col ${isSelectChatOpen ? 'hidden md:flex' : 'flex'} `}>
       <CardHeader className='px-4 py-3 border-b'>
         <div className='flex items-center gap-3'>
           <div className='relative'>
@@ -207,7 +208,7 @@ const ChatSection = (props: Props) => {
         </div>
       </CardHeader>
       <CardContent className='flex-1 p-0 overflow-hidden flex flex-col '>
-        <ScrollArea className='p-4 h-[500px]'>
+        <ScrollArea className='p-4 h-[300px] md:h-[500px]'>
           <div className='space-y-4'>
             {messages?.map((msg) => (
               <div

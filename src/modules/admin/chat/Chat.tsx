@@ -11,6 +11,8 @@ import { toast } from 'sonner'
 import { Conversation, Message, SelectedConversation } from '@/types/conversation.type'
 import { produce } from 'immer'
 import ChatSection from '@/components/chat/ChatSection'
+import { Button } from '@/components/ui/button'
+import { ArrowLeft } from '@phosphor-icons/react'
 
 const Chat = () => {
   const { user: currentUser } = useUserStore()
@@ -18,6 +20,7 @@ const Chat = () => {
 
   const [searchTerm, setSearchTerm] = useState('')
   const [conversations, setConversations] = useState<Conversation[]>([])
+  const [isSelectChatOpen, setIsSelectChatOpen] = useState(true)
 
   const socket = getSocket()
   // Fetch conversations
@@ -60,6 +63,7 @@ const Chat = () => {
 
     // setUserStatus(participant?.user.chatStatus || 'OFFLINE')
     setSelectedConversation({ otherParticipant: participant, conversationId: conversation.id })
+    setIsSelectChatOpen(false)
 
     // Mark all unread messages as read when selecting the conversation
     if (conversation.unreadCount && conversation.unreadCount > 0) {
@@ -77,6 +81,11 @@ const Chat = () => {
         }),
       )
     }
+  }
+
+  const handleBack = () => {
+    setSelectedConversation(null)
+    setIsSelectChatOpen(true)
   }
 
   // Load conversations on component mount
@@ -122,7 +131,9 @@ const Chat = () => {
     <div className='flex flex-col'>
       <div className='flex flex-col md:flex-row h-full gap-4 md:max-h-[600px]'>
         {/* User List - Left Side */}
-        <Card className='w-full md:w-1/3 lg:w-1/4 flex flex-col max-h-[400px]  md:max-h-[600px]'>
+        <Card
+          className={`w-full md:w-1/3 lg:w-1/4 flex flex-col max-h-[400px] md:max-h-[600px] ${selectedConversation ? 'hidden md:flex' : 'flex'}`}
+        >
           <CardHeader className='px-4 py-3'>
             <CardTitle className='text-sm'>Conversations</CardTitle>
             <div className='relative'>
@@ -180,11 +191,17 @@ const Chat = () => {
 
         {/* Chat Area - Right Side */}
         {selectedConversation && (
-          <ChatSection
-            selectedConversation={selectedConversation}
-            conversations={conversations}
-            setConversations={setConversations}
-          />
+          <>
+            <Button variant='outline' size='icon' onClick={handleBack}>
+              <ArrowLeft size={16} />
+            </Button>
+            <ChatSection
+              selectedConversation={selectedConversation}
+              isSelectChatOpen={isSelectChatOpen}
+              conversations={conversations}
+              setConversations={setConversations}
+            />
+          </>
         )}
         {!selectedConversation && (
           <div className='flex-1 flex items-center justify-center'>

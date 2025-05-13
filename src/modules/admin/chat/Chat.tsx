@@ -85,9 +85,6 @@ const Chat = () => {
   }, [])
 
   useEffect(() => {
-    // Join conversation
-    socket.emit('registerUser', { userId: currentUser?.id })
-
     // Listen for newMessageNotification (when a new message is sent, but not in chat room)
     socket.on('newMessageNotification', async ({ conversationId, message }) => {
       if (conversationId !== selectedConversation?.conversationId) {
@@ -119,7 +116,7 @@ const Chat = () => {
     return () => {
       cleanUpListeners(['newMessageNotification'])
     }
-  }, [currentUser?.id, selectedConversation?.conversationId, conversations.length])
+  }, [currentUser?.id, conversations.length])
 
   return (
     <div className='flex flex-col'>

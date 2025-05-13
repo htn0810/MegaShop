@@ -80,6 +80,8 @@ const ChatSection = (props: Props) => {
   }
 
   useEffect(() => {
+    // Join conversation
+    socket.emit('joinConversation', { conversationId: selectedConversation.conversationId })
     const currentConversation = conversations.find((c) => c.id === selectedConversation?.conversationId)
     setMessages(currentConversation?.messages || [])
     setOtherParticipant(selectedConversation.otherParticipant.user)
@@ -88,12 +90,8 @@ const ChatSection = (props: Props) => {
     }
   }, [selectedConversation.conversationId])
 
-  // Connect socket and listen for events
   useEffect(() => {
     if (!currentUser?.id || !selectedConversation) return
-
-    // Join conversation
-    socket.emit('joinConversation', { conversationId: selectedConversation.conversationId })
 
     // Listen for new messages
     socket.on('newMessage', (message: Message) => {

@@ -12,9 +12,19 @@ const getSocket = () => {
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
+      autoConnect: false,
     })
   }
   return socket
+}
+
+const connectSocket = ({ userId }: { userId: number }) => {
+  const socket = getSocket()
+  if (!socket.connected) {
+    socket.io.opts.query = { userId } // Gửi userId khi connect
+    socket.connect() // Mở kết nối khi login
+    console.log('Kết nối socket thành công cho user, bro!', userId)
+  }
 }
 
 // Cleanup specific listener
@@ -32,4 +42,4 @@ const disconnectSocket = () => {
   }
 }
 
-export { getSocket, cleanUpListeners, disconnectSocket }
+export { getSocket, cleanUpListeners, connectSocket, disconnectSocket }

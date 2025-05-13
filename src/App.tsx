@@ -34,7 +34,8 @@ const App = () => {
   useEffect(() => {
     // Gửi heartbeat mỗi 30s để báo "Tao còn sống"
     const heartbeatInterval = setInterval(() => {
-      if (user?.id) {
+      if (user?.id && socket.connected) {
+        console.log('Heartbeat sent to server', user.id)
         socket.emit('heartbeat', { userId: user.id })
       }
     }, 30000)
@@ -50,7 +51,7 @@ const App = () => {
       clearInterval(heartbeatInterval)
       window.removeEventListener('beforeunload', handleBeforeUnload)
     }
-  }, [user])
+  }, [user?.id])
 
   return (
     <Fragment>

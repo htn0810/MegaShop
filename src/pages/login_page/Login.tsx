@@ -14,7 +14,7 @@ import { CartAPI } from '@/apis/cart/cart'
 import { useUserStore } from '@/store/userStore'
 import { useCartStore } from '@/store/cartStore'
 import { groupProductsByShop } from '@/utils/groupProductsByShop'
-import { getSocket } from '@/configs/socket'
+import { connectSocket, getSocket } from '@/configs/socket'
 
 type FormData = {
   email: string
@@ -59,12 +59,15 @@ const Login = () => {
         setIsLoading(false)
         const { user } = response.data.data
         setUser(user)
+        connectSocket({ userId: user.id })
         handleGetCart()
         const message = response.data.message
         socket.emit('setStatus', {
           userId: user.id,
           status: 'ONLINE',
         })
+        // Join conversation
+        socket.emit('registerUser', { userId: user.id })
         navigate('/')
         return message
       },

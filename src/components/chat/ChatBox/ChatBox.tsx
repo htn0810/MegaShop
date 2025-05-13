@@ -111,7 +111,6 @@ const ChatBox = () => {
   useEffect(() => {
     if (!user?.id || !conversation) return
 
-    // socket.connect()
     socket.emit('joinConversation', { conversationId: conversation.id })
 
     // Receive new messages

@@ -13,6 +13,7 @@ import { produce } from 'immer'
 import ChatSection from '@/components/chat/ChatSection'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from '@phosphor-icons/react'
+import useDebounce from '@/custom_hooks/useDebounce'
 
 const Chat = () => {
   const { user: currentUser } = useUserStore()
@@ -23,6 +24,9 @@ const Chat = () => {
   const [isSelectChatOpen, setIsSelectChatOpen] = useState(true)
 
   const socket = getSocket()
+
+  const debouncedSearchTerm = useDebounce(searchTerm, 500)
+
   // Fetch conversations
   const handleGetConversations = async () => {
     try {
@@ -154,6 +158,12 @@ const Chat = () => {
                 conversations?.map((conver) => {
                   const otherParicipant = conver.participants.find((p) => p.user.id !== currentUser?.id)
                   if (!otherParicipant) return null
+                  if (
+                    debouncedSearchTerm &&
+                    !otherParicipant.user.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+                  ) {
+                    return null
+                  }
                   const unreadCount = conver.unreadCount || 0
                   return (
                     <div

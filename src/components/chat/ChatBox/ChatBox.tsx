@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
@@ -14,7 +14,20 @@ import { Conversation, Message, Participant } from '@/types/conversation.type'
 
 const ChatBox = () => {
   const { user } = useUserStore()
-  const { isChatOpen, selectedChatUserId, isMinimized, minimizeChat, maximizeChat, closeChat } = useChatStore()
+  const {
+    isChatOpen,
+    selectedChatUserId,
+    setSelectedChatUserId,
+    removeChatUserId,
+    chatUserIds,
+    isMinimized,
+    minimizeChat,
+    maximizeChat,
+    isBubbled,
+    showBubble,
+    hideBubble,
+    closeChat,
+  } = useChatStore()
 
   const [messages, setMessages] = useState<Message[]>([])
   const [otherParticipant, setOtherParticipant] = useState<Participant['user'] | null>(null)
@@ -28,6 +41,14 @@ const ChatBox = () => {
   const socket = getSocket()
   // Typing logic
   const typingTimeout = useRef<NodeJS.Timeout | null>(null)
+
+  const handleSelectChat = (userId: number) => {
+    if (userId !== selectedChatUserId) {
+      setSelectedChatUserId(userId)
+    }
+    hideBubble()
+    maximizeChat()
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!conversation) return
@@ -182,14 +203,40 @@ const ChatBox = () => {
   if (!isChatOpen || !selectedChatUserId || !otherParticipant) return null
 
   // Render minimized chat
+  console.log('isMinimized', isMinimized)
   if (isMinimized) {
     return (
       <div
-        className='fixed bottom-4 right-4 z-[9999] bg-white rounded-full shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-200 border border-gray-200'
-        onClick={maximizeChat}
-        style={{ width: '50px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        className='fixed bottom-4 right-4 z-[9999] p-3 cursor-pointer transition-all duration-200'
+        onClick={showBubble}
       >
-        <ChatDots size={28} />
+        {isBubbled && chatUserIds.length > 0 && (
+          <div className='flex flex-col gap-y-2'>
+            {chatUserIds.map((userId) => (
+              <div className='w-[50px] h-[50px] hover:scale-110 flex items-center justify-center relative group'>
+                <Avatar
+                  className='h-full w-full shadow-md dark:shadow-gray-600'
+                  key={userId}
+                  onClick={() => handleSelectChat(userId)}
+                >
+                  <AvatarImage src={otherParticipant.avatarUrl} alt={otherParticipant.name} />
+                  <AvatarFallback>{userId}</AvatarFallback>
+                </Avatar>
+                <Button
+                  variant='secondary'
+                  size='icon'
+                  className='hidden group-hover:flex items-center justify-center size-4 absolute top-0 right-0 rounded-full hover:bg-red-500'
+                  onClick={() => removeChatUserId(userId)}
+                >
+                  <X />
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
+        <div className='w-[50px] h-[50px] hover:scale-110 shadow-md dark:shadow-gray-600 bg-white rounded-full flex items-center justify-center mt-2'>
+          <ChatDots size={28} className='dark:text-black' />
+        </div>
 
         {unreadCount > 0 && (
           <div className='absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center min-w-[20px] h-[20px] px-1'>

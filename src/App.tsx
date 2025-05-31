@@ -1,5 +1,5 @@
 import PrimaryLayout from '@/layouts/primary_layout'
-import { Fragment, useEffect } from 'react'
+import { Fragment, useCallback, useEffect } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import './i18n'
 import MegaLazyLoad from '@/components/lazy_load/MegaLazyLoad'
@@ -27,8 +27,8 @@ const App = () => {
   const ForgotPassword = MegaLazyLoad(import('@/pages/forgot_password_page/ForgotPassword'))
 
   const { user } = useUserStore()
-  const { closeChat } = useChatStore()
-
+  const closeChat = useChatStore((state) => state.closeChat)
+  const handleClose = useCallback(() => closeChat(), [closeChat])
   const socket = getSocket()
 
   useEffect(() => {
@@ -41,7 +41,7 @@ const App = () => {
     }, 30000)
 
     const handleBeforeUnload = () => {
-      closeChat()
+      handleClose()
     }
 
     window.addEventListener('beforeunload', handleBeforeUnload)
